@@ -45,10 +45,13 @@ lista1 = []
 numeros_matriz = []
 for fila in matriz:
     for numero in fila:
+        #Metemos los numeros de la matriz en un vector lineal
         numeros_matriz.append(numero)
+#Verificamos que los numeros del vector no esten en la matriz
 for numero in vector:
     if numero not in numeros_matriz and numero not in lista1:
         lista1.append(numero)
+#Verificamos que los numeros de la matriz no esten en el vector
 for numero in numeros_matriz:
     if numero not in vector and numero not in lista1:
         lista1.append(numero)
@@ -62,10 +65,13 @@ for i in range(len(numeros_matriz)):
     repeticiones = 0
     if es_primo(numeros_matriz[i]):
         for j in numeros_matriz:
+            #Comprobamos si no se repite en la matriz
             if j == numeros_matriz[i]:
                 repeticiones += 1
+        #Si se repite una vez es porque se comparo asi mismo y verificamos que no este en el vector
         if repeticiones == 1 and numeros_matriz[i] not in vector:
             lista2.append(numeros_matriz[i])
+#Hacemos lo mismo pero con el vector ahora
 for i in range(len(vector)):
     repeticiones = 0
     if es_primo(vector[i]):
