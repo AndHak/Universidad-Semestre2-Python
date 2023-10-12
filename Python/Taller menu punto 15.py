@@ -13,8 +13,10 @@ def es_primo(x):
       return False
   return True
 def agregar_a_diccionario(matriz):
+  primos = []
+  repeticiones = []
   for i in range(len(matriz)):
     for j in range(len(matriz)):
       if es_primo(matriz[i][j]):
-        if matriz[i][j] in diccionario:
-          diccionario[]
+        if matriz[i][j] in primos:
+          primos.append(matriz[i][j] =
