@@ -61,9 +61,17 @@ print(f"Fibonacci mayor matriz: {fibonacci_mayor} posicion fila: {posicion_fibon
 
 #Matriz modificada dentro del rango del par menor al fibonacci mayor de la matriz con el factorial
 matriz_modificada = matriz.copy()
-for i in range(posicion_par_menor_fila, posicion_fibonacci_mayor_fila):
+for i in range(len(matriz_modificada)):
     for j in range(len(matriz_modificada)):
-        matriz_modificada[i][j] = factorial_primo_mayor
+        if i >= posicion_par_menor_fila and i <= posicion_fibonacci_mayor_fila:
+            if i == posicion_par_menor_fila:
+                if j > posicion_par_menor_columna:
+                    matriz_modificada[i][j] = factorial_primo_mayor
+            if i == posicion_fibonacci_mayor_fila:
+                if j < posicion_fibonacci_mayor_columna:
+                    matriz_modificada[i][j] = factorial_primo_mayor
+            if i > posicion_par_menor_fila and i < posicion_fibonacci_mayor_fila:
+                matriz_modificada[i][j] = factorial_primo_mayor
 print("\nMatriz Modificada")
 for fila in matriz_modificada:
     print(" ".join("{:4}".format(n) for n in fila))
