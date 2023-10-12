@@ -27,6 +27,10 @@ for fila in matriz:
         conjunto.append(n)
     if es_fibonacci(n) and n not in conjunto:
         conjunto.append(n)
+for i in range(len(conjunto)):
+  for j in range(len(conjunto)-1-i):
+    if conjunto[j] > conjunto[j+1]:
+      conjunto[j], conjunto[j+1] = conjunto[j+1], conjunto[j]
 print(f"Vector:\n{vector}")
 print(f"\nMatriz:")
 for fila in matriz:
