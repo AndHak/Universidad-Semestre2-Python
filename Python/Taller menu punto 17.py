@@ -40,7 +40,7 @@ for i in range(len(claves)):
 # Ordenar diccionario2 por clave usando el algoritmo de burbuja
 claves2 = list(diccionario2.keys())
 for i in range(len(claves2)):
-    for j in range(len(claves2) - i - 1):
+    for j in range(len(claves2) -i -1):
         if claves2[j] > claves2[j + 1]:
             claves2[j], claves2[j + 1] = claves2[j + 1], claves2[j]
 
