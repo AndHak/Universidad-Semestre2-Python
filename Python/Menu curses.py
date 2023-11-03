@@ -7,6 +7,7 @@ import time # Libreria de tiempo
 #---------------------------------------------------------------------------------------------------------------#
 
 #--------------------------------------------- A T E N C I O N ---------------------------------------------------#
+# ---------------------------- Instalar Curses con pip install windows-curses ------------------------------------#
 # Los calculos se hicieron con random, puede que no siempre se cumplan los requisitos para mostrar los resultados #
 #------------------ si algun programa no funciona ejecutelo de nuevo hasta que funcione --------------------------#
 
