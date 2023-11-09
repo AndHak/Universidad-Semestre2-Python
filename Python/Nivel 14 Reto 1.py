@@ -60,14 +60,14 @@ def agregar_producto():
 
                 id_producto = input(Fore.LIGHTYELLOW_EX + "ID del producto:" + Fore.RESET + " ")
                 nombre_producto = input(Fore.LIGHTYELLOW_EX + "Nombre del producto:" + Fore.RESET + " ")
-                precio_de_compra = input(Fore.LIGHTYELLOW_EX + "Precio de compra:" + Fore.RESET + " ")
-                precio_de_venta = input(Fore.LIGHTYELLOW_EX + "Precio de venta:" + Fore.RESET + " ")
-                cantidad = input(Fore.LIGHTYELLOW_EX + "        Stock:" + Fore.RESET + " ")
+                precio_de_compra = float(input(Fore.LIGHTYELLOW_EX + "Precio de compra:" + Fore.RESET + " "))
+                precio_de_venta = float(input(Fore.LIGHTYELLOW_EX + "Precio de venta:" + Fore.RESET + " "))
+                cantidad = int(input(Fore.LIGHTYELLOW_EX + "        Stock:" + Fore.RESET + " "))
 
-                datos_producto["nombre producto"] = nombre_producto
-                datos_producto["Precio de comprar"] = precio_de_compra
-                datos_producto["Precio de venta"] = precio_de_venta
-                datos_producto["Stock:   "] = cantidad
+                datos_producto["Nombre producto: "] = nombre_producto
+                datos_producto["Precio de compra: "] = precio_de_compra
+                datos_producto["Precio de venta: "] = precio_de_venta
+                datos_producto["Stock: "] = cantidad
 
                 inventario_productos[id_producto] = datos_producto
 
@@ -77,19 +77,54 @@ def agregar_producto():
             print(Fore.LIGHTRED_EX + "Entrada no valida" + Fore.RESET)
             os.system("sleep 0.5")
 
+def eliminar_producto():
+    eliminando = True
+    while eliminando:
+        try:
+            producto_a_eliminar = input("Ingrese el ID del producto que desea eliminar: ")
+            if producto_a_eliminar in inventario_productos:
+                caracteristicas = inventario_productos[producto_a_eliminar]
+                print(f"ID del producto: {producto_a_eliminar}")
+                print(f"Nombre: {caracteristicas['Nombre producto: ']}")
+                print(f"Precio de Compra: {caracteristicas['Precio de compra: ']}")
+                print(f"Precio de Venta: {caracteristicas['Precio de venta: ']}")
+                print(f"Cantidad: {caracteristicas['Stock: ']}")
+                eliminar = input("\n¿Este es el producto que desea eliminar? (si/no): ")
+                if eliminar.lower() == "si":
+                    del inventario_productos[producto_a_eliminar]
+                    print("El producto fue eliminado con éxito.")
+                    eliminar_nuevo = input("\n¿Desea eliminar otro producto? (si/no): ")
+                    if eliminar_nuevo.lower() == "si":
+                        eliminando = True
+                    elif eliminar_nuevo.lower() == "no":
+                        eliminando = False
+                    else:
+                        print("Opción no válida, pruebe con si o no.")
+                elif eliminar.lower() == "no":
+                    eliminando = False
+                else:
+                    print("Opción no válida, pruebe con si o no.")
+            else:
+                print("El producto no existe en el inventario.")
+                pausa()
+        except ValueError:
+            print("Error")
+
+
 def ver_lista_de_productos():
     if not inventario_productos:
         print("No hay productos en el inventario.")
     else:
         for id_producto, caracteristicas in inventario_productos.items():
             print(f"ID del producto: {id_producto}")
-            print(f"Nombre: {caracteristicas['nombre producto']}")
-            print(f"Precio de compra: {caracteristicas['Precio de comprar']}")
-            print(f"Precio de venta: {caracteristicas['Precio de venta']}")
-            print(f"Cantidad: {caracteristicas['Stock:   ']}")
+            print(f"Nombre: {caracteristicas['Nombre producto: ']}")
+            print(f"Precio de compra: {caracteristicas['Precio de compra: ']}")
+            print(f"Precio de venta: {caracteristicas['Precio de venta: ']}")
+            print(f"Cantidad: {caracteristicas['Stock: ']}")
             print()
 
     pausa()
+
 #Menus 
 def dashboard_inventario():
     while True:
@@ -121,6 +156,8 @@ def dashboard_inventario():
 
             if  inventario_chose == 1:
                 agregar_producto()
+            if inventario_chose == 2:
+                eliminar_producto()
             if inventario_chose == 3:
                 ver_lista_de_productos()
             if inventario_chose == 4:
