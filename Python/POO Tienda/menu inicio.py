@@ -32,7 +32,7 @@ def main():
             elif dashboard_chose == 5:
                 tienda.mostrar_encabezado("¡Vuelva Pronto!")
                 os.system("sleep 1")
-                os.system("clear" if os.name == "posix" else "cls")
+                os.system("clear")
                 break
             else:
                 tienda.mostrar_error("Opción no válida. Intente de nuevo.")

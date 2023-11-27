@@ -27,6 +27,7 @@ class Tienda:
         print(f"Precio de venta: {producto.precio_venta}")
         print(f"Cantidad: {producto.stock}")
         print()
+        os.system("sleep 2")
 
     def ver_lista_de_productos(self): 
         if not self.inventario_productos:
@@ -94,6 +95,7 @@ class Tienda:
                     if exito:
                         self.registrar_venta(id_producto, cantidad, total_venta)
                         self.mostrar_exito(f"Venta realizada con éxito. Total de la venta: ${total_venta:.2f}")
+                        self.imprimir_factura(id_producto)
                     else:
                         self.mostrar_error("No se pudo completar la venta.")
                 else:
@@ -178,7 +180,26 @@ class Tienda:
     def registrar_venta(self, id_producto, cantidad, total_venta):
         self.ventas.append({"id_producto": id_producto, "cantidad": cantidad, "total_venta": total_venta})
 
+    def imprimir_factura(self, id_venta):
+        nombre_archivo = f"factura_venta_{id_venta}.txt"
+        try:
+            with open(nombre_archivo, "w") as archivo:
+                archivo.write("Factura de Venta\n")
+                archivo.write("=" * 20 + "\n")
+
+                for venta in self.ventas:
+                    if venta['id_producto'] == id_venta:
+                        archivo.write(f"ID del producto: {venta['id_producto']}\n")
+                        archivo.write(f"Cantidad vendida: {venta['cantidad']}\n")
+                        archivo.write(f"Total venta: ${venta['total_venta']:.2f}\n")
+                        archivo.write("=" * 20 + "\n")
+                        archivo.write("Gracias por su compra")
+                        archivo.write("Vuelva pronto ;)")
+
+            print(f"Factura generada correctamente: {nombre_archivo}")
+        except Exception as e:
+            print(f"Error al generar la factura: {e}")
 
 if __name__ == "__main__":
     tienda = Tienda()
-    tienda.menu_inventario()  # o puedes llamar a otras funciones según sea necesario
+    tienda.menu_inventario() 
