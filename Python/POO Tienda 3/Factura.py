@@ -64,7 +64,7 @@ class Factura:
         except ValueError:
             Funciones.mostrar_error("Entrada no válida")
 
-        # Almacena la información de la venta en el diccionario
+        
         self.datos_factura[numero_factura] = {
             "Detalles Factura": venta_total,
             "Total Factura": costo_total_venta

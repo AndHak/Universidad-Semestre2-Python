@@ -28,8 +28,7 @@ class Menus():
         self.inventario_productos[producto3.id_producto] = producto3
         self.inventario_productos[producto4.id_producto] = producto4
 
-    #Menu inventario y submenus
-
+    #Menu inventario
     def menu_inventario(self):
         while True:
             Funciones.mostrar_encabezado("Inventario")
@@ -54,6 +53,7 @@ class Menus():
             except ValueError:
                 Funciones.mostrar_error("Entrada no válida. Intente de nuevo.")
 
+    #Menus del menu inventario  {
     def agregar_producto(self):
         Funciones.mostrar_encabezado("Agregar Producto")
         seguir = True
@@ -114,6 +114,10 @@ class Menus():
         else:
             for id_producto, producto in self.inventario_productos.items():
                 Funciones.mostrar_producto(producto)
+    #                               }
+
+
+
 
     #Menu Sistema de ventas
     def menu_sistema_de_ventas(self):
@@ -138,7 +142,7 @@ class Menus():
                     break
             except ValueError:
                 Funciones.mostrar_error("Entrada no válida, Intente de nuevo")
-
+    #Menus del menu sistema de ventas {
     def vender(self):
         while True:
             venta_total = []
@@ -189,10 +193,72 @@ class Menus():
     
     #En proceso...
     def devoluciones(self):
+        if not self.ventas:
+            Funciones.mostrar_alerta("No hay ventas realizadas")
+        else:
+            while True:
+                try:
+                    Funciones.mostrar_encabezado("Devoluciones")
+                    n_factura = input("Ingre el numero de factura ('s' para salir): ")
+                    if n_factura == "s":
+                        break
+                    elif int(n_factura) in self.ventas:
+                        factura_a_modificar = int(n_factura)
+                        informacion_venta = self.ventas[factura_a_modificar]
+                        Funciones.mostrar_exito("Facura Encontrada")
+                        print(f"\n\nFactura N°  {factura_a_modificar}")
+                        Funciones.mostrar_separador()
+                        print("\nDetalles Factura")
+                        Funciones.mostrar_separador()
 
-        pass
+                        for articulo, venta in enumerate(informacion_venta["Detalles Factura"], start=1):
+                            id_producto, nombre, precio, cantidad, costo_total_producto = venta
+                            print(f"{articulo}.     id: {id_producto} Nombre: {nombre:<10}   -   $ {precio} x {cantidad} unidades   {costo_total_producto}")
 
-    #Menu informacion de ventas
+                        Funciones.mostrar_separador()
+                        print(f"{'Total:':<60} $ {informacion_venta['Total Factura']:.2f}")
+
+                        try:
+                            producto_a_modificar = input("\n\nIngrese la id del producto que desea mdificar ('c' para cancelar): ")
+                            producto_selecionado = None
+                            for dato in informacion_venta["Detalles Factura"]:
+                                if dato[0] == producto_a_modificar:
+                                    producto_seleccionado = dato
+                                    break
+                            if producto_a_modificar == "c":
+                                Funciones.mostrar_alerta("Operacion cancelada")
+                                break
+                            elif producto_seleccionado:
+                                print("\n\nProducto seleccionado: ")
+                                print(f"id: {producto_seleccionado[0]} Nombre: {producto_seleccionado[1]}   -   $ {producto_seleccionado[2]} x {producto_seleccionado[3]} unidades")
+                                try:
+                                    cantidad_a_devolver = input("Ingrese la cantidad a devolver: ")
+                                    if 0 < int(cantidad_a_devolver) < int(producto_seleccionado[3]): 
+                                        cantidad_a_devolver = int(cantidad_a_devolver)
+                                        cantidad_reducida = producto_seleccionado[3] - cantidad_a_devolver 
+                                        costo_mermar_total_factura = cantidad_a_devolver * producto_seleccionado[2]
+                                        nuevo_costo_producto = producto_seleccionado[2] * cantidad_reducida
+                                        informacion_venta["Total Factura"] -= costo_mermar_total_factura
+                                        producto_seleccionado[3] -= cantidad_a_devolver
+                                        producto_seleccionado[4] = nuevo_costo_producto
+                                        self.ganancias_totales -= costo_mermar_total_factura
+                                        self.inventario_productos[producto_a_modificar].cantidad_producto += cantidad_a_devolver
+                                        Funciones.mostrar_exito(f"Devolución exitosa. Nuevo total de la factura: ${informacion_venta['Total Factura']:.2f}")      
+                                except ValueError:
+                                    Funciones.mostrar_error("Entrada no válida, Intente de nuevo")
+                            else:
+                                Funciones.mostrar_error("El producto buscado no se encuentra en la factura")
+                        except ValueError:
+                                Funciones.mostrar_error("Entrada no válida, Intente de nuevo")
+                    else:
+                        Funciones.mostrar_error("La factura no existe")
+                except ValueError:
+                    Funciones.mostrar_error("Entrada no válida, Intente de nuevo")
+    #                                      }                
+
+
+
+    #Menu informacion de ventas ----- Pertenece al menu sistema de ventas
     def cuadre_de_caja_menu(self):
         while True:
             Funciones.mostrar_encabezado("Cuadre de caja")
@@ -218,7 +284,8 @@ class Menus():
                     break
             except ValueError:
                 Funciones.mostrar_error("Entrada no válida. Intente de nuevo.")
-        
+    
+    #Menus cuadre de caja {
     def ver_todas_las_ventas(self):
         if not self.ventas:
             Funciones.mostrar_alerta("No hay ventas realizadas")
@@ -250,7 +317,7 @@ class Menus():
                     informacion_venta = self.ventas[n_factura_a_buscar]
                     print(f"Factura N°  {n_factura_a_buscar}")
                     Funciones.mostrar_separador()
-                    print(f"\nDetalle Factura:")
+                    print(f"\nDetalles Factura:")
                     Funciones.mostrar_separador()
 
                     for articulo, venta in enumerate(informacion_venta["Detalles Factura"], start=1):
@@ -264,6 +331,24 @@ class Menus():
             except ValueError:
                 Funciones.mostrar_error("Entrada no válida. Intente de nuevo.")
 
+    def ver_movimientos_caja(self):
+        if not self.modificaciones_caja:
+            Funciones.mostrar_alerta("Aun no hay movimientos de caja")
+        else:
+            Funciones.mostrar_encabezado("Movimientos de caja")
+            print("{:<5} {:<25} {:<15} {:<20} {:<35}".format("N°", "Fecha modificación", "Hora", "Caja original", "Modificación"))
+            for numero, datos in self.modificaciones_caja.items():
+                fecha = datos["Fecha"]
+                hora = datos["Hora"]
+                dinero_en_caja = datos["Monto"]
+                descripcion_de_modificacion = datos["Descripcion"]
+                print("{:<5} {:<25} {:<15} {:<20} {:<35}".format(numero, fecha, hora, dinero_en_caja, descripcion_de_modificacion))
+        input("Preseione una tecla para continuar...")
+    #                       }
+
+
+
+    #Menu nodificaciones caja
     def modificar_dinero_caja(self):
         while True:
             Funciones.mostrar_encabezado("Modificar dinero caja")
@@ -287,7 +372,7 @@ class Menus():
             except ValueError:
                 Funciones.mostrar_error("Entrada no válida, Intente de nuevo")
     
-    #Modificaciones de caja
+    #Modificaciones de caja menus {
     def vaciar_dinero_caja(self):
         self.numero_de_modificacion += 1
         fecha = datetime.now().strftime("%Y-%m-%d")
@@ -337,21 +422,8 @@ class Menus():
             self.modificaciones_caja[self.numero_de_modificacion] = datos
             self.cuadre_de_caja += suma
             Funciones.mostrar_exito(f"La caja quedó en: ${self.cuadre_de_caja:.2f}")
+    
 
-    #Ver movimientos caja
-    def ver_movimientos_caja(self):
-        if not self.modificaciones_caja:
-            Funciones.mostrar_alerta("Aun no hay movimientos de caja")
-        else:
-            Funciones.mostrar_encabezado("Movimientos de caja")
-            print("{:<5} {:<25} {:<15} {:<20} {:<35}".format("N°", "Fecha modificación", "Hora", "Caja original", "Modificación"))
-            for numero, datos in self.modificaciones_caja.items():
-                fecha = datos["Fecha"]
-                hora = datos["Hora"]
-                dinero_en_caja = datos["Monto"]
-                descripcion_de_modificacion = datos["Descripcion"]
-                print("{:<5} {:<25} {:<15} {:<20} {:<35}".format(numero, fecha, hora, dinero_en_caja, descripcion_de_modificacion))
-        input("Preseione una tecla para continuar...")
 
     #Facturas
     def facturas(self):
@@ -384,7 +456,7 @@ class Menus():
         3.  Patrimonio tienda
         4.  Balance Ventas vs Compras
         5.  Salir
-""")
+        """)
             try:
                 opcion_seleccionada = int(input("Escoja una opción del menú: "))
 
@@ -401,6 +473,7 @@ class Menus():
             except ValueError:
                 Funciones.mostrar_error("Entrada no válida, Intente de nuevo")
 
+    #Menus pertenencientes al menu estadisticas {
     def estadisticas_de_ventas(self):
         if not self.ventas:
             Funciones.mostrar_alerta("No hay ventas para analizar")
@@ -548,5 +621,5 @@ class Menus():
         balance = self.ganancias_totales - total_compras
         print(f"Balance de cuenta: ${balance:.2f}")
         input("\nPresione una tecla para continuar...")
-
+    #                                             }
             
