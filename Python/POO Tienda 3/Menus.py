@@ -146,76 +146,118 @@ class Menus():
     def vender(self):
         while True:
             venta_total = []
-            generar_factura = False
             costo_total_venta = 0
             while True:
                 try:
                     venta_actual = []
-                    print("('s' para salir, 'g' para guardar venta)")
-                    producto_a_vender = input("Ingrese la ID del producto: ")
-                    if producto_a_vender.lower() == "s":
-                        Funciones.mostrar_alerta("Saliendo")
-                        break
+                    print("""\n
+            Opciones: -  's' para salir  - 
+                      -  'g' para guardar venta)  
+                      -  'e' eliminar producto""")
+                    producto_a_vender = input("\nIngrese la ID del producto: ")
 
-                    if producto_a_vender.lower() == "g":
-                        generar_factura = True
-                        if generar_factura:
+                    if producto_a_vender.isnumeric():
+
+                        if producto_a_vender in self.inventario_productos:
+                            producto = self.inventario_productos[producto_a_vender]
+                            Funciones.mostrar_producto(producto)
+
+                            try:
+                                cantidad_venta = int(input("Ingrese la cantidad a vender: "))
+                                if cantidad_venta > 0:
+
+                                    producto_existente = None
+                                    for datos in venta_total:
+                                        if datos[0] == producto_a_vender:
+                                            producto_existente = datos
+                                            break
+
+                                    if not producto_existente:  
+                                        if cantidad_venta <= producto.cantidad_producto:
+                                            producto.cantidad_producto -= cantidad_venta
+                                            self.productos_vendidos += cantidad_venta
+                                            costo_total_producto = producto.precio_venta_producto * cantidad_venta
+                                            venta_actual.extend((producto.id_producto, producto.nombre_producto, producto.precio_venta_producto, cantidad_venta, costo_total_producto))
+                                            venta_total.append(venta_actual)
+                                            costo_total_venta += costo_total_producto
+                                        else:
+                                            Funciones.mostrar_error("No hay suficientes stock para realizar la venta")
+                                    if producto_existente:
+                                        if cantidad_venta <= producto.cantidad_producto:
+                                            producto.cantidad_producto -= cantidad_venta
+                                            self.productos_vendidos += cantidad_venta
+                                            costo_total_producto = producto.precio_venta_producto * cantidad_venta
+                                            producto_existente[3] += cantidad_venta
+                                            producto_existente[4] += costo_total_producto
+                                            costo_total_venta += costo_total_producto
+                                        else:
+                                            Funciones.mostrar_error("No hay suficientes stock para realizar la venta")
+                                else:
+                                    Funciones.mostrar_error("Esa cantidad no está permitida")    
+                            except ValueError:
+                                Funciones.mostrar_error("Ingrese una cantidad válida")
+                        else:
+                            Funciones.mostrar_error("El producto no existe en el inventario")
+
+                    if producto_a_vender.isalpha():
+
+                        if producto_a_vender.lower() == "s":
+                            Funciones.mostrar_alerta("Saliendo")
+                            break
+
+                        if producto_a_vender.lower() == "g":
                             numero_factura, factura_info = self.factura.generar_factura(venta_total, costo_total_venta)
                             self.cuadre_de_caja += costo_total_venta
                             self.ventas[numero_factura] = factura_info
                             self.ganancias_totales += self.cuadre_de_caja
                             break
 
-                    if producto_a_vender in self.inventario_productos:
-                        producto = self.inventario_productos[producto_a_vender]
-                        Funciones.mostrar_producto(producto)
+                        if producto_a_vender.lower() == "e":
+                            print("\n\nProductos facturados hasta el momento")
+                            Funciones.mostrar_separador()
+                            for i, venta in enumerate(venta_total, start=1):
+                                id_producto, nombre, precio_venta, cantidad_venta, costo_total_producto = venta
+                                print(f"{i}     id: {id_producto} Nombre: {nombre:<10} $ {precio_venta} x {cantidad_venta}      $ {costo_total_producto}")
+                            Funciones.mostrar_separador()
+                            
+                            try:
+                                producto_a_cancelar = input("Ingrese la id del producto a cancelar: ")
 
-                        try:
-                            cantidad_venta = int(input("Ingrese la cantidad a vender: "))
-                            if cantidad_venta > 0:
-
-                                producto_existente = None
+                                producto_existente_a_eliminar = None
                                 for datos in venta_total:
-                                    if datos[0] == producto_a_vender:
-                                        producto_existente = datos
+                                    if datos[0] == producto_a_cancelar:
+                                        producto_existente_a_eliminar = datos
                                         break
+                                if producto_existente_a_eliminar is None:
+                                    Funciones.mostrar_error("Entrada no válida. Intente de nuevo.")
+                                else:
+                                    if producto_existente_a_eliminar:
+                                        for datos_a_eliminar in venta_total:
+                                            if datos_a_eliminar[0] == producto_a_cancelar:
+                                                costo_total_venta -= datos_a_eliminar[4]
+                                                self.productos_vendidos -= datos_a_eliminar[3]
+                                                if producto_a_cancelar in self.inventario_productos:
+                                                    self.inventario_productos[producto_a_cancelar].cantidad_producto += datos_a_eliminar[3]
+                                                else:
+                                                    Funciones.mostrar_error("El producto no existe en el inventario")
 
-                                if not producto_existente:  
-                                    if cantidad_venta <= producto.cantidad_producto:
-                                        producto.cantidad_producto -= cantidad_venta
-                                        self.productos_vendidos += cantidad_venta
-                                        costo_total_producto = producto.precio_venta_producto * cantidad_venta
-                                        venta_actual.extend((producto.id_producto, producto.nombre_producto, producto.precio_venta_producto, cantidad_venta, costo_total_producto))
-                                        venta_total.append(venta_actual)
-                                        costo_total_venta += costo_total_producto
-                                    else:
-                                        Funciones.mostrar_error("No hay suficientes stock para realizar la venta")
-                                if producto_existente:
-                                    if cantidad_venta <= producto.cantidad_producto:
-                                        producto.cantidad_producto -= cantidad_venta
-                                        self.productos_vendidos += cantidad_venta
-                                        costo_total_producto = producto.precio_venta_producto * cantidad_venta
-                                        producto_existente[3] += cantidad_venta
-                                        producto_existente[4] += costo_total_producto
-                                        costo_total_venta += costo_total_producto
-                                    else:
-                                        Funciones.mostrar_error("No hay suficientes stock para realizar la venta")
-                            else:
-                                Funciones.mostrar_error("Esa cantidad no está permitida")    
-                        except ValueError:
-                            Funciones.mostrar_error("Ingrese una cantidad válida")
-                    else:
-                        Funciones.mostrar_error("El producto no existe en el inventario")
+                                                venta_total.remove(datos_a_eliminar)
+                                                break
+                                                
+                                        Funciones.mostrar_exito("El producto fue eliminado")
+
+                            except ValueError:
+                                Funciones.mostrar_error("Entrada no válida. Intente de nuevo.")
+                    
                 except ValueError:
                     Funciones.mostrar_error("Entrada no válida. Intente de nuevo.")
             break
     
     #En proceso...  #Agregar devolucion de un producto si la venta es 1 y se resta 1
-                    #Registro de devoluciones
                     #Menu devoluciones para:
+                    #Registro de devoluciones
                     #devolver un producto
                     #cambiar un producto
-                    #registrar devoluciones o cambios
                     #regresar
     def devoluciones(self):
         if not self.ventas:
