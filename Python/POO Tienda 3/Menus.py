@@ -169,18 +169,37 @@ class Menus():
                     if producto_a_vender in self.inventario_productos:
                         producto = self.inventario_productos[producto_a_vender]
                         Funciones.mostrar_producto(producto)
+
                         try:
                             cantidad_venta = int(input("Ingrese la cantidad a vender: "))
                             if cantidad_venta > 0:
-                                if cantidad_venta <= producto.cantidad_producto:
-                                    producto.cantidad_producto -= cantidad_venta
-                                    self.productos_vendidos += cantidad_venta
-                                    costo_total_producto = producto.precio_venta_producto * cantidad_venta
-                                    venta_actual.extend((producto.id_producto, producto.nombre_producto, producto.precio_venta_producto, cantidad_venta, costo_total_producto))
-                                    venta_total.append(venta_actual)
-                                    costo_total_venta += costo_total_producto
-                                else:
-                                    Funciones.mostrar_error("No hay suficientes stock para realizar la venta")
+
+                                producto_existente = None
+                                for datos in venta_total:
+                                    if datos[0] == producto_a_vender:
+                                        producto_existente = datos
+                                        break
+
+                                if not producto_existente:  
+                                    if cantidad_venta <= producto.cantidad_producto:
+                                        producto.cantidad_producto -= cantidad_venta
+                                        self.productos_vendidos += cantidad_venta
+                                        costo_total_producto = producto.precio_venta_producto * cantidad_venta
+                                        venta_actual.extend((producto.id_producto, producto.nombre_producto, producto.precio_venta_producto, cantidad_venta, costo_total_producto))
+                                        venta_total.append(venta_actual)
+                                        costo_total_venta += costo_total_producto
+                                    else:
+                                        Funciones.mostrar_error("No hay suficientes stock para realizar la venta")
+                                if producto_existente:
+                                    if cantidad_venta <= producto.cantidad_producto:
+                                        producto.cantidad_producto -= cantidad_venta
+                                        self.productos_vendidos += cantidad_venta
+                                        costo_total_producto = producto.precio_venta_producto * cantidad_venta
+                                        producto_existente[3] += cantidad_venta
+                                        producto_existente[4] += costo_total_producto
+                                        costo_total_venta += costo_total_producto
+                                    else:
+                                        Funciones.mostrar_error("No hay suficientes stock para realizar la venta")
                             else:
                                 Funciones.mostrar_error("Esa cantidad no está permitida")    
                         except ValueError:
@@ -191,7 +210,13 @@ class Menus():
                     Funciones.mostrar_error("Entrada no válida. Intente de nuevo.")
             break
     
-    #En proceso...
+    #En proceso...  #Agregar devolucion de un producto si la venta es 1 y se resta 1
+                    #Registro de devoluciones
+                    #Menu devoluciones para:
+                    #devolver un producto
+                    #cambiar un producto
+                    #registrar devoluciones o cambios
+                    #regresar
     def devoluciones(self):
         if not self.ventas:
             Funciones.mostrar_alerta("No hay ventas realizadas")
@@ -258,6 +283,7 @@ class Menus():
 
 
 
+
     #Menu informacion de ventas ----- Pertenece al menu sistema de ventas
     def cuadre_de_caja_menu(self):
         while True:
@@ -299,7 +325,7 @@ class Menus():
                 
                 for articulo, venta in enumerate(detalles_factura, start=1):
                     id_producto, nombre, precio, cantidad, costo_total_producto = venta
-                    print(f"{articulo}.     id: {id_producto} Nombre: {nombre:<10}   -   $ {precio} x {cantidad} unidades  {costo_total_producto} ")
+                    print(f"{articulo}.     id: {id_producto} Nombre: {nombre:<10}   -   $ {precio} x {cantidad} unidades  $ {costo_total_producto} ")
                 
                 Funciones.mostrar_separador()
                 print(f"{'Total:':<60} $ {informacion_venta['Total Factura']:.2f}")
@@ -322,7 +348,7 @@ class Menus():
 
                     for articulo, venta in enumerate(informacion_venta["Detalles Factura"], start=1):
                         id_producto, nombre, precio, cantidad, costo_total_producto = venta
-                        print(f"{articulo}.     id: {id_producto} Nombre: {nombre:<10} - $ {precio} x {cantidad} unidades  {costo_total_producto} ")
+                        print(f"{articulo}.     id: {id_producto} Nombre: {nombre:<10} - $ {precio} x {cantidad} unidades  $ {costo_total_producto} ")
                     Funciones.mostrar_separador()
                     print(f"{'Total:':<60} $ {informacion_venta['Total Factura']:.2f}")
                     input("Preseione una tecla para continuar...")
@@ -345,6 +371,8 @@ class Menus():
                 print("{:<5} {:<25} {:<15} {:<20} {:<35}".format(numero, fecha, hora, dinero_en_caja, descripcion_de_modificacion))
         input("Preseione una tecla para continuar...")
     #                       }
+
+
 
 
 
@@ -425,6 +453,7 @@ class Menus():
     
 
 
+
     #Facturas
     def facturas(self):
         if not self.ventas:
@@ -439,12 +468,17 @@ class Menus():
 
                 for numero, venta in enumerate(detalles_factura, start=1):
                     id_producto, nombre, precio, cantidad, costo_total_producto = venta
-                    print(f"{numero}.       id: {id_producto} Nombre: {nombre:<10}   -   $ {precio} x {cantidad} unidades  {costo_total_producto}")
+                    print(f"{numero}.       id: {id_producto} Nombre: {nombre:<10}   -   $ {precio} x {cantidad} unidades   $ {costo_total_producto}")
                 
                 Funciones.mostrar_separador()
                 print(f"{'Total:':<60} $ {informacion_venta['Total Factura']:.2f}")
                 print()
         input("Presione una tecla para continuar...")
+
+
+
+
+
 
     #Menu estadisticas generales
     def estadisticas(self):
@@ -593,9 +627,9 @@ class Menus():
         total_patrimonio = dinero_bienes + self.ganancias_totales
         print("\nPatrimonio")
         Funciones.mostrar_separador()
-        print(f"Dinero en bienes: {dinero_bienes}")
-        print(f"Dinero Ventas: {self.ganancias_totales}")
-        print(f"Patrimonio total: {total_patrimonio}")
+        print(f"Dinero en bienes: $ {dinero_bienes}")
+        print(f"Dinero Ventas: $ {self.ganancias_totales}")
+        print(f"Patrimonio total: $ {total_patrimonio}")
         input("\nPresione una tecla para continuar...")
 
     def balance_ventas_compras(self):
@@ -619,7 +653,7 @@ class Menus():
         print(f"Total cantidad de productos en inventario: {total_cantidad_de_productos}")
         Funciones.mostrar_separador()
         balance = self.ganancias_totales - total_compras
-        print(f"Balance de cuenta: ${balance:.2f}")
+        print(f"Balance de cuenta: $ {balance:.2f}")
         input("\nPresione una tecla para continuar...")
     #                                             }
             
