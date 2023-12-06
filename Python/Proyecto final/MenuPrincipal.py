@@ -3,6 +3,9 @@ from MenusInteractivos import *
 from Funciones import *
 import os
 
+#Abriri terminal...
+#digitar        pip install colorama
+#               pip install tabulate
 
 abrir_menu = Menus()
 

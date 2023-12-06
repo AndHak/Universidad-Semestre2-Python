@@ -3,13 +3,9 @@ from datetime import datetime, timedelta
 from Funciones import *
 from Datos import *
 from tabulate import *
-
-
 import os
 
 init(autoreset=True)
-
-from datetime import timedelta
 
 class Menus:
     def __init__(self):
