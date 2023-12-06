@@ -1,7 +1,4 @@
-from colorama import init, Fore
-import os
 
-init(autoreset=True)
 
 
 class CaracteristicasProducto():
