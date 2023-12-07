@@ -63,46 +63,67 @@ class CentralPrestamos:
                 break
 
         if recurso_prestamo:
-            registro_prestamo = RegistroPrestamo(recurso_prestamo, usuario_actual)
+            registro_prestamo = RegistroPrestamo(recurso_prestamo, usuario_actual, nombre_destinatario)
             self.prestamos.append(registro_prestamo)
-            self.historial_prestamos.append(registro_prestamo) 
+            self.historial_prestamos.append(registro_prestamo)
             recurso_prestamo.estado = "Prestado"
             print(f"Préstamo realizado correctamente a {nombre_destinatario}.")
         else:
             print("No se pudo realizar el préstamo. Verifique el código del recurso.")
 
 
+
     def devolucion_recurso(self):
         codigo_recurso_devolucion = input("Ingrese el código del recurso a devolver: ")
 
-        for prestamo in self.prestamos:
+        for prestamo in self.historial_prestamos:
             if prestamo.recurso.codigo == codigo_recurso_devolucion:
                 prestamo.recurso.estado = "Disponible"
-                self.prestamos.remove(prestamo)
+                self.historial_prestamos.remove(prestamo)
                 print(f"Devolución realizada correctamente del recurso {codigo_recurso_devolucion}.")
                 return
 
-        print("No se pudo realizar la devolución. Verifique el código del recurso o si existe un préstamo asociado.")
+        print("No se pudo realizar la devolución. Verifique el código del recurso o si existe un préstamo asociado en el historial.")
 
 
     def mostrar_prestamo_usuario(self):
         nombre_usuario = input("Ingrese el nombre del usuario a consultar: ")
 
-        for prestamo in self.prestamos:
-            if prestamo.usuario.nombre == nombre_usuario:
-                print(f"Usuario: {prestamo.usuario.nombre}, Recurso prestado: {prestamo.recurso.nombre}")
-                return
+        for prestamo in self.historial_prestamos:
+            if isinstance(prestamo.usuario, str):
+                usuario_nombre = prestamo.usuario
+            else:
+                usuario_nombre = getattr(prestamo.usuario, 'nombre', 'N/A')
 
-        print("No se encontraron préstamos asociados al usuario especificado.")
+            if isinstance(prestamo.recurso, str):
+                recurso_nombre = prestamo.recurso
+            else:
+                recurso_nombre = getattr(prestamo.recurso, 'nombre', 'N/A')
+
+            if isinstance(prestamo.destinatario, str):
+                destinatario_nombre = prestamo.destinatario
+            else:
+                destinatario_nombre = getattr(prestamo.destinatario, 'nombre_destinatario', 'N/A')
+
+            print(f"Usuario: {usuario_nombre}, Recurso prestado: {recurso_nombre}, Prestado a: {destinatario_nombre}")
+
+        print("No se encontraron préstamos asociados al usuario especificado en el historial.")
+
 
 
     def mostrar_prestamos_usuarios(self):
-        print("Préstamos realizados:")
+        print("Historial completo de préstamos:")
+        print("{:<20} {:<20} {:<20} {:<20}".format("Usuario", "Recurso prestado", "Prestado a", "Fecha de préstamo"))
+
         for prestamo in self.historial_prestamos:
-            if isinstance(prestamo.usuario, Usuario):
-                usuario_nombre = prestamo.usuario.nombre
-                recurso_nombre = prestamo.recurso.nombre
-                print(f"Usuario: {usuario_nombre}, Recurso prestado: {recurso_nombre}")
-            else:
-                print("Invalid user object in the loan.")
+            usuario_nombre = getattr(prestamo.usuario, 'nombre', 'N/A')
+            recurso_nombre = getattr(prestamo.recurso, 'nombre', 'N/A')
+            nombre_destinatario = getattr(prestamo.destinatario, 'nombre_destinatario', 'N/A')
+
+            print("{:<20} {:<20} {:<20}".format(usuario_nombre, recurso_nombre, nombre_destinatario))
+
+        if not self.historial_prestamos:
+            print("No hay registros de préstamos.")
+
+
 

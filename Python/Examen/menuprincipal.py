@@ -48,7 +48,6 @@ def menu_usuario(login, central_prestamos, usuario_actual):
         elif opcion_principal == "3":
             menu_prestamos_devoluciones(central_prestamos, usuario_actual) 
         elif opcion_principal == "4":
-            login.cerrar_sesion()
             break
         else:
             print("Opción no válida. Por favor, seleccione una opción válida.")
@@ -99,8 +98,8 @@ def menu_prestamos_devoluciones(central_prestamos, usuario_actual):
         print("\nMenú Manejo de Préstamos y Devoluciones")
         print("1. Préstamo de Recurso")
         print("2. Devolución de un recurso")
-        print("3. Mostrar préstamo usuario")
-        print("4. Mostrar préstamos usuarios")
+        print("3. Mostrar préstamos")
+        print("4. Mostrar registro préstamos")
         print("5. Salir")
 
         opcion_prestamos_devoluciones = input("Seleccione una opción: ")
@@ -117,8 +116,6 @@ def menu_prestamos_devoluciones(central_prestamos, usuario_actual):
             break
         else:
             print("Opción no válida. Por favor, seleccione una opción válida.")
-
-# ... (código posterior)
 
 if __name__ == "__main__":
     central_prestamos = CentralPrestamos()  

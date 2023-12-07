@@ -49,6 +49,14 @@ class Login:
             if usuario.username == user and usuario.password == password:
                 return True
         return False
+    
+    def consultar_usuario(self):
+        username_consultar = input("Ingrese el nombre de usuario a consultar: ")
+        for usuario in self.usuarios:
+            if usuario.username == username_consultar:
+                print(f"Nombre: {usuario.nombre}, Tipo: {usuario.tipo}")
+                return
+        print(f"Usuario {username_consultar} no encontrado.")
 
     def eliminar_usuario(self):
         username = input("Digite el nombre de usuario que desea eliminar: ")
