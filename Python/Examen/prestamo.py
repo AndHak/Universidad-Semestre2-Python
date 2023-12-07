@@ -6,7 +6,7 @@ class CentralPrestamos:
     def __init__(self):
         self.recursos = []
         self.prestamos = []
-        self.historial_prestamos = []  # Loan history
+        self.historial_prestamos = [] 
         self.usuarios = []  
 
     def agregar_recurso(self):
@@ -65,7 +65,7 @@ class CentralPrestamos:
         if recurso_prestamo:
             registro_prestamo = RegistroPrestamo(recurso_prestamo, usuario_actual)
             self.prestamos.append(registro_prestamo)
-            self.historial_prestamos.append(registro_prestamo)  # Add to loan history
+            self.historial_prestamos.append(registro_prestamo) 
             recurso_prestamo.estado = "Prestado"
             print(f"Préstamo realizado correctamente a {nombre_destinatario}.")
         else:
