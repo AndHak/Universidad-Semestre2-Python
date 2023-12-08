@@ -18,7 +18,7 @@ def menu_principal():
         1.  Sistema de peliculas
         2.  Sistema de confiteria
         3.  Sistema de ventas
-        4.  Informacion de mantenimiento
+        4.  Manejo de cuentas
         5.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
