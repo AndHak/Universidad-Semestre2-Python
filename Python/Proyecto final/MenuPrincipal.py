@@ -96,9 +96,10 @@ def sistema_de_confiteria():
         2.  Eliminar producto
         3.  Modificar producto
         4.  Administracion de combos
-        5.  Mostrar productos y combos
-        6.  Consultar ventas confiteria
-        7.  Salir""")
+        5.  Buscar productos
+        6.  Buscar combos
+        7.  Consultar ventas confiteria
+        8.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
@@ -110,16 +111,47 @@ def sistema_de_confiteria():
             elif opcion_seleccionada == 4:
                 administracion_de_combos()
             elif opcion_seleccionada == 5:
-                pass
+                abrir_menu.buscar_productos()
             elif opcion_seleccionada == 6:
                 pass
             elif opcion_seleccionada == 7:
+                pass
+            elif opcion_seleccionada == 8:
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
 
 def administracion_de_combos():
-    pass
+    while True:
+        os.system("cls")
+        Funciones.encabezado()
+        Funciones.subtitulo("Menu sistema de confiteria")
+        print("""
+        1.  Agregar combo
+        2.  Eliminar combo
+        3.  Modificar combo
+        4.  Estadisticas de combos
+        5.  Ver combos
+        6.  Registro de combos
+        7.  Salir""")
+        try:
+            opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
+            if opcion_seleccionada == 1:
+                abrir_menu.agregar_combo()
+            elif opcion_seleccionada == 2:
+                abrir_menu.eliminar_combo()
+            elif opcion_seleccionada == 3:
+                abrir_menu.modificar_combo()
+            elif opcion_seleccionada == 4:
+                abrir_menu.estadisticas_de_combos()
+            elif opcion_seleccionada == 5:
+                abrir_menu.ver_combos()
+            elif opcion_seleccionada == 6:
+                abrir_menu.registro_de_combos()
+            elif opcion_seleccionada == 7:
+                break
+        except ValueError:
+            Funciones.mostrar_error("Ingrese una opción válida")
 
 def sistema_de_ventas():
     while True:

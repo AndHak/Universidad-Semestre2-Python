@@ -34,14 +34,14 @@ class Menus:
 
         self.agregar_asignaciones_prueba()
 
-        producto1 = DatosConfiteria(1, "Palomitas - Caja Grande", "Snacks", 2000, 10000, 20)
-        producto2 = DatosConfiteria(2, "Palomitas - Caja Mediana", "Snacks", 1000, 5000, 20)
-        producto3 = DatosConfiteria(3, "Palomitas - Personal", "Snacks", 500, 4000, 20)
-        producto4 = DatosConfiteria(4, "Gaseosa - Grande", "Bebidas", 2000, 5000, 50)
-        producto5 = DatosConfiteria(5, "Gaseosa - Mediana", "Bebidas", 3000, 7000, 35)
-        producto6 = DatosConfiteria(6, "Perro Caliente", "Comida Rápida", 1200, 8000, 30)
-        producto7 = DatosConfiteria(7, "Nachos con Queso", "Snacks", 2000, 5000, 40)
-        producto8 = DatosConfiteria(8, "Caramelos", "Snacks", 200, 900, 200)
+        producto1 = DatosConfiteria("1", "Palomitas - Caja Grande", "Snacks", 2000, 10000, 20)
+        producto2 = DatosConfiteria("2", "Palomitas - Caja Mediana", "Snacks", 1000, 5000, 20)
+        producto3 = DatosConfiteria("3", "Palomitas - Personal", "Snacks", 500, 4000, 20)
+        producto4 = DatosConfiteria("4", "Gaseosa - Grande", "Bebidas", 2000, 5000, 50)
+        producto5 = DatosConfiteria("5", "Gaseosa - Mediana", "Bebidas", 3000, 7000, 35)
+        producto6 = DatosConfiteria("6", "Perro Caliente", "Comida Rápida", 1200, 8000, 30)
+        producto7 = DatosConfiteria("7", "Nachos con Queso", "Snacks", 2000, 5000, 40)
+        producto8 = DatosConfiteria("8", "Caramelos", "Snacks", 200, 900, 200)
 
         self.inventario_confiteria[producto1.id_producto] = producto1
         self.inventario_confiteria[producto2.id_producto] = producto2
@@ -530,11 +530,13 @@ class Menus:
                 if nombre_producto.lower() == "c":
                     Funciones.mostrar_alerta("La operacón se ha cancelado")
                     break
+                nombre_producto = nombre_producto.title()
                 
                 categoria_producto = Funciones.hacer_pregunta("Categoria: ")
                 if categoria_producto.lower() == "c":
                     Funciones.mostrar_alerta("La operacón se ha cancelado")
                     break
+                categoria_producto = categoria_producto.title()
 
                 precio_compra_producto = Funciones.hacer_pregunta("Precio compra: ")
                 if precio_compra_producto.lower() == "c":
@@ -630,10 +632,214 @@ class Menus:
                 Funciones.mostrar_error("Ingrese una opción válida")
 
     def modificar_producto(self):
-        pass
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Modificar producto")
+            #Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
 
-    def mostrar_productos(self):
-        pass
+            try:
+                if not self.inventario_confiteria:
+                    Funciones.mostrar_alerta("No hay productos en confiteria")
+                else:
+                    Funciones.mostrar_productos(self.inventario_confiteria)
+
+                id_producto_buscar = Funciones.hacer_pregunta("ID producto que desea modificar: ")
+                if id_producto_buscar.lower() == "c":
+                    Funciones.mostrar_alerta("La operacón se ha cancelado")
+                    break
+
+                if id_producto_buscar in self.inventario_confiteria:
+
+                    Funciones.mostrar_exito("Producto encontrado: ")
+
+                    producto_encontrado = self.inventario_confiteria[id_producto_buscar]
+
+                    for id_producto, datos_producto in self.inventario_confiteria.items():
+                        if id_producto_buscar == id_producto:
+
+                            datos_producto = producto_encontrado.obtener_datos_producto()
+
+                            inventario_data = [[datos_producto[0], datos_producto[1], datos_producto[2],
+                                                f"$ {datos_producto[3]:.2f}", f"$ {datos_producto[4]:.2f}",
+                                                datos_producto[5]]]
+                            
+                            headers = ["ID", "Producto", "Categoria", "Compra", "Venta", "Cantidad"]
+                            print(tabulate(inventario_data, headers=headers, tablefmt="fancy_grid"))
+                            print()
+                    try:
+                        modificar_pregunta = Funciones.hacer_pregunta("Esta seguro que desea modificar si/no: ")
+                        if modificar_pregunta.lower() == "c":
+                            Funciones.mostrar_alerta("La operacón se ha cancelado")
+                            break  
+                        if modificar_pregunta.lower() == "no":
+                            Funciones.mostrar_alerta("La operacón se ha cancelado")
+                        if modificar_pregunta.lower() == "si":
+                            try:
+                                id_producto_nuevo = Funciones.hacer_pregunta("Nuevo ID: ")
+                                if id_producto_nuevo.lower() == "c":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                if id_producto_buscar in self.inventario_confiteria:
+                                    producto_encontrado = self.inventario_confiteria.pop(id_producto_buscar)
+                                    self.inventario_confiteria[id_producto_nuevo] = producto_encontrado
+                                producto_encontrado.id_producto = id_producto_nuevo
+
+                                nombre_producto = Funciones.hacer_pregunta("Nuevo Nombre: ")
+                                if nombre_producto.lower() == "c":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                producto_encontrado.nombre_producto = nombre_producto.title()
+
+                                categoria_producto = Funciones.hacer_pregunta("Nueva Categoría: ")
+                                if categoria_producto.lower() == "c":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                producto_encontrado.categoria_producto = categoria_producto.title()
+
+                                precio_compra_producto = Funciones.hacer_pregunta("Nuevo Precio compra: ")
+                                if precio_compra_producto.lower() == "c":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                producto_encontrado.precio_compra_producto = float(precio_compra_producto)
+
+                                if producto_encontrado.precio_compra_producto >= 0:
+
+                                    precio_venta_producto = Funciones.hacer_pregunta("Nuevo Precio venta: ")
+                                    if precio_venta_producto.lower() == "c":
+                                        Funciones.mostrar_alerta("La operación se ha cancelado")
+                                        break
+                                    producto_encontrado.precio_venta_producto = float(precio_venta_producto)
+
+                                    if producto_encontrado.precio_venta_producto > producto_encontrado.precio_compra_producto:
+
+                                        cantidad_producto = Funciones.hacer_pregunta("Nueva Cantidad: ")
+                                        if cantidad_producto.lower() == "c":
+                                            Funciones.mostrar_alerta("La operación se ha cancelado")
+                                            break
+                                        producto_encontrado.cantidad_producto = int(cantidad_producto)
+
+                                        if producto_encontrado.cantidad_producto > 0:
+                                            Funciones.mostrar_exito("Se ha modificado el producto")
+                                        else:
+                                            Funciones.mostrar_alerta("La cantidad no es válida")
+
+                                    else:
+                                        Funciones.mostrar_alerta("El precio digitado no es válido")
+
+                                else:
+                                    Funciones.mostrar_alerta("El precio digitado no es válido")
+
+                            except ValueError:
+                                Funciones.mostrar_error("Ingrese una opción válida")
+                                    
+                    except ValueError:
+                        Funciones.mostrar_error("Ingrese una opción válida")
+
+            except ValueError:
+                Funciones.mostrar_error("Ingrese una opción válida")
+
+    #METODOS PARA MENU ADMINISTRACION DE COMBOS
+
+    ##########################################################################################
+
+    
+
+    ##########################################################################################
+
+    def buscar_productos(self):
+        mostrar_productos_orden = None
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Agregar producto")
+            #Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+            print("Ordenar por nombre: 'on'")
+            print("Ordenar por categoria 'ocat'")
+            print("Ordenar por cantidad: 'ocan'")
+            print("Ordenar por precio compra: 'opc'")
+            print("Ordenar por precio venta 'opv'")
+            print("Bucar por nombre: 'bn'")
+
+            if not self.inventario_confiteria:
+                Funciones.mostrar_alerta("No hay productos en confiteria")
+            else:
+                if mostrar_productos_orden:
+                    Funciones.mostrar_productos(mostrar_productos_orden)
+                else:
+                    Funciones.mostrar_productos(self.inventario_confiteria)
+            try:
+                buscar_id_producto = Funciones.hacer_pregunta("Buscar id producto: ")
+                if buscar_id_producto.lower() == "c":
+                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                    break
+
+                if buscar_id_producto.lower() == "on":
+                    orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].nombre_producto)
+                    mostrar_productos_orden = dict(orden)
+
+                if buscar_id_producto.lower() == "ocat":
+                    orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].categoria_producto)
+                    mostrar_productos_orden = dict(orden)
+
+                if buscar_id_producto.lower() == "ocan":
+                    orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].cantidad_producto)
+                    mostrar_productos_orden = dict(orden)
+
+                if buscar_id_producto.lower() == "opc":
+                    orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].precio_compra_producto)
+                    mostrar_productos_orden = dict(orden)
+
+                if buscar_id_producto.lower() == "opv":
+                    orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].precio_venta_producto)
+                    mostrar_productos_orden = dict(orden)
+
+                elif buscar_id_producto.lower() == "bn":
+                    nombre_a_buscar = Funciones.hacer_pregunta("Nombre a buscar: ").title()
+                    productos_encontrados = [producto for producto in self.inventario_confiteria.values()
+                                            if nombre_a_buscar.lower() in producto.nombre_producto.lower()]
+
+                    if productos_encontrados:
+                        print("\n\nProductos encontrados:\n")
+                        for producto_encontrado in productos_encontrados:
+                            datos_producto = producto_encontrado.obtener_datos_producto()
+
+                            inventario_data = [[datos_producto[0], datos_producto[1], datos_producto[2],
+                                                f"$ {datos_producto[3]:.2f}", f"$ {datos_producto[4]:.2f}",
+                                                datos_producto[5]]]
+
+                            headers = ["ID", "Producto", "Categoria", "Compra", "Venta", "Cantidad"]
+                            print(tabulate(inventario_data, headers=headers, tablefmt="fancy_grid"))
+                        print()
+                        os.system("pause")
+                    else:
+                        Funciones.mostrar_alerta(f"No se encontraron productos que contengan '{nombre_a_buscar}'.")
+
+
+                if buscar_id_producto in self.inventario_confiteria:
+
+                    Funciones.mostrar_exito("Producto encontrado: ")
+
+                    producto_encontrado = self.inventario_confiteria[buscar_id_producto]
+
+                    for id_producto, datos_producto in self.inventario_confiteria.items():
+                        if buscar_id_producto == id_producto:
+
+                            datos_producto = producto_encontrado.obtener_datos_producto()
+
+                            inventario_data = [[datos_producto[0], datos_producto[1], datos_producto[2],
+                                                f"$ {datos_producto[3]:.2f}", f"$ {datos_producto[4]:.2f}",
+                                                datos_producto[5]]]
+                            
+                            headers = ["ID", "Producto", "Categoria", "Compra", "Venta", "Cantidad"]
+                            print(tabulate(inventario_data, headers=headers, tablefmt="fancy_grid"))
+                            print()
+                            os.system("pause")            
+
+            except ValueError:
+                Funciones.mostrar_error("Ingrese una opción válida")
 
 
 
@@ -646,6 +852,8 @@ class Menus:
 
 #######################################################################################
 
+
+
 #######################################################################################
 
 
@@ -654,6 +862,8 @@ class Menus:
 #METODOS PARA EL SISTEMA DE INFORMACION Y ESTADISTICAS
 
 #######################################################################################
+
+
 
 #######################################################################################
 
