@@ -18,6 +18,9 @@ class DatosCliente:
         self.nombre_cliente = nombre_cliente
         self.edad_cliente = edad_cliente
 
+    def obtener_datos_cliente(self):
+        return self.identificacion, self.nombre_cliente, self.edad_cliente
+
 class DatosConfiteria:
     def __init__(self, id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto):
         self.id_producto = id_producto

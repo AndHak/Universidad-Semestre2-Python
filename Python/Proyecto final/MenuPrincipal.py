@@ -18,7 +18,7 @@ def menu_principal():
         1.  Sistema de peliculas
         2.  Sistema de confiteria
         3.  Sistema de ventas
-        4.  Informacion ventas
+        4.  Informacion de mantenimiento
         5.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
@@ -29,7 +29,7 @@ def menu_principal():
             elif opcion_seleccionada == 3:
                 sistema_de_ventas()
             elif opcion_seleccionada == 4:
-                informacion_ventas()
+                manejo_de_cuentas()
             elif opcion_seleccionada == 5:
                 break
         except ValueError:
@@ -157,13 +157,51 @@ def sistema_de_ventas():
     while True:
         os.system("cls")
         Funciones.encabezado()
-        Funciones.subtitulo("Menu sistema de ventas")
+        Funciones.subtitulo("Sistema de ventas")
+        print("""
+        1.  Realizar venta
+        2.  Modificar venta
+        3.  Deshacer venta
+        4.  Menu cuadre de caja y cuentas
+        5.  Buscar facturas
+        6.  Ver ventas
+        7.  Salir""")
+        try:
+            opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
+            if opcion_seleccionada == 1:
+                abrir_menu.realizar_venta()
+            elif opcion_seleccionada == 2:
+                abrir_menu.modificar_venta()
+            elif opcion_seleccionada == 3:
+                abrir_menu.deshacer_venta()
+            elif opcion_seleccionada == 4:
+                menu_cuadre_de_caja_y_cuentas()
+            elif opcion_seleccionada == 5:
+                abrir_menu.buscar_facturas()
+            elif opcion_seleccionada == 6:
+                abrir_menu.ver_ventas()
+            elif opcion_seleccionada == 7:
+                break
+        except ValueError:
+            Funciones.mostrar_error("Ingrese una opción válida")
 
-def informacion_ventas():
+def manejo_de_cuentas():
     while True:
         os.system("cls")
         Funciones.encabezado()
-        Funciones.subtitulo("Menu sistema de informacion y estadisticas")
+        Funciones.subtitulo("Menu Manejo de cuentas y datos estadisticos")
+        pass
+
+def menu_cuadre_de_caja_y_cuentas():
+    while True:
+        os.system("cls")
+        Funciones.encabezado()
+        Funciones.subtitulo("Menu cuadre de caja y cuentas")
+        pass
+
+
+
+
 
 
 menu_principal()
