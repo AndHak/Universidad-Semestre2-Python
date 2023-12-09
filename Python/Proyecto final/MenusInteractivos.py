@@ -78,9 +78,9 @@ class Menus:
                     producto = DatosConfiteria(id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto)
                     self.inventario_confiteria[id_producto] = producto
         except FileNotFoundError:
-            print("El archivo 'cartelera.txt' no fue encontrado. Se creará por primera vez al agregar una película.")
+            print("El archivo 'confiteria.txt' no fue encontrado. Se creará por primera vez al agregar productos.")
         except Exception as e:
-            print(f"Error al leer 'cartelera.txt': {e}")
+            print(f"Error al leer 'confiteria.txt': {e}")
 
 
         try:
