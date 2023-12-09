@@ -3,3 +3,5 @@ Interestelar,Viaje interestelar para salvar la Tierra,169,Ciencia Ficción,10,90
 Avatar,Aventura en Pandora,178,Ciencia Ficción,16,7500.0
 Jurassic Park,Parque de dinosaurios,127,Aventura,12,5500.0
 Inception,Mundo de los sueños,148,Ciencia Ficción,14,8500.0
+Cars,Kchau,100,Animado,0,4000.0
+Cars2,Kchau,100,Animado,0,4500.0

@@ -2,6 +2,7 @@ from colorama import init
 from datetime import datetime, timedelta
 from Funciones import *
 from Datos import *
+from Archivo import *
 from tabulate import *
 import os
 
@@ -9,7 +10,7 @@ init(autoreset=True)
 
 class Menus:
 
-    def __init__(self):
+    def __init__(self, archivo):
         self.cartelera = {}
         self.ventas_peliculas = {}
         self.ventas_confiteria = {}
@@ -17,6 +18,7 @@ class Menus:
         self.ocupacion_sala = []
         self.inventario_confiteria = {}
         self.salas = {}
+        self.archivo = archivo
         self.cargar_datos()
     
     def salir(self):
@@ -40,6 +42,12 @@ class Menus:
                 datos_asignacion[4] = str(datos_asignacion[4])
                 datos_asignacion[5] = str(datos_asignacion[5])
                 file.write(','.join(map(str, datos_asignacion)) + '\n')
+
+        ruta_archivo_peliculas = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\archivos\archivo_peliculas.txt"
+        with open(ruta_archivo_peliculas, "w", encoding="utf-8") as file:
+            for datos in self.archivo.archivo_peliculas:
+                file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]}\n")
+        
 
     def cargar_datos(self):
         try:
@@ -176,9 +184,11 @@ class Menus:
 
                 #creamos una variable a la que se le asignan los datos de la clase DatosPelicula
                 pelicula_a_agregar = DatosPelicula(titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula)
+                pelicula_a_agregar_archivo = [titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula, 'NUEVO']
 
                 #La agregamos al diccionario con la clave id_pelicula
                 self.cartelera[titulo_pelicula] = pelicula_a_agregar
+                self.archivo.archivo_peliculas.append(pelicula_a_agregar_archivo)
                 Funciones.mostrar_exito("La película ha sido agregada a la cartelera")
 
             except ValueError:
@@ -210,9 +220,16 @@ class Menus:
                     Funciones.mostrar_alerta("La operación se ha cancelado")
                     break
                 titulo_pelicula = titulo_pelicula.title()
-                #Buscar código de pelicula en cartelera
+
+                for titulo, datos in self.cartelera:
+                    if titulo == titulo_pelicula:
+                        datos_pelicula = datos, "ELIMINADO"
+                datos_archivo_pelicula_eliminacion = [datos_pelicula, "ELIMINADO"]
+                self.archivo.archivo_peliculas.append(datos_archivo_pelicula_eliminacion)
+            #Buscar código de pelicula en cartelera
                 if titulo_pelicula in self.cartelera:
                     #Eliminar pelicula de la cartelera
+
                     del self.cartelera[titulo_pelicula]
                     
                     for datos in self.ocupacion_sala:

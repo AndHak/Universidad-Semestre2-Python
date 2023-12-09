@@ -6,7 +6,9 @@ import os
 #digitar        pip install colorama
 #               pip install tabulate
 
-abrir_menu = Menus()
+
+archivo = Archivo()
+abrir_menu = Menus(archivo)
 
 def menu_principal():
     while True:
