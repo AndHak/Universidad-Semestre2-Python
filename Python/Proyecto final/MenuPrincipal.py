@@ -31,6 +31,8 @@ def menu_principal():
             elif opcion_seleccionada == 4:
                 manejo_de_cuentas()
             elif opcion_seleccionada == 5:
+                abrir_menu.eliminar_salas_canceladas()
+                abrir_menu.salir()
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")

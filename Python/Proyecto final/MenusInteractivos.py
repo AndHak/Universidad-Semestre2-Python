@@ -8,6 +8,7 @@ import os
 init(autoreset=True)
 
 class Menus:
+
     def __init__(self):
         self.cartelera = {}
         self.ventas_peliculas = {}
@@ -15,55 +16,90 @@ class Menus:
         self.clientes = {}
         self.ocupacion_sala = []
         self.inventario_confiteria = {}
+        self.cargar_datos()
 
-        pelicula1 = DatosPelicula("El Padrino", "Historia de la mafia en Nueva York", 180, "Drama", 18, 6000)
-        pelicula2 = DatosPelicula("Titanic", "Historia de amor a bordo de un barco", 195, "Romance", 12, 5000)
-        pelicula3 = DatosPelicula("El Señor De Los Anillos", "Aventuras en la Tierra Media", 201, "Fantasía", 14, 8000)
-        pelicula4 = DatosPelicula("Interestelar", "Viaje interestelar para salvar la Tierra", 169, "Ciencia Ficción", 10, 9000)
-        pelicula5 = DatosPelicula("Avatar", "Aventura en Pandora", 178, "Ciencia Ficción", 16, 7500)
-        pelicula6 = DatosPelicula("Jurassic Park", "Parque de dinosaurios", 127, "Aventura", 12, 5500)
-        pelicula7 = DatosPelicula("Inception", "Mundo de los sueños", 148, "Ciencia Ficción", 14, 8500)
+    def salir(self):
+        self.guardar_datos()
 
-        self.agregar_pelicula_al_cartelera(pelicula1)
-        self.agregar_pelicula_al_cartelera(pelicula2)
-        self.agregar_pelicula_al_cartelera(pelicula3)
-        self.agregar_pelicula_al_cartelera(pelicula4)
-        self.agregar_pelicula_al_cartelera(pelicula5)
-        self.agregar_pelicula_al_cartelera(pelicula6)
-        self.agregar_pelicula_al_cartelera(pelicula7)
+    def guardar_datos(self):
+        ruta_cartelera = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\cartelera.txt"
+        with open(ruta_cartelera, "w", encoding="utf-8") as file:
+            for titulo, pelicula in self.cartelera.items():
+                file.write(f"{titulo},{pelicula.sinopsis},{pelicula.duracion},{pelicula.genero},{pelicula.edad_minima},{pelicula.costo_pelicula}\n")
 
-        self.agregar_asignaciones_prueba()
+        ruta_confiteria = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\confiteria.txt"
+        with open(ruta_confiteria, "w", encoding="utf-8") as file:
+            for id_producto, datos_producto in self.inventario_confiteria.items():
+                file.write(f"{id_producto},{datos_producto.nombre_producto},{datos_producto.categoria_producto},{datos_producto.precio_compra_producto},{datos_producto.precio_venta_producto},{datos_producto.cantidad_producto}\n")
 
-        producto1 = DatosConfiteria("1", "Palomitas - Caja Grande", "Snacks", 2000, 10000, 20)
-        producto2 = DatosConfiteria("2", "Palomitas - Caja Mediana", "Snacks", 1000, 5000, 20)
-        producto3 = DatosConfiteria("3", "Palomitas - Personal", "Snacks", 500, 4000, 20)
-        producto4 = DatosConfiteria("4", "Gaseosa - Grande", "Bebidas", 2000, 5000, 50)
-        producto5 = DatosConfiteria("5", "Gaseosa - Mediana", "Bebidas", 3000, 7000, 35)
-        producto6 = DatosConfiteria("6", "Perro Caliente", "Comida Rápida", 1200, 8000, 30)
-        producto7 = DatosConfiteria("7", "Nachos con Queso", "Snacks", 2000, 5000, 40)
-        producto8 = DatosConfiteria("8", "Caramelos", "Snacks", 200, 900, 200)
+        ruta_ocupacion_sala = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\ocupacion_sala.txt"
+        with open(ruta_ocupacion_sala, "w", encoding="utf-8") as file:
+            for datos_asignacion in self.ocupacion_sala:
+                datos_asignacion[3] = str(datos_asignacion[3])
+                datos_asignacion[4] = str(datos_asignacion[4])
+                datos_asignacion[5] = str(datos_asignacion[5])
+                file.write(','.join(map(str, datos_asignacion)) + '\n')
 
-        self.inventario_confiteria[producto1.id_producto] = producto1
-        self.inventario_confiteria[producto2.id_producto] = producto2
-        self.inventario_confiteria[producto3.id_producto] = producto3
-        self.inventario_confiteria[producto4.id_producto] = producto4
-        self.inventario_confiteria[producto5.id_producto] = producto5
-        self.inventario_confiteria[producto6.id_producto] = producto6
-        self.inventario_confiteria[producto7.id_producto] = producto7
-        self.inventario_confiteria[producto8.id_producto] = producto8
+    def cargar_datos(self):
+
+        try:
+            ruta_cartelera = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\cartelera.txt"
+            with open(ruta_cartelera, "r", encoding="utf-8") as file:
+                for line in file:
+                    datos_pelicula = line.strip().split(',')
+                    titulo_pelicula = datos_pelicula[0]
+                    sinopsis = datos_pelicula[1]
+                    duracion = int(datos_pelicula[2])
+                    genero = datos_pelicula[3]
+                    edad_minima = int(datos_pelicula[4])
+                    costo_pelicula = float(datos_pelicula[5])
+
+                    pelicula = DatosPelicula(titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula)
+                    self.cartelera[titulo_pelicula] = pelicula
+
+        except FileNotFoundError:
+            print("El archivo 'cartelera.txt' no fue encontrado. Se creará por primera vez al agregar una película.")
+        except Exception as e:
+            print(f"Error al leer 'cartelera.txt': {e}")
+        
+
+        try:
+            ruta_confiteria = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\confiteria.txt"
+            with open(ruta_confiteria, "r", encoding="utf-8") as file:
+                for line in file:
+                    datos_producto = line.strip().split(',')
+                    id_producto = datos_producto[0]
+                    nombre_producto = datos_producto[1]
+                    categoria_producto = datos_producto[2]
+                    precio_compra_producto = float(datos_producto[3])
+                    precio_venta_producto = float(datos_producto[4])
+                    cantidad_producto = int(datos_producto[5])
+
+                    producto = DatosConfiteria(id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto)
+                    self.inventario_confiteria[id_producto] = producto
+        except FileNotFoundError:
+            print("El archivo 'cartelera.txt' no fue encontrado. Se creará por primera vez al agregar una película.")
+        except Exception as e:
+            print(f"Error al leer 'cartelera.txt': {e}")
 
 
-    def agregar_pelicula_al_cartelera(self, pelicula):
-        self.cartelera[pelicula.titulo_pelicula] = pelicula
+        try:
+            ruta_ocupacion_sala = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\ocupacion_sala.txt"
+            with open(ruta_ocupacion_sala, "r", encoding="utf-8") as file:
+                for line in file:
+                    datos_asignacion = line.strip().split(',')
+                    asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada = datos_asignacion
 
-    def agregar_asignaciones_prueba(self):
-        asignacion2 = [2321301, "2023", "12", 23, 21, 30, 1, "El Señor De Los Anillos"]
-        asignacion3 = [23902, "2023", "12", 23, 9, 0, 2, "Interestelar"]
-        asignacion4 = [231202, "2023", "12", 23, 12, 0, 2, "Avatar"]
-        asignacion5 = [231401, "2023", "12", 23, 14, 0, 1, "Jurassic Park"]
-        asignacion6 = [231602, "2023", "12", 23, 16, 0, 2, "Inception"]
+                    dia, mes, año, hora, minutos = map(int, [dia, mes, año, hora, minutos])
 
-        self.ocupacion_sala.extend([asignacion2, asignacion3, asignacion4, asignacion5, asignacion6])
+                    self.ocupacion_sala.append([asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada])
+
+        except FileNotFoundError:
+            print("El archivo 'ocupacion_sala.txt' no fue encontrado. Se creará por primera vez al asignar salas.")
+        except Exception as e:
+            print(f"Error al leer 'ocupacion_sala.txt': {e}")
+
+                
 
     
 
@@ -175,7 +211,7 @@ class Menus:
                 if titulo_pelicula.lower() == "c":
                     Funciones.mostrar_alerta("La operación se ha cancelado")
                     break
-                titulo_pelicula = titulo_pelicula.capitalize()
+                titulo_pelicula = titulo_pelicula.title()
                 #Buscar código de pelicula en cartelera
                 if titulo_pelicula in self.cartelera:
                     #Eliminar pelicula de la cartelera
@@ -254,15 +290,19 @@ class Menus:
                                     break
                                 sala = int(sala)
 
-                                asignacion_id = str(dia) + str(hora) + str(minutos) + str(sala)
-                                datos = [asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala]
+                                if 0 < sala < 4:
 
-                                esta_ocupada = self.verificar_disponibilidad_sala(asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala)
-                                if not esta_ocupada:
-                                    self.ocupacion_sala.append(datos)
-                                    Funciones.mostrar_exito(f"\nLa película {pelicula_a_asignar_sala} Se presentara en la Sala {sala}\nPara el día {dia} a las {hora:02}:{minutos:02}")
+                                    asignacion_id = str(dia) + str(hora) + str(minutos) + str(sala)
+                                    datos = [asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala]
+
+                                    esta_ocupada = self.verificar_disponibilidad_sala(asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala)
+                                    if not esta_ocupada:
+                                        self.ocupacion_sala.append(datos)
+                                        Funciones.mostrar_exito(f"\nLa película {pelicula_a_asignar_sala} Se presentara en la Sala {sala}\nPara el día {dia} a las {hora:02}:{minutos:02}")
+                                    else:
+                                        Funciones.mostrar_alerta(f"La sala {sala} no está disponible")
                                 else:
-                                    Funciones.mostrar_alerta(f"La sala {sala} no está disponible")
+                                    Funciones.mostrar_error("No existe la sala asignada")
                             else:
                                 Funciones.mostrar_error("Los minutos deben ir desde 0 hasta 59")
                         else:
