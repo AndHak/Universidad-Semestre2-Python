@@ -1,4 +1,4 @@
-from colorama import *
+from colorama import init
 from datetime import datetime, timedelta
 from Funciones import *
 from Datos import *
@@ -16,8 +16,9 @@ class Menus:
         self.clientes = {}
         self.ocupacion_sala = []
         self.inventario_confiteria = {}
+        self.salas = {}
         self.cargar_datos()
-
+    
     def salir(self):
         self.guardar_datos()
 
@@ -41,7 +42,6 @@ class Menus:
                 file.write(','.join(map(str, datos_asignacion)) + '\n')
 
     def cargar_datos(self):
-
         try:
             ruta_cartelera = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\cartelera.txt"
             with open(ruta_cartelera, "r", encoding="utf-8") as file:
@@ -61,7 +61,6 @@ class Menus:
             print("El archivo 'cartelera.txt' no fue encontrado. Se creará por primera vez al agregar una película.")
         except Exception as e:
             print(f"Error al leer 'cartelera.txt': {e}")
-        
 
         try:
             ruta_confiteria = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\confiteria.txt"
@@ -82,7 +81,6 @@ class Menus:
         except Exception as e:
             print(f"Error al leer 'confiteria.txt': {e}")
 
-
         try:
             ruta_ocupacion_sala = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\ocupacion_sala.txt"
             with open(ruta_ocupacion_sala, "r", encoding="utf-8") as file:
@@ -90,18 +88,18 @@ class Menus:
                     datos_asignacion = line.strip().split(',')
                     asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada = datos_asignacion
 
-                    dia, mes, año, hora, minutos = map(int, [dia, mes, año, hora, minutos])
-
-                    self.ocupacion_sala.append([asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada])
+                    if sala.upper() == "XX":
+                        mes, año, dia = map(int, [mes, año, dia])
+                        self.ocupacion_sala.append([asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada])
+                    else:
+                        dia, mes, año, hora, minutos, sala = map(int, [dia, mes, año, hora, minutos, sala])
+                        self.ocupacion_sala.append([asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada])
 
         except FileNotFoundError:
             print("El archivo 'ocupacion_sala.txt' no fue encontrado. Se creará por primera vez al asignar salas.")
         except Exception as e:
             print(f"Error al leer 'ocupacion_sala.txt': {e}")
 
-                
-
-    
 
 #METODOS PARA EL SISTEMA DE PELICULAS
 
@@ -394,9 +392,20 @@ class Menus:
                         for datos in self.ocupacion_sala:
                             if datos[3] == dia_cronograma and datos[4] == hora_asignacion_a_eliminar and datos[5] == minutos_asignacion_a_eliminar and datos[6] == sala_asignacion_a_eliminar:
                                 asignacion_a_eliminar = datos
+                                id_asignacion_a_eliminar = datos[0]
                                 se_puede_eliminar_asignacion = True
 
                         if se_puede_eliminar_asignacion:
+                            
+                            eliminar_de_salas = False
+                            if self.salas:
+                                for id_sala, sala in self.salas.items():
+                                    if id_sala == id_asignacion_a_eliminar:
+                                        eliminar_de_salas = True
+                            
+                            if eliminar_de_salas:
+                                del self.salas[id_asignacion_a_eliminar]
+
                             self.ocupacion_sala.remove(asignacion_a_eliminar)
                             Funciones.mostrar_exito("La Asignacion de sala ha sido eliminada")
                         else:
@@ -457,6 +466,7 @@ class Menus:
                         for datos in self.ocupacion_sala:
                             if datos[3] == dia_cronograma and datos[4] == hora_asignacion_a_modificar and datos[5] == minutos_asignacion_a_modificar and datos[6] == sala_asignacion_a_modificar:
                                 asignacion_a_modificar = datos
+                                id_asignacion_vieja = datos[0]
                                 se_puede_modificar_asignacion = True
                             
                         if se_puede_modificar_asignacion:
@@ -481,21 +491,30 @@ class Menus:
                                 Funciones.mostrar_alerta("La operación se ha cancelado")
                                 break
                             sala_modificada = int(sala_modificada)
+
+                            if 0 < sala_modificada <= 4:
+
+                                id_asignacion_nueva = str(dia_cronograma) + str(hora_modificada) + str(minutos_modificados) + str(sala_modificada)
                             
-                            nueva_fecha_hora = datetime(int(año), int(mes), dia_cronograma, hora_modificada, minutos_modificados)
-                            intervalo_tiempo = timedelta(hours=3)
+                                nueva_fecha_hora = datetime(int(año), int(mes), dia_cronograma, hora_modificada, minutos_modificados)
+                                intervalo_tiempo = timedelta(hours=3)
 
-                            fecha_hora_asignada = datetime(int(año), int(mes), asignacion_a_modificar[3], asignacion_a_modificar[4], asignacion_a_modificar[5])
-                            if not (nueva_fecha_hora >= fecha_hora_asignada + intervalo_tiempo or nueva_fecha_hora + intervalo_tiempo <= fecha_hora_asignada):
-                                cumple_requisitos_para_modificarse = True
+                                fecha_hora_asignada = datetime(int(año), int(mes), asignacion_a_modificar[3], asignacion_a_modificar[4], asignacion_a_modificar[5])
+                                if not (nueva_fecha_hora >= fecha_hora_asignada + intervalo_tiempo or nueva_fecha_hora + intervalo_tiempo <= fecha_hora_asignada):
+                                    cumple_requisitos_para_modificarse = True
 
-                            if cumple_requisitos_para_modificarse:
-                                asignacion_a_modificar[4] = hora_modificada
-                                asignacion_a_modificar[5] = minutos_modificados
-                                asignacion_a_modificar[6] = sala_modificada
-                                Funciones.mostrar_exito("La modificación ha sido exitosa")
-                            else:
-                                Funciones.mostrar_error(f"La sala {sala_modificada} no está disponible en el horario especificado")
+                                if cumple_requisitos_para_modificarse:
+                                    asignacion_a_modificar[4] = hora_modificada
+                                    asignacion_a_modificar[5] = minutos_modificados
+                                    asignacion_a_modificar[6] = sala_modificada
+                                    asignacion_a_modificar[0] = id_asignacion_nueva
+
+                                    if self.salas and id_asignacion_vieja in self.salas:
+                                        self.salas[id_asignacion_nueva] = self.salas.pop(id_asignacion_vieja, None)
+
+                                    Funciones.mostrar_exito("La modificación ha sido exitosa")
+                                else:
+                                    Funciones.mostrar_error(f"La sala {sala_modificada} no está disponible en el horario especificado")
 
                         else:
                             Funciones.mostrar_alerta("No existe una asignación de sala con los datos especificados")
@@ -803,6 +822,7 @@ class Menus:
             print("Ordenar por precio venta 'opv'")
             print("Bucar por nombre: 'bn'")
 
+
             if not self.inventario_confiteria:
                 Funciones.mostrar_alerta("No hay productos en confiteria")
             else:
@@ -810,6 +830,10 @@ class Menus:
                     Funciones.mostrar_productos(mostrar_productos_orden)
                 else:
                     Funciones.mostrar_productos(self.inventario_confiteria)
+                    # Definir colores y estilos
+                    color_titulo = Fore.LIGHTCYAN_EX
+                    color_headers = Fore.LIGHTYELLOW_EX
+                    estilo_reset = Style.RESET_ALL
             try:
                 buscar_id_producto = Funciones.hacer_pregunta("Buscar id producto: ")
                 if buscar_id_producto.lower() == "c":
@@ -836,47 +860,53 @@ class Menus:
                     orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].precio_venta_producto)
                     mostrar_productos_orden = dict(orden)
 
-                elif buscar_id_producto.lower() == "bn":
+                if buscar_id_producto.lower() == "bn":
                     nombre_a_buscar = Funciones.hacer_pregunta("Nombre a buscar: ").title()
                     productos_encontrados = [producto for producto in self.inventario_confiteria.values()
                                             if nombre_a_buscar.lower() in producto.nombre_producto.lower()]
 
                     if productos_encontrados:
-                        print("\n\nProductos encontrados:\n")
+                        print(f"\n\n{color_titulo}Productos encontrados:\n{estilo_reset}")
+                        encontrados = []
                         for producto_encontrado in productos_encontrados:
                             datos_producto = producto_encontrado.obtener_datos_producto()
 
-                            inventario_data = [[datos_producto[0], datos_producto[1], datos_producto[2],
+                            encontrados.append([datos_producto[0], datos_producto[1], datos_producto[2],
                                                 f"$ {datos_producto[3]:.2f}", f"$ {datos_producto[4]:.2f}",
-                                                datos_producto[5]]]
+                                                datos_producto[5]])
 
-                            headers = ["ID", "Producto", "Categoria", "Compra", "Venta", "Cantidad"]
-                            print(tabulate(inventario_data, headers=headers, tablefmt="fancy_grid"))
+                        headers = [f"{color_headers}ID", "Producto", "Categoria", "Compra", "Venta", f"Cantidad{estilo_reset}"]
+                        print(tabulate(encontrados, headers=headers, tablefmt="fancy_grid"))
                         print()
                         os.system("pause")
                     else:
                         Funciones.mostrar_alerta(f"No se encontraron productos que contengan '{nombre_a_buscar}'.")
 
 
-                if buscar_id_producto in self.inventario_confiteria:
+                if buscar_id_producto.isnumeric():
 
-                    Funciones.mostrar_exito("Producto encontrado: ")
+                    if buscar_id_producto in self.inventario_confiteria:
 
-                    producto_encontrado = self.inventario_confiteria[buscar_id_producto]
+                        print(f"{color_titulo}\n\nProducto encontrado:\n{estilo_reset}")
 
-                    for id_producto, datos_producto in self.inventario_confiteria.items():
-                        if buscar_id_producto == id_producto:
+                        producto_encontrado = self.inventario_confiteria[buscar_id_producto]
 
-                            datos_producto = producto_encontrado.obtener_datos_producto()
+                        for id_producto, datos_producto in self.inventario_confiteria.items():
+                            if buscar_id_producto == id_producto:
 
-                            inventario_data = [[datos_producto[0], datos_producto[1], datos_producto[2],
-                                                f"$ {datos_producto[3]:.2f}", f"$ {datos_producto[4]:.2f}",
-                                                datos_producto[5]]]
-                            
-                            headers = ["ID", "Producto", "Categoria", "Compra", "Venta", "Cantidad"]
-                            print(tabulate(inventario_data, headers=headers, tablefmt="fancy_grid"))
-                            print()
-                            os.system("pause")            
+                                datos_producto = producto_encontrado.obtener_datos_producto()
+
+                                inventario_data = [[datos_producto[0], datos_producto[1], datos_producto[2],
+                                                    f"$ {datos_producto[3]:.2f}", f"$ {datos_producto[4]:.2f}",
+                                                    datos_producto[5]]]
+                                
+                                headers = [f"{color_headers}ID", "Producto", "Categoria", "Compra", "Venta", f"Cantidad{estilo_reset}"]
+                                print(tabulate(inventario_data, headers=headers, tablefmt="fancy_grid"))
+                                print()
+                                os.system("pause")
+                    else:
+                        if buscar_id_producto not in self.inventario_confiteria:
+                            Funciones.mostrar_alerta("No hay ningun producto con la ID buscada")            
 
             except ValueError:
                 Funciones.mostrar_error("Ingrese una opción válida")
@@ -891,6 +921,207 @@ class Menus:
 #METODOS PARA EL SISTEMA DE VENTAS
 
 #######################################################################################
+
+    def realizar_venta(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Venta")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+
+            if not self.cartelera:
+                Funciones.mostrar_alerta("No hay películas disponibles")
+            else:
+                Funciones.mostrar_peliculas(self.cartelera)
+                pelicula_a_comprar = Funciones.hacer_pregunta("Película: ")
+
+                if pelicula_a_comprar.lower() == "c":
+                    Funciones.mostrar_alerta("La venta se ha cancelado")
+                    break
+                pelicula_a_comprar = pelicula_a_comprar.title()
+
+                if pelicula_a_comprar in self.cartelera:
+
+                    dias = []
+                    for datos in self.ocupacion_sala:
+                        if datos[7] == pelicula_a_comprar:
+                            dias.append(int(datos[3]))
+                    
+                    if not dias:
+                        Funciones.mostrar_alerta(f"No hay salas asignadas para {pelicula_a_comprar}")
+                    else:
+                        print(f"\nHay funciones disponibles para los días {dias}")
+                        
+                        dia_de_compra = Funciones.hacer_pregunta("Seleccione un día: ")
+                        if dia_de_compra.lower() == "c":
+                            Funciones.mostrar_alerta("La venta se ha cancelado")
+                            break
+                        dia_de_compra = int(dia_de_compra)
+
+                        if dia_de_compra in dias:
+                            cronograma_dia = [datos for datos in self.ocupacion_sala if datos[3] == dia_de_compra and datos[7] == pelicula_a_comprar]
+                            Funciones.mostrar_ocupacion_sala(self.ocupacion_sala, cronograma_dia, dia_de_compra)
+
+                            hora_de_compra = Funciones.hacer_pregunta("hora: ")
+                            if hora_de_compra.lower() == "c":
+                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                                break
+                            hora_de_compra = int(hora_de_compra)
+
+                            minutos_de_compra = Funciones.hacer_pregunta("minutos: ")
+                            if minutos_de_compra.lower() == "c":
+                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                                break
+                            minutos_de_compra = int(minutos_de_compra)
+
+                            sala_de_compra = Funciones.hacer_pregunta("sala: ")
+                            if sala_de_compra.lower() == "c":
+                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                                break
+                            sala_de_compra = int(sala_de_compra)
+
+                            id_identificacion_sala = str(dia_de_compra) + str(hora_de_compra) + str(minutos_de_compra) + str(sala_de_compra)
+                            primera_compra_de_sala = False
+
+                            if id_identificacion_sala in self.salas:
+                                print(f"\nAsignacion: {id_identificacion_sala}")
+                                print(f"\nPelicula: {pelicula_a_comprar}")
+                                print(f"dia: {dia_de_compra} - hora: {hora_de_compra:02}:{minutos_de_compra:02}")
+                                for id_sala, sala_a_modificar in self.salas.items():
+                                    if id_sala == id_identificacion_sala:
+                                        sala = sala_a_modificar
+                                        Funciones.imprimir_sala_centro(sala)
+
+
+                                cuantos_boletos_compra = Funciones.hacer_pregunta("\nCuantos asientos (5 max): ")
+                                if cuantos_boletos_compra.lower() == "c":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                cuantos_boletos_compra = int(cuantos_boletos_compra)
+
+                                if 0 < cuantos_boletos_compra <= 5:
+
+                                    asientos_validos = 0
+                                    cancelacion_compra = False
+                                    validos = []
+
+                                    while asientos_validos < cuantos_boletos_compra:
+
+                                        asiento_a_comprar = Funciones.hacer_pregunta("Selecione un asiento: ")
+                                        if asiento_a_comprar.lower() == "c":
+                                            cancelacion_compra = True
+                                            break
+
+                                        if asiento_a_comprar != "XX":
+
+                                            for i in range(len(sala)):
+                                                for j in range(len(sala[i])):
+                                                    if sala[i][j] == asiento_a_comprar:
+                                                        if sala[i][j] not in validos:
+                                                            validos.append(sala[i][j])
+                                                            sala[i][j] = "XX"
+                                                            asientos_validos += 1
+                                                            break         
+                                                        else:
+                                                            Funciones.mostrar_error("Este asiento ya ha sido seleccionado")
+                                                            break
+                                                else:
+                                                    continue
+                                                break     
+                                            else:
+                                                Funciones.mostrar_error("Este asiento no es válido")
+                                        else:
+                                            Funciones.mostrar_error("Este asiento ya ha sido vendido")
+
+                                                    
+                                    if cancelacion_compra:
+                                        break
+
+                                    if asientos_validos == cuantos_boletos_compra:
+                                        self.salas[id_identificacion_sala] = sala
+                                        Funciones.mostrar_exito("La compra se ha realizado correctamente")
+                         
+                            else:
+                                for datos in self.ocupacion_sala:
+                                    if id_identificacion_sala == datos[0] and dia_de_compra == datos[3] and hora_de_compra == datos[4] and minutos_de_compra == datos[5] \
+                                        and sala_de_compra == datos[6] and pelicula_a_comprar == datos[7]:
+                                        primera_compra_de_sala = True
+
+                                if primera_compra_de_sala:
+                                    sala = Funciones.generar_sala()
+                                    Funciones.imprimir_sala_centro(sala)
+
+                                    cuantos_boletos_compra = Funciones.hacer_pregunta("\nCuantos asientos (5 max): ")
+                                    if cuantos_boletos_compra.lower() == "c":
+                                        Funciones.mostrar_alerta("La operación se ha cancelado")
+                                        break
+                                    cuantos_boletos_compra = int(cuantos_boletos_compra)
+
+                                    if 0 < cuantos_boletos_compra <= 5:
+
+                                        asientos_validos = 0
+                                        cancelacion_compra = False
+                                        validos = []
+
+                                        while asientos_validos < cuantos_boletos_compra:
+
+                                            asiento_a_comprar = Funciones.hacer_pregunta("Selecione un asiento: ")
+                                            if asiento_a_comprar.lower() == "c":
+                                                cancelacion_compra = True
+                                                break
+
+                                            for i in range(len(sala)):
+                                                for j in range(len(sala[i])):
+                                                    if sala[i][j] == asiento_a_comprar:
+                                                        if sala[i][j] not in validos:
+                                                            validos.append(sala[i][j])
+                                                            sala[i][j] = "XX"
+                                                            asientos_validos += 1
+                                                            break         
+                                                        else:
+                                                            Funciones.mostrar_error("Este asiento ya ha sido seleccionado")
+                                                            break
+                                                else:
+                                                    continue
+                                                break     
+                                            else:
+                                                Funciones.mostrar_error("Este asiento no es válido")          
+                                                        
+                                        if cancelacion_compra:
+                                            break
+
+                                        if asientos_validos == cuantos_boletos_compra:
+                                            self.salas[id_identificacion_sala] = sala
+                                            Funciones.mostrar_exito("La compra se ha realizado correctamente")
+            
+                                else:
+                                    Funciones.mostrar_alerta("horario incorrecto y/o sala incorrectaa")
+
+                        else:
+                            Funciones.mostrar_alerta(f"No hay funciones para el dia {dia_de_compra}")
+                        
+    def administracion_de_salas(self):
+        for id_sala, sala in self.salas.items():
+            print(f"\nID de Sala: {id_sala}")
+
+            for datos in self.ocupacion_sala:
+                if datos[0] == id_sala:
+                    pelicula = datos[7]
+                    dia = datos[3]
+                    hora = datos[4]
+                    minutos = datos[5]
+
+                    print(f"Película: {pelicula}")
+                    print(f"Día: {dia} - Hora: {hora:02}:{minutos:02}")
+
+            Funciones.imprimir_sala_centro(sala)
+
+        input()
+
+
+
+
 
 
 

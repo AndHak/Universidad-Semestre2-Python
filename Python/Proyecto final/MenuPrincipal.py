@@ -1,4 +1,3 @@
-from colorama import init, Fore
 from MenusInteractivos import *
 from Funciones import *
 import os
@@ -19,7 +18,8 @@ def menu_principal():
         2.  Sistema de confiteria
         3.  Sistema de ventas
         4.  Manejo de cuentas
-        5.  Salir""")
+        5.  Ver administracion de salas
+        6.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
@@ -31,7 +31,8 @@ def menu_principal():
             elif opcion_seleccionada == 4:
                 manejo_de_cuentas()
             elif opcion_seleccionada == 5:
-                abrir_menu.eliminar_salas_canceladas()
+                abrir_menu.administracion_de_salas()
+            elif opcion_seleccionada == 6:
                 abrir_menu.salir()
                 break
         except ValueError:
@@ -100,8 +101,7 @@ def sistema_de_confiteria():
         4.  Administracion de combos
         5.  Buscar productos
         6.  Buscar combos
-        7.  Consultar ventas confiteria
-        8.  Salir""")
+        7.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
@@ -117,8 +117,6 @@ def sistema_de_confiteria():
             elif opcion_seleccionada == 6:
                 pass
             elif opcion_seleccionada == 7:
-                pass
-            elif opcion_seleccionada == 8:
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
@@ -132,10 +130,9 @@ def administracion_de_combos():
         1.  Agregar combo
         2.  Eliminar combo
         3.  Modificar combo
-        4.  Estadisticas de combos
+        4.  Registro de combos
         5.  Ver combos
-        6.  Registro de combos
-        7.  Salir""")
+        6.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
@@ -145,12 +142,10 @@ def administracion_de_combos():
             elif opcion_seleccionada == 3:
                 abrir_menu.modificar_combo()
             elif opcion_seleccionada == 4:
-                abrir_menu.estadisticas_de_combos()
+                abrir_menu.registro_de_combos()
             elif opcion_seleccionada == 5:
                 abrir_menu.ver_combos()
             elif opcion_seleccionada == 6:
-                abrir_menu.registro_de_combos()
-            elif opcion_seleccionada == 7:
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
@@ -200,10 +195,5 @@ def menu_cuadre_de_caja_y_cuentas():
         Funciones.encabezado()
         Funciones.subtitulo("Menu cuadre de caja y cuentas")
         pass
-
-
-
-
-
 
 menu_principal()
