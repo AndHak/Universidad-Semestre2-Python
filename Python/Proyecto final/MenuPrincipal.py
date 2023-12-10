@@ -188,8 +188,50 @@ def manejo_de_cuentas():
     while True:
         os.system("cls")
         Funciones.encabezado()
-        Funciones.subtitulo("Menu Manejo de cuentas y datos estadisticos")
-        pass
+        Funciones.subtitulo("administracion y datos estadisticos")
+        print("""
+        1.  Ver archivos
+        2.  Salir""")
+        try:
+            opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
+            if opcion_seleccionada == 1:
+                menu_archivos()
+            elif opcion_seleccionada == 2:
+                break
+        except ValueError:
+            Funciones.mostrar_error("Ingrese una opción válida")
+
+
+
+def menu_archivos():
+    while True:
+        os.system("cls")
+        Funciones.encabezado()
+        Funciones.subtitulo("Archivos")
+        print("""
+        1.  Archivos Peliculas
+        2.  Archivos Productos
+        3.  Archivos Combos
+        4.  Archivos manejo de salas
+        5.  Archivos Facturas Confiteria
+        6.  Archivos Facturas Peliculas   
+        7.  Salir""")
+        try:
+            opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
+            if opcion_seleccionada == 1:
+                abrir_menu.archivo.mostrar_archivo_peliculas()
+            if opcion_seleccionada == 2:
+                abrir_menu.archivo.mostrar_archivo_productos()
+            if opcion_seleccionada == 3:
+                abrir_menu.archivo.mostrar_archivo_combos()
+            if opcion_seleccionada == 4:
+                abrir_menu.archivo.mostrar_archivo_ocupacion_sala()
+            elif opcion_seleccionada == 7:
+                break
+        except ValueError:
+            Funciones.mostrar_error("Ingrese una opción válida")
+
+
 
 def menu_cuadre_de_caja_y_cuentas():
     while True:

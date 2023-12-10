@@ -25,16 +25,19 @@ class Menus:
         self.guardar_datos()
 
     def guardar_datos(self):
+        #Guardar datos de la cartelera
         ruta_cartelera = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\cartelera.txt"
         with open(ruta_cartelera, "w", encoding="utf-8") as file:
             for titulo, pelicula in self.cartelera.items():
                 file.write(f"{titulo},{pelicula.sinopsis},{pelicula.duracion},{pelicula.genero},{pelicula.edad_minima},{pelicula.costo_pelicula}\n")
 
+        #Guardar datos de la confiteria
         ruta_confiteria = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\confiteria.txt"
         with open(ruta_confiteria, "w", encoding="utf-8") as file:
             for id_producto, datos_producto in self.inventario_confiteria.items():
                 file.write(f"{id_producto},{datos_producto.nombre_producto},{datos_producto.categoria_producto},{datos_producto.precio_compra_producto},{datos_producto.precio_venta_producto},{datos_producto.cantidad_producto}\n")
 
+        #Guardar datos de la ocupacion de sala
         ruta_ocupacion_sala = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\ocupacion_sala.txt"
         with open(ruta_ocupacion_sala, "w", encoding="utf-8") as file:
             for datos_asignacion in self.ocupacion_sala:
@@ -43,13 +46,27 @@ class Menus:
                 datos_asignacion[5] = str(datos_asignacion[5])
                 file.write(','.join(map(str, datos_asignacion)) + '\n')
 
+        #Guardar datos del archivo de peliculas
         ruta_archivo_peliculas = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\archivos\archivo_peliculas.txt"
         with open(ruta_archivo_peliculas, "w", encoding="utf-8") as file:
             for datos in self.archivo.archivo_peliculas:
                 file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]}\n")
-        
+
+        #Guardar datos del archivo de productos
+        ruta_archivo_productos = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\archivos\archivo_productos.txt"
+        with open(ruta_archivo_productos, "w", encoding="utf-8") as file:
+            for datos in self.archivo.archivo_productos:
+                file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]}\n")
+
+        #Guardar datos de archivo ocupacion salas
+        ruta_archivo_ocupacion_salas = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\archivos\archivo_ocupacion_salas.txt"
+        with open(ruta_archivo_ocupacion_salas, "w", encoding="utf-8") as file:
+            for datos in self.archivo.archivo_ocupacion_sala:
+                file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]},{datos[7]},{datos[8]}\n")
+                
 
     def cargar_datos(self):
+        #Cargar datos a la cartelera
         try:
             ruta_cartelera = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\cartelera.txt"
             with open(ruta_cartelera, "r", encoding="utf-8") as file:
@@ -70,6 +87,7 @@ class Menus:
         except Exception as e:
             print(f"Error al leer 'cartelera.txt': {e}")
 
+        #Cargar datos a la confiteria
         try:
             ruta_confiteria = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\confiteria.txt"
             with open(ruta_confiteria, "r", encoding="utf-8") as file:
@@ -89,6 +107,7 @@ class Menus:
         except Exception as e:
             print(f"Error al leer 'confiteria.txt': {e}")
 
+        #Cargar datos a la ocupacion de salas
         try:
             ruta_ocupacion_sala = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\ocupacion_sala.txt"
             with open(ruta_ocupacion_sala, "r", encoding="utf-8") as file:
@@ -107,6 +126,34 @@ class Menus:
             print("El archivo 'ocupacion_sala.txt' no fue encontrado. Se creará por primera vez al asignar salas.")
         except Exception as e:
             print(f"Error al leer 'ocupacion_sala.txt': {e}")
+
+        #Cargar datos al archivo de peliculas
+        try:
+            ruta_archivo_peliculas = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\archivos\archivo_peliculas.txt"
+            with open(ruta_archivo_peliculas, "r", encoding="utf-8") as file:
+                for line in file:
+                    datos_pelicula = line.strip().split(',')
+                    datos_pelicula = line.strip().split(',')
+                    titulo_pelicula = datos_pelicula[0]
+                    sinopsis = datos_pelicula[1]
+                    duracion = int(datos_pelicula[2])
+                    genero = datos_pelicula[3]
+                    edad_minima = int(datos_pelicula[4])
+                    costo_pelicula = float(datos_pelicula[5])
+                    caso = datos_pelicula[6]
+
+                    pelicula = DatosPelicula(titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula)
+                    datos_a_cargar = [titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula, caso]
+                    self.archivo.archivo_peliculas.append(datos_a_cargar)
+        
+        except FileNotFoundError:
+            print("El archivo 'ocupacion_sala.txt' no fue encontrado. Se creará por primera vez al asignar salas.")
+        except Exception as e:
+            print(f"Error al leer 'ocupacion_sala.txt': {e}")
+
+
+
+
 
 
 #METODOS PARA EL SISTEMA DE PELICULAS
@@ -221,15 +268,16 @@ class Menus:
                     break
                 titulo_pelicula = titulo_pelicula.title()
 
-                for titulo, datos in self.cartelera:
-                    if titulo == titulo_pelicula:
-                        datos_pelicula = datos, "ELIMINADO"
-                datos_archivo_pelicula_eliminacion = [datos_pelicula, "ELIMINADO"]
-                self.archivo.archivo_peliculas.append(datos_archivo_pelicula_eliminacion)
-            #Buscar código de pelicula en cartelera
-                if titulo_pelicula in self.cartelera:
-                    #Eliminar pelicula de la cartelera
 
+                if titulo_pelicula in self.cartelera:
+
+                    #Agregar cambio al archivo
+                    datos = self.cartelera[titulo_pelicula]
+                    # Agregar cambio al archivo
+                    datos_archivo_pelicula_eliminacion = [datos.titulo_pelicula, datos.sinopsis, datos.duracion, datos.genero, datos.edad_minima, datos.costo_pelicula, "ELIMINADO"]
+                    self.archivo.archivo_peliculas.append(datos_archivo_pelicula_eliminacion)
+
+                    #Eliminar pelicula de la cartelera
                     del self.cartelera[titulo_pelicula]
                     
                     for datos in self.ocupacion_sala:
@@ -309,10 +357,12 @@ class Menus:
 
                                     asignacion_id = str(dia) + str(hora) + str(minutos) + str(sala)
                                     datos = [asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala]
+                                    datos_archivo = [asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala, "NUEVO"]
 
                                     esta_ocupada = self.verificar_disponibilidad_sala(asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala)
                                     if not esta_ocupada:
                                         self.ocupacion_sala.append(datos)
+                                        self.archivo.archivo_ocupacion_sala.append(datos_archivo)
                                         Funciones.mostrar_exito(f"\nLa película {pelicula_a_asignar_sala} Se presentara en la Sala {sala}\nPara el día {dia} a las {hora:02}:{minutos:02}")
                                     else:
                                         Funciones.mostrar_alerta(f"La sala {sala} no está disponible")
@@ -419,7 +469,13 @@ class Menus:
                                 for id_sala, sala in self.salas.items():
                                     if id_sala == id_asignacion_a_eliminar:
                                         eliminar_de_salas = True
-                            
+
+                            for datos_archivo in self.ocupacion_sala:
+                                if datos_archivo[0] == id_asignacion_a_eliminar:
+                                    datos_a_eliminar_archivo = [datos_archivo[0], datos_archivo[1], datos_archivo[2], datos_archivo[3], datos_archivo[4], datos_archivo[5], datos_archivo[6], datos_archivo[7], "ELIMINADA"]
+                            self.archivo.archivo_ocupacion_sala.append(datos_a_eliminar_archivo)
+
+                            #Eliminar la sala matriz con los asientos
                             if eliminar_de_salas:
                                 del self.salas[id_asignacion_a_eliminar]
 
