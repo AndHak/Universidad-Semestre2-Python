@@ -34,7 +34,7 @@ class Archivo:
             print()
             os.system("pause")
 
-    
+
     def mostrar_archivo_productos(self):
         if not self.archivo_productos:
             Funciones.mostrar_alerta("No hay datos en el archivo de productos.")
@@ -59,9 +59,11 @@ class Archivo:
             print()
             os.system("pause")
 
-    def mostrar_archivo_combos():
-        pass
-        
+
+    #def mostrar_archivo_combos():
+        #pass
+
+
     def mostrar_archivo_ocupacion_sala(self):
         if not self.archivo_ocupacion_sala:
             Funciones.mostrar_alerta("No hay datos en el archivo de ocupación de sala.")

@@ -19,7 +19,7 @@ def menu_principal():
         1.  Sistema de peliculas
         2.  Sistema de confiteria
         3.  Sistema de ventas
-        4.  Manejo de cuentas
+        4.  Administracion de datos y estadisticas
         5.  Ver administracion de salas
         6.  Salir""")
         try:
@@ -31,7 +31,7 @@ def menu_principal():
             elif opcion_seleccionada == 3:
                 sistema_de_ventas()
             elif opcion_seleccionada == 4:
-                manejo_de_cuentas()
+                manejo_de_datos()
             elif opcion_seleccionada == 5:
                 abrir_menu.administracion_de_salas()
             elif opcion_seleccionada == 6:
@@ -184,7 +184,7 @@ def sistema_de_ventas():
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
 
-def manejo_de_cuentas():
+def manejo_de_datos():
     while True:
         os.system("cls")
         Funciones.encabezado()

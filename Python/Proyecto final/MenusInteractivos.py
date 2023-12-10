@@ -585,6 +585,9 @@ class Menus:
                                     if self.salas and id_asignacion_vieja in self.salas:
                                         self.salas[id_asignacion_nueva] = self.salas.pop(id_asignacion_vieja, None)
 
+                                    datos_a_modificar_archivo = [asignacion_a_modificar[0], asignacion_a_modificar[1], asignacion_a_modificar[2], asignacion_a_modificar[3], asignacion_a_modificar[4], asignacion_a_modificar[5], asignacion_a_modificar[6], asignacion_a_modificar[7], "MODIFICADA"]
+                                    self.archivo.archivo_ocupacion_sala.append(datos_a_modificar_archivo)
+
                                     Funciones.mostrar_exito("La modificación ha sido exitosa")
                                 else:
                                     Funciones.mostrar_error(f"La sala {sala_modificada} no está disponible en el horario especificado")
