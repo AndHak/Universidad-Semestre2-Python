@@ -25,20 +25,21 @@ class Menus:
         self.guardar_datos()
 
     def guardar_datos(self):
+        directorio_actual = os.path.dirname(os.path.abspath(__file__))
         #Guardar datos de la cartelera
-        ruta_cartelera = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\cartelera.txt"
+        ruta_cartelera = os.path.join(directorio_actual,"datos_cine", "cartelera.txt")
         with open(ruta_cartelera, "w", encoding="utf-8") as file:
             for titulo, pelicula in self.cartelera.items():
                 file.write(f"{titulo},{pelicula.sinopsis},{pelicula.duracion},{pelicula.genero},{pelicula.edad_minima},{pelicula.costo_pelicula}\n")
 
         #Guardar datos de la confiteria
-        ruta_confiteria = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\confiteria.txt"
+        ruta_confiteria = os.path.join(directorio_actual,"datos_cine", "confiteria.txt")
         with open(ruta_confiteria, "w", encoding="utf-8") as file:
             for id_producto, datos_producto in self.inventario_confiteria.items():
                 file.write(f"{id_producto},{datos_producto.nombre_producto},{datos_producto.categoria_producto},{datos_producto.precio_compra_producto},{datos_producto.precio_venta_producto},{datos_producto.cantidad_producto}\n")
 
         #Guardar datos de la ocupacion de sala
-        ruta_ocupacion_sala = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\ocupacion_sala.txt"
+        ruta_ocupacion_sala = os.path.join(directorio_actual,"datos_cine", "ocupacion_sala.txt")
         with open(ruta_ocupacion_sala, "w", encoding="utf-8") as file:
             for datos_asignacion in self.ocupacion_sala:
                 datos_asignacion[3] = str(datos_asignacion[3])
@@ -47,28 +48,29 @@ class Menus:
                 file.write(','.join(map(str, datos_asignacion)) + '\n')
 
         #Guardar datos del archivo de peliculas
-        ruta_archivo_peliculas = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\archivos\archivo_peliculas.txt"
+        ruta_archivo_peliculas = os.path.join(directorio_actual,"datos_cine", "archivos", "archivo_peliculas.txt")
         with open(ruta_archivo_peliculas, "w", encoding="utf-8") as file:
             for datos in self.archivo.archivo_peliculas:
                 file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]}\n")
 
         #Guardar datos del archivo de productos
-        ruta_archivo_productos = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\archivos\archivo_productos.txt"
+        ruta_archivo_productos = os.path.join(directorio_actual,"datos_cine", "archivos", "archivo_productos.txt")
         with open(ruta_archivo_productos, "w", encoding="utf-8") as file:
             for datos in self.archivo.archivo_productos:
                 file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]}\n")
 
         #Guardar datos de archivo ocupacion salas
-        ruta_archivo_ocupacion_salas = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\archivos\archivo_ocupacion_salas.txt"
+        ruta_archivo_ocupacion_salas = os.path.join(directorio_actual,"datos_cine", "archivos", "archivo_ocupacion_salas.txt")
         with open(ruta_archivo_ocupacion_salas, "w", encoding="utf-8") as file:
             for datos in self.archivo.archivo_ocupacion_sala:
                 file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]},{datos[7]},{datos[8]}\n")
                 
 
     def cargar_datos(self):
+        directorio_actual = os.path.dirname(os.path.abspath(__file__))
         #Cargar datos a la cartelera
         try:
-            ruta_cartelera = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\cartelera.txt"
+            ruta_cartelera = os.path.join(directorio_actual, "datos_cine", "cartelera.txt")
             with open(ruta_cartelera, "r", encoding="utf-8") as file:
                 for line in file:
                     datos_pelicula = line.strip().split(',')
@@ -89,7 +91,7 @@ class Menus:
 
         #Cargar datos a la confiteria
         try:
-            ruta_confiteria = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\confiteria.txt"
+            ruta_confiteria = os.path.join(directorio_actual, "datos_cine", "confiteria.txt")
             with open(ruta_confiteria, "r", encoding="utf-8") as file:
                 for line in file:
                     datos_producto = line.strip().split(',')
@@ -109,7 +111,7 @@ class Menus:
 
         #Cargar datos a la ocupacion de salas
         try:
-            ruta_ocupacion_sala = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\ocupacion_sala.txt"
+            ruta_ocupacion_sala = os.path.join(directorio_actual, "datos_cine", "ocupacion_sala.txt")
             with open(ruta_ocupacion_sala, "r", encoding="utf-8") as file:
                 for line in file:
                     datos_asignacion = line.strip().split(',')
@@ -129,7 +131,7 @@ class Menus:
 
         #Cargar datos al archivo de peliculas
         try:
-            ruta_archivo_peliculas = r"C:\Programacion Universidad\Semestre 2\Python\Proyecto final\datos_cine\archivos\archivo_peliculas.txt"
+            ruta_archivo_peliculas = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_peliculas.txt")
             with open(ruta_archivo_peliculas, "r", encoding="utf-8") as file:
                 for line in file:
                     datos_pelicula = line.strip().split(',')
