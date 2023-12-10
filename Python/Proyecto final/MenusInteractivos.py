@@ -1226,8 +1226,10 @@ class Menus:
                                                 print(f"Película: {pelicula}")
                                                 print(f"Día: {dia} - Hora: {hora:02}:{minutos:02} - Sala: {sala}")
 
-                                        Funciones.imprimir_sala_centro(sala)
-                                        salas_encontradas = True
+                                            Funciones.imprimir_sala_centro(sala)
+                                            salas_encontradas = True
+                                            break
+                                    else:
                                         break
                             else:
                                 for datos in self.ocupacion_sala:
