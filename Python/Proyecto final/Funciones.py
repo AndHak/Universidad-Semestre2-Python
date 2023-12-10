@@ -134,7 +134,7 @@ class Funciones:
 
     def generar_sala():
         sala = []
-        columnas = "ABCDEFGHIJK"
+        columnas = "ABCDFGHIJK"
         for i in range(len(columnas)-1, -1, -1):
             fila_actual = []
             for j in range(10):
@@ -144,7 +144,6 @@ class Funciones:
         return sala
     
     def imprimir_sala_centro(sala):
-        print("\n") 
         print(f"OCUPADO: {Fore.LIGHTRED_EX}XX{Style.RESET_ALL}")
         print(f"DISPONIBLE: {Fore.LIGHTGREEN_EX}LN°{Style.RESET_ALL}")
         print("\n")
@@ -158,7 +157,13 @@ class Funciones:
             print("\n")
         print("\n            " + Fore.BLACK + Back.WHITE + "_____________PANTALLA_____________" + Style.RESET_ALL)
 
-
+    def comprobar_sala_llena(sala):
+        for i, fila in enumerate(sala, start=1):
+            for j, asiento in enumerate(fila, start=1):
+                if asiento != "XX":
+                    return False
+        return True
+    
 
 
 

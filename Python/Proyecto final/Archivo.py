@@ -21,7 +21,7 @@ class Archivo:
             titulo = f"{color_titulo}A R C H I V O   D E   P E L Í C U L A S{estilo_reset}"
 
             headers = [f"{color_headers}Título", "Sinopsis", "Duración", "Género", "Edad Mínima", "Costo", f"Caso{estilo_reset}"]
-            data = [[fila[0], fila[1], fila[2], fila[3], fila[4], f"$ {fila[5]:.2f}", fila[6]] for fila in self.archivo_peliculas]
+            data = [[fila[0], fila[1], fila[2], fila[3], f"{fila[4]}+", f"$ {fila[5]:.2f}", fila[6]] for fila in self.archivo_peliculas]
 
             # Obtener la tabla del archivo de películas utilizando tabulate sin imprimir
             tabla_archivo_peliculas = tabulate(data, headers=headers, tablefmt="fancy_grid")
@@ -75,7 +75,7 @@ class Archivo:
             titulo = f"{color_titulo}A R C H I V O   D E   O C U P A C I Ó N   D E   S A L A{estilo_reset}"
 
             headers = [f"{color_headers}ID Asignación", "Año", "Mes", "Día", "Hora", "Minutos", "Sala", "Película", f"Caso{estilo_reset}"]
-            data = [[fila[0], fila[1], fila[2], fila[3], fila[4], fila[5], fila[6], fila[7], fila[8]] for fila in self.archivo_ocupacion_sala]
+            data = [[fila[0], fila[1], fila[2], fila[3], f"{fila[4]:02}", f"{fila[5]:02}", fila[6], fila[7], fila[8]] for fila in self.archivo_ocupacion_sala]
 
             # Obtener la tabla del archivo de ocupación de sala utilizando tabulate sin imprimir
             tabla_archivo_ocupacion_sala = tabulate(data, headers=headers, tablefmt="fancy_grid")

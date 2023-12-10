@@ -156,6 +156,7 @@ class Menus:
 
 
 
+
 #METODOS PARA EL SISTEMA DE PELICULAS
 
 #######################################################################################
@@ -1061,6 +1062,7 @@ class Menus:
                             primera_compra_de_sala = False
 
                             if id_identificacion_sala in self.salas:
+
                                 print(f"\nAsignacion: {id_identificacion_sala}")
                                 print(f"\nPelicula: {pelicula_a_comprar}")
                                 print(f"dia: {dia_de_compra} - hora: {hora_de_compra:02}:{minutos_de_compra:02}")
@@ -1069,54 +1071,60 @@ class Menus:
                                         sala = sala_a_modificar
                                         Funciones.imprimir_sala_centro(sala)
 
+                                sala_llena = Funciones.comprobar_sala_llena(sala_a_modificar)
 
-                                cuantos_boletos_compra = Funciones.hacer_pregunta("\nCuantos asientos (5 max): ")
-                                if cuantos_boletos_compra.lower() == "c":
-                                    Funciones.mostrar_alerta("La operación se ha cancelado")
-                                    break
-                                cuantos_boletos_compra = int(cuantos_boletos_compra)
+                                if sala_llena:
+                                    Funciones.mostrar_alerta("La sala esta llena, no es posible hacer venta")
 
-                                if 0 < cuantos_boletos_compra <= 5:
+                                if not sala_llena:
+                            
+                                    cuantos_boletos_compra = Funciones.hacer_pregunta("\nCuantos asientos (5 max): ")
+                                    if cuantos_boletos_compra.lower() == "c":
+                                        Funciones.mostrar_alerta("La operación se ha cancelado")
+                                        break
+                                    cuantos_boletos_compra = int(cuantos_boletos_compra)
 
-                                    asientos_validos = 0
-                                    cancelacion_compra = False
-                                    validos = []
+                                    if 0 < cuantos_boletos_compra <= 5:
 
-                                    while asientos_validos < cuantos_boletos_compra:
+                                        asientos_validos = 0
+                                        cancelacion_compra = False
+                                        validos = []
 
-                                        asiento_a_comprar = Funciones.hacer_pregunta("Selecione un asiento: ")
-                                        if asiento_a_comprar.lower() == "c":
-                                            cancelacion_compra = True
+                                        while asientos_validos < cuantos_boletos_compra:
+
+                                            asiento_a_comprar = Funciones.hacer_pregunta("Selecione un asiento: ")
+                                            if asiento_a_comprar.lower() == "c":
+                                                cancelacion_compra = True
+                                                break
+
+                                            if asiento_a_comprar != "XX":
+
+                                                for i in range(len(sala)):
+                                                    for j in range(len(sala[i])):
+                                                        if sala[i][j] == asiento_a_comprar:
+                                                            if sala[i][j] not in validos:
+                                                                validos.append(sala[i][j])
+                                                                sala[i][j] = "XX"
+                                                                asientos_validos += 1
+                                                                break         
+                                                            else:
+                                                                Funciones.mostrar_error("Este asiento ya ha sido seleccionado")
+                                                                break
+                                                    else:
+                                                        continue
+                                                    break     
+                                                else:
+                                                    Funciones.mostrar_error("Este asiento no es válido")
+                                            else:
+                                                Funciones.mostrar_error("Este asiento ya ha sido vendido")
+
+                                                        
+                                        if cancelacion_compra:
                                             break
 
-                                        if asiento_a_comprar != "XX":
-
-                                            for i in range(len(sala)):
-                                                for j in range(len(sala[i])):
-                                                    if sala[i][j] == asiento_a_comprar:
-                                                        if sala[i][j] not in validos:
-                                                            validos.append(sala[i][j])
-                                                            sala[i][j] = "XX"
-                                                            asientos_validos += 1
-                                                            break         
-                                                        else:
-                                                            Funciones.mostrar_error("Este asiento ya ha sido seleccionado")
-                                                            break
-                                                else:
-                                                    continue
-                                                break     
-                                            else:
-                                                Funciones.mostrar_error("Este asiento no es válido")
-                                        else:
-                                            Funciones.mostrar_error("Este asiento ya ha sido vendido")
-
-                                                    
-                                    if cancelacion_compra:
-                                        break
-
-                                    if asientos_validos == cuantos_boletos_compra:
-                                        self.salas[id_identificacion_sala] = sala
-                                        Funciones.mostrar_exito("La compra se ha realizado correctamente")
+                                        if asientos_validos == cuantos_boletos_compra:
+                                            self.salas[id_identificacion_sala] = sala
+                                            Funciones.mostrar_exito("La compra se ha realizado correctamente")
                          
                             else:
                                 for datos in self.ocupacion_sala:
@@ -1178,22 +1186,76 @@ class Menus:
                             Funciones.mostrar_alerta(f"No hay funciones para el dia {dia_de_compra}")
                         
     def administracion_de_salas(self):
-        for id_sala, sala in self.salas.items():
-            print(f"\nID de Sala: {id_sala}")
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Ver asientos salas")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
 
-            for datos in self.ocupacion_sala:
-                if datos[0] == id_sala:
-                    pelicula = datos[7]
-                    dia = datos[3]
-                    hora = datos[4]
-                    minutos = datos[5]
+            if not self.ocupacion_sala:
+                Funciones.mostrar_alerta("No hay salas asignadas")
+            else:
+                try:
+                    dia_mostrar_salas = Funciones.hacer_pregunta("Dia: ")
+                    if dia_mostrar_salas.lower() == "c":
+                        break
+                    dia_mostrar_salas = int(dia_mostrar_salas)
 
-                    print(f"Película: {pelicula}")
-                    print(f"Día: {dia} - Hora: {hora:02}:{minutos:02}")
+                    salas_encontradas = False
 
-            Funciones.imprimir_sala_centro(sala)
+                    for datos_sala in self.ocupacion_sala:
+                        if datos_sala[3] != dia_mostrar_salas:
+                            continue
+                        else:
+                            id_sala = datos_sala[0]
+                            if id_sala in self.salas:
+                                for id_busqueda, sala in self.salas.items():
+                                    if id_sala == id_busqueda:
+                                        print(f"\n\nID de Sala: {id_sala}")
 
-        input()
+                                        for datos_ocupacion in self.ocupacion_sala:
+                                            if datos_ocupacion[0] == id_sala:
+                                                id_sala = datos_ocupacion[0]
+                                                pelicula = datos_ocupacion[7]
+                                                dia = datos_ocupacion[3]
+                                                hora = datos_ocupacion[4]
+                                                minutos = datos_ocupacion[5]
+                                                sala = datos_ocupacion[6]
+                                                print(f"\n\nID de Sala: {id_sala}")
+                                                print(f"Película: {pelicula}")
+                                                print(f"Día: {dia} - Hora: {hora:02}:{minutos:02} - Sala: {sala}")
+
+                                        Funciones.imprimir_sala_centro(sala)
+                                        salas_encontradas = True
+                                        break
+                            else:
+                                for datos in self.ocupacion_sala:
+                                    if datos[0] == id_sala:
+                                        pelicula = datos[7]
+                                        dia = datos[3]
+                                        hora = datos[4]
+                                        minutos = datos[5]
+                                        sala = datos[6]
+                                        print(f"\n\nID de Sala: {id_sala}")
+                                        print(f"Película: {pelicula}")
+                                        print(f"Día: {dia} - Hora: {hora:02}:{minutos:02} - Sala: {sala}")
+
+                                        Funciones.imprimir_sala_centro(Funciones.generar_sala())
+                                        salas_encontradas = True
+                                        break
+
+                    if not salas_encontradas:
+                        Funciones.mostrar_alerta("No hay salas para ese día")
+
+                    if salas_encontradas:
+                        print()
+                        os.system("pause")
+
+                except ValueError:
+                    Funciones.mostrar_error("Ingrese un valor valido")
+
+
 
 
 
