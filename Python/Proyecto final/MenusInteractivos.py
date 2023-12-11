@@ -6,74 +6,86 @@ from Archivo import *
 from tabulate import *
 import os
 
+#Iniciamos colorama con letras blancas
 init(autoreset=True)
 
 class Menus:
 
+    #Este constructor hereda algunas listas que estan en la clase archivo
     def __init__(self, archivo):
-        self.cartelera = {}
-        self.ventas_peliculas = {}
-        self.ventas_confiteria = {}
-        self.clientes = {}
-        self.ocupacion_sala = []
-        self.inventario_confiteria = {}
-        self.salas = {}
-        self.archivo = archivo
-        self.cargar_datos()
+        
+        self.cartelera = {}     #Aqui se van a guardar las peliculas disponibles
+        self.ventas_peliculas = {}      #Aqui se van a registrar las peliculas vendidas
+        self.ventas_confiteria = {}     #Aqui se registran los productos vendidos
+        self.clientes = {}      #Aqui se registran los clientes con las compras que hacen en confiteria y peliculas
+        self.ocupacion_sala = []        #Aqui se almacenan los horarios de funcion
+        self.inventario_confiteria = {}     #Aqui se guardan los productos de la confiteria
+        self.salas = {}     #Aqui se guardan las salas una vez se haya realizado alguna venta
+        self.archivo = archivo      #Aqui llamamos a las listas que estan en la clase archivo
+
+        self.egresos = {}       #Aqui se manejan egresos por pagos luz, agua, aseo, administracion, etc.
+        self.dinero_en_caja = 0        #Aqui guardamos el dinero en caja
+
+        self.cargar_datos()     #Aqui cargamos los datos al constructor de los documentos txt
     
     def salir(self):
-        self.guardar_datos()
+        self.guardar_datos()    #Antes de salir guardamos datos, se guardan datos cuando cerramos el programa corractamente
 
     def guardar_datos(self):
-        directorio_actual = os.path.dirname(os.path.abspath(__file__))
+        directorio_actual = os.path.dirname(os.path.abspath(__file__))      #Buscamos el directorio donde está este documento python
+
         #Guardar datos de la cartelera
-        ruta_cartelera = os.path.join(directorio_actual,"datos_cine", "cartelera.txt")
-        with open(ruta_cartelera, "w", encoding="utf-8") as file:
-            for titulo, pelicula in self.cartelera.items():
-                file.write(f"{titulo},{pelicula.sinopsis},{pelicula.duracion},{pelicula.genero},{pelicula.edad_minima},{pelicula.costo_pelicula}\n")
+        ruta_cartelera = os.path.join(directorio_actual,"datos_cine", "cartelera.txt")      #La ruta del documento va desde el directorio, a la carpeta datos cine y especificamos el nombre.txt
+        with open(ruta_cartelera, "w", encoding="utf-8") as file:       #Abrimos el archivo para escritura utf-8 para español
+            for titulo, pelicula in self.cartelera.items():     #Buscamos las peliculas que tenemos en cartelera
+                file.write(f"{titulo},{pelicula.sinopsis},{pelicula.duracion},{pelicula.genero},{pelicula.edad_minima},{pelicula.costo_pelicula}\n")    #Se va a escribir en el txt lo de la cartelera
 
         #Guardar datos de la confiteria
-        ruta_confiteria = os.path.join(directorio_actual,"datos_cine", "confiteria.txt")
-        with open(ruta_confiteria, "w", encoding="utf-8") as file:
-            for id_producto, datos_producto in self.inventario_confiteria.items():
-                file.write(f"{id_producto},{datos_producto.nombre_producto},{datos_producto.categoria_producto},{datos_producto.precio_compra_producto},{datos_producto.precio_venta_producto},{datos_producto.cantidad_producto}\n")
+        ruta_confiteria = os.path.join(directorio_actual,"datos_cine", "confiteria.txt")     #La ruta del documento va desde el directorio, a la carpeta datos cine y especificamos el nombre.txt
+        with open(ruta_confiteria, "w", encoding="utf-8") as file:      #Abrimos el archivo para escritura utf-8 para español
+            for id_producto, datos_producto in self.inventario_confiteria.items():      #Buscamos los productos en confiteria
+                file.write(f"{id_producto},{datos_producto.nombre_producto},{datos_producto.categoria_producto},{datos_producto.precio_compra_producto},{datos_producto.precio_venta_producto},{datos_producto.cantidad_producto}\n")       #Se va a escribir en el txt lo de confiteria
 
         #Guardar datos de la ocupacion de sala
-        ruta_ocupacion_sala = os.path.join(directorio_actual,"datos_cine", "ocupacion_sala.txt")
-        with open(ruta_ocupacion_sala, "w", encoding="utf-8") as file:
-            for datos_asignacion in self.ocupacion_sala:
-                datos_asignacion[3] = str(datos_asignacion[3])
-                datos_asignacion[4] = str(datos_asignacion[4])
-                datos_asignacion[5] = str(datos_asignacion[5])
-                file.write(','.join(map(str, datos_asignacion)) + '\n')
+        ruta_ocupacion_sala = os.path.join(directorio_actual,"datos_cine", "ocupacion_sala.txt")        #La ruta del documento va desde el directorio, a la carpeta datos cine y especificamos el nombre.txt
+        with open(ruta_ocupacion_sala, "w", encoding="utf-8") as file:      #Abrimos el archivo para escritura utf-8 para español
+            for datos_asignacion in self.ocupacion_sala:    #Buscamos la informacion de las funciones
+                datos_asignacion[3] = str(datos_asignacion[3])  #Pasamos el dia a string
+                datos_asignacion[4] = str(datos_asignacion[4])  #Pasamos la hora a string
+                datos_asignacion[5] = str(datos_asignacion[5])  #Pasamos los minutos a string
+                datos_asignacion[6] = str(datos_asignacion[6])  #Pasamos la sala a string
+                file.write(f"{datos_asignacion[0]},{datos_asignacion[1]},{datos_asignacion[2]},{datos_asignacion[3]},{datos_asignacion[4]},{datos_asignacion[5]},{datos_asignacion[6]},{datos_asignacion[7]}\n")    #Escribios todo lo de ocupacion sala en el txt
 
         #Guardar datos del archivo de peliculas
-        ruta_archivo_peliculas = os.path.join(directorio_actual,"datos_cine", "archivos", "archivo_peliculas.txt")
-        with open(ruta_archivo_peliculas, "w", encoding="utf-8") as file:
-            for datos in self.archivo.archivo_peliculas:
-                file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]}\n")
+        ruta_archivo_peliculas = os.path.join(directorio_actual,"datos_cine", "archivos", "archivo_peliculas.txt")      #Ruta al directorio actual, a la carpeta datos_cine/archivos abre nombre.txt
+        with open(ruta_archivo_peliculas, "w", encoding="utf-8") as file:       #Abrimos el archivo para escritura utf-8 para español
+            for datos in self.archivo.archivo_peliculas:        #Buscamos por cada lista en la lista archivo peliculas
+                file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]}\n")   #Escribimos los datos de la lista en el txt
 
         #Guardar datos del archivo de productos
-        ruta_archivo_productos = os.path.join(directorio_actual,"datos_cine", "archivos", "archivo_productos.txt")
-        with open(ruta_archivo_productos, "w", encoding="utf-8") as file:
-            for datos in self.archivo.archivo_productos:
-                file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]}\n")
+        ruta_archivo_productos = os.path.join(directorio_actual,"datos_cine", "archivos", "archivo_productos.txt")      #Ruta al directorio actual, a la carpeta datos_cine/archivos abre nombre.txt
+        with open(ruta_archivo_productos, "w", encoding="utf-8") as file:       #Abrimos el archivo para escritura utf-8 para español
+            for datos in self.archivo.archivo_productos:        #Buscamos por cada lista en la lista archivo prodcutos
+                file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]}\n")   #Escribimos los datos de la lista en el txt
 
         #Guardar datos de archivo ocupacion salas
-        ruta_archivo_ocupacion_salas = os.path.join(directorio_actual,"datos_cine", "archivos", "archivo_ocupacion_salas.txt")
-        with open(ruta_archivo_ocupacion_salas, "w", encoding="utf-8") as file:
-            for datos in self.archivo.archivo_ocupacion_sala:
-                file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]},{datos[7]},{datos[8]}\n")
+        ruta_archivo_ocupacion_salas = os.path.join(directorio_actual,"datos_cine", "archivos", "archivo_ocupacion_salas.txt")      #Ruta al directorio actual, a la carpeta datos_cine/archivos abre nombre.txt
+        with open(ruta_archivo_ocupacion_salas, "w", encoding="utf-8") as file:     #Abrimos el archivo para escritura utf-8 para español
+            for datos in self.archivo.archivo_ocupacion_sala:       #Buscamos por cada lista en la lista archivo ocupacion sala
+                file.write(f"{datos[0]},{datos[1]},{datos[2]},{datos[3]},{datos[4]},{datos[5]},{datos[6]},{datos[7]},{datos[8]}\n")     #Escribimos los datos de la lista en el txt
                 
 
     def cargar_datos(self):
-        directorio_actual = os.path.dirname(os.path.abspath(__file__))
+        directorio_actual = os.path.dirname(os.path.abspath(__file__))      #Buscamos el directorio donde está este documento python
+
         #Cargar datos a la cartelera
         try:
-            ruta_cartelera = os.path.join(directorio_actual, "datos_cine", "cartelera.txt")
-            with open(ruta_cartelera, "r", encoding="utf-8") as file:
+            ruta_cartelera = os.path.join(directorio_actual, "datos_cine", "cartelera.txt")     #Entramos a la ruta
+            with open(ruta_cartelera, "r", encoding="utf-8") as file:       #Abrimos el archivo en la ruta especificada como tipo read y utf-8 para español
                 for line in file:
-                    datos_pelicula = line.strip().split(',')
+                    datos_pelicula = line.strip().split(',')    # Divide la línea en elementos utilizando la coma como separador y elimina espacios en blanco
+
+                    # Asigna los elementos a variables correspondientes
                     titulo_pelicula = datos_pelicula[0]
                     sinopsis = datos_pelicula[1]
                     duracion = int(datos_pelicula[2])
@@ -81,6 +93,7 @@ class Menus:
                     edad_minima = int(datos_pelicula[4])
                     costo_pelicula = float(datos_pelicula[5])
 
+                    # Crea un objeto DatosPelicula con los datos y lo agrega al diccionario "cartelera" usando el título como clave
                     pelicula = DatosPelicula(titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula)
                     self.cartelera[titulo_pelicula] = pelicula
 
@@ -91,10 +104,12 @@ class Menus:
 
         #Cargar datos a la confiteria
         try:
-            ruta_confiteria = os.path.join(directorio_actual, "datos_cine", "confiteria.txt")
-            with open(ruta_confiteria, "r", encoding="utf-8") as file:
+            ruta_confiteria = os.path.join(directorio_actual, "datos_cine", "confiteria.txt")       #Entramos a la ruta
+            with open(ruta_confiteria, "r", encoding="utf-8") as file:      #Abrimos el archivo en la ruta especificada como tipo read y utf-8 para español
                 for line in file:
-                    datos_producto = line.strip().split(',')
+                    datos_producto = line.strip().split(',')    # Divide la línea en elementos utilizando la coma como separador y elimina espacios en blanco
+
+                    # Asigna los elementos a variables correspondientes
                     id_producto = datos_producto[0]
                     nombre_producto = datos_producto[1]
                     categoria_producto = datos_producto[2]
@@ -102,6 +117,7 @@ class Menus:
                     precio_venta_producto = float(datos_producto[4])
                     cantidad_producto = int(datos_producto[5])
 
+                    # Crea un objeto DatosConfiteria con los datos y lo agrega al diccionario "inventario_confiteria" usando la id_producto como clave
                     producto = DatosConfiteria(id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto)
                     self.inventario_confiteria[id_producto] = producto
         except FileNotFoundError:
@@ -111,18 +127,18 @@ class Menus:
 
         #Cargar datos a la ocupacion de salas
         try:
-            ruta_ocupacion_sala = os.path.join(directorio_actual, "datos_cine", "ocupacion_sala.txt")
-            with open(ruta_ocupacion_sala, "r", encoding="utf-8") as file:
+            ruta_ocupacion_sala = os.path.join(directorio_actual, "datos_cine", "ocupacion_sala.txt")       #Entramos a la ruta
+            with open(ruta_ocupacion_sala, "r", encoding="utf-8") as file:      #Abrimos el archivo en la ruta especificada como tipo read y utf-8 para español
                 for line in file:
-                    datos_asignacion = line.strip().split(',')
-                    asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada = datos_asignacion
+                    datos_asignacion = line.strip().split(',')  # Divide la línea en elementos utilizando la coma como separador y elimina espacios en blanco
+                    asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada = datos_asignacion #Especificamos los datos que contiene la lista
 
-                    if sala.upper() == "XX":
-                        mes, año, dia = map(int, [mes, año, dia])
-                        self.ocupacion_sala.append([asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada])
+                    if sala.upper() == "XX": #Si hay alguna sala cancelada
+                        mes, año, dia = map(int, [mes, año, dia])   #convertimos a int mes año y dia
+                        self.ocupacion_sala.append([asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada])  #Agregamos los datos a la lista ocupacion_sala
                     else:
-                        dia, mes, año, hora, minutos, sala = map(int, [dia, mes, año, hora, minutos, sala])
-                        self.ocupacion_sala.append([asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada])
+                        dia, mes, año, hora, minutos, sala = map(int, [dia, mes, año, hora, minutos, sala])   #Si no hay canceladas convertimos a int dia, mes, año, hora, minutos, sala
+                        self.ocupacion_sala.append([asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_asignada])  #Agregamos los datos a la lista ocupacion_sala
 
         except FileNotFoundError:
             print("El archivo 'ocupacion_sala.txt' no fue encontrado. Se creará por primera vez al asignar salas.")
@@ -131,11 +147,12 @@ class Menus:
 
         #Cargar datos al archivo de peliculas
         try:
-            ruta_archivo_peliculas = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_peliculas.txt")
-            with open(ruta_archivo_peliculas, "r", encoding="utf-8") as file:
+            ruta_archivo_peliculas = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_peliculas.txt")     #Entramos a la ruta
+            with open(ruta_archivo_peliculas, "r", encoding="utf-8") as file:       #Abrimos el archivo en la ruta especificada como tipo read y utf-8 para español
                 for line in file:
-                    datos_pelicula = line.strip().split(',')
-                    datos_pelicula = line.strip().split(',')
+                    datos_pelicula = line.strip().split(',')    # Divide la línea en elementos utilizando la coma como separador y elimina espacios en blanco
+
+                    # Asigna los elementos a variables correspondientes
                     titulo_pelicula = datos_pelicula[0]
                     sinopsis = datos_pelicula[1]
                     duracion = int(datos_pelicula[2])
@@ -144,6 +161,7 @@ class Menus:
                     costo_pelicula = float(datos_pelicula[5])
                     caso = datos_pelicula[6]
 
+                    #Crea un objeto DatosPelicula con los datos y lo agregamos a la lista archivo_peliculas + el caso
                     pelicula = DatosPelicula(titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula)
                     datos_a_cargar = [titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula, caso]
                     self.archivo.archivo_peliculas.append(datos_a_cargar)
@@ -1001,7 +1019,7 @@ class Menus:
 
 #######################################################################################
 
-    def realizar_venta(self):
+    def realizar_venta_pelicula(self):
         while True:
             os.system("cls")
             Funciones.encabezado()

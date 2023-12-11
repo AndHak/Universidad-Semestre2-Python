@@ -9,6 +9,7 @@ class Archivo:
         self.archivo_ocupacion_sala = []
         self.archivo_facturas_confiteria = []
         self.archivo_factura_peliculas = []
+        self.modificaciones_caja = []
 
     def mostrar_archivo_peliculas(self):
         if not self.archivo_peliculas:

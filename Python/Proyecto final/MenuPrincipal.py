@@ -168,7 +168,7 @@ def sistema_de_ventas():
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
-                abrir_menu.realizar_venta()
+                abrir_menu.realizar_venta_pelicula()
             elif opcion_seleccionada == 2:
                 abrir_menu.modificar_venta()
             elif opcion_seleccionada == 3:
