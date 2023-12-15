@@ -147,13 +147,13 @@ class Funciones:
         print(f"OCUPADO: {Fore.LIGHTRED_EX}XX{Style.RESET_ALL}")
         print(f"DISPONIBLE: {Fore.LIGHTGREEN_EX}LN°{Style.RESET_ALL}")
         print("\n")
-        for i, fila in enumerate(sala, start=1):
+        for i in range(len(sala)):
             print("        ", " ", end="")
-            for j, asiento in enumerate(fila, start=1):
-                if asiento == "XX":
-                    print(f"{Fore.LIGHTRED_EX}{asiento}{Style.RESET_ALL}", end="  ")
+            for j in range(len(sala[i])):
+                if sala[i][j] == "XX":
+                    print(f"{Fore.LIGHTRED_EX}{sala[i][j]}{Style.RESET_ALL}", end="  ")
                 else:
-                    print(f"{Fore.LIGHTGREEN_EX}{asiento}{Style.RESET_ALL}", end="  ")
+                    print(f"{Fore.LIGHTGREEN_EX}{sala[i][j]}{Style.RESET_ALL}", end="  ")
             print("\n")
         print("\n            " + Fore.BLACK + Back.WHITE + "_____________PANTALLA_____________" + Style.RESET_ALL)
 

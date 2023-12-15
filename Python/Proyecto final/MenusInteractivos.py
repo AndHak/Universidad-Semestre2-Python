@@ -1040,10 +1040,10 @@ class Menus:
 
                 if pelicula_a_comprar in self.cartelera:
 
-                    dias = []
+                    dias = set()
                     for datos in self.ocupacion_sala:
                         if datos[7] == pelicula_a_comprar:
-                            dias.append(int(datos[3]))
+                            dias.add(int(datos[3]))
                     
                     if not dias:
                         Funciones.mostrar_alerta(f"No hay salas asignadas para {pelicula_a_comprar}")
@@ -1230,10 +1230,8 @@ class Menus:
                         else:
                             id_sala = datos_sala[0]
                             if id_sala in self.salas:
-                                for id_busqueda, sala in self.salas.items():
-                                    if id_sala == id_busqueda:
-                                        print(f"\n\nID de Sala: {id_sala}")
-
+                                for id_busqueda, sala_actual in self.salas.items():
+                                    if id_busqueda == id_sala:
                                         for datos_ocupacion in self.ocupacion_sala:
                                             if datos_ocupacion[0] == id_sala:
                                                 id_sala = datos_ocupacion[0]
@@ -1242,15 +1240,17 @@ class Menus:
                                                 hora = datos_ocupacion[4]
                                                 minutos = datos_ocupacion[5]
                                                 sala = datos_ocupacion[6]
-                                                print(f"\n\nID de Sala: {id_sala}")
-                                                print(f"Película: {pelicula}")
-                                                print(f"Día: {dia} - Hora: {hora:02}:{minutos:02} - Sala: {sala}")
+                                                break
 
-                                            Funciones.imprimir_sala_centro(sala)
-                                            salas_encontradas = True
-                                            break
-                                    else:
+                                        print(f"\n\nID de Sala: {id_sala}")
+                                        print(f"Película: {pelicula}")
+                                        print(f"Día: {dia} - Hora: {hora:02}:{minutos:02} - Sala: {sala}")
+
+                                        Funciones.imprimir_sala_centro(sala_actual)
+                                        salas_encontradas = True
                                         break
+
+
                             else:
                                 for datos in self.ocupacion_sala:
                                     if datos[0] == id_sala:
