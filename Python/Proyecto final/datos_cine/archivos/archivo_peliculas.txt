@@ -1,3 +1,0 @@
-Cars2,Kchau,100,Animado,0,4500.0,ELIMINADO
-Cars2,Kchau2,110,Animado,0,4000.0,NUEVO
-Cars2,Kchau2,110,Animado,0,4000.0,ELIMINADO

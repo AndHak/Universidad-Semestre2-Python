@@ -33,17 +33,17 @@ class Funciones:
     @staticmethod
     def mostrar_error(mensaje):
         print(Fore.LIGHTRED_EX + f"\n{mensaje}" + Fore.RESET)
-        time.sleep(2) 
+        time.sleep(1) 
 
     @staticmethod
     def mostrar_exito(mensaje):
         print(Fore.LIGHTGREEN_EX + f"\n{mensaje}" + Fore.RESET)
-        time.sleep(2) 
+        time.sleep(1) 
 
     @staticmethod
     def mostrar_alerta(mensaje):
         print(Fore.LIGHTMAGENTA_EX + f"\n{mensaje}" + Fore.RESET)
-        time.sleep(2)
+        time.sleep(1)
 
 
     @staticmethod
@@ -145,13 +145,16 @@ class Funciones:
     
     def imprimir_sala_centro(sala):
         print(f"OCUPADO: {Fore.LIGHTRED_EX}XX{Style.RESET_ALL}")
-        print(f"DISPONIBLE: {Fore.LIGHTGREEN_EX}LN°{Style.RESET_ALL}")
+        print(f"DISPONIBLE: {Fore.LIGHTGREEN_EX}VERDE{Style.RESET_ALL}")
+        print(f"SELECCIONADO: {Fore.LIGHTYELLOW_EX}SELECCIONADO{Style.RESET_ALL}")
         print("\n")
         for i in range(len(sala)):
             print("        ", " ", end="")
             for j in range(len(sala[i])):
                 if sala[i][j] == "XX":
                     print(f"{Fore.LIGHTRED_EX}{sala[i][j]}{Style.RESET_ALL}", end="  ")
+                elif sala[i][j].startswith("|") and sala[i][j].endswith("|"):
+                    print(f"{Fore.LIGHTYELLOW_EX}{sala[i][j]}{Style.RESET_ALL}", end="  ")
                 else:
                     print(f"{Fore.LIGHTGREEN_EX}{sala[i][j]}{Style.RESET_ALL}", end="  ")
             print("\n")
@@ -164,8 +167,17 @@ class Funciones:
                     return False
         return True
     
+    def restablecer_asientos_seleccionados(sala):
+        for i in range(len(sala)):
+            for j in range(len(sala[i])):
+                if sala[i][j].startswith("|") and sala[i][j].endswith("|"):
+                    sala[i][j] = sala[i][j][1:-1]
 
-
+    def confirmar_asientos_seleccionados(sala):
+        for i in range(len(sala)):
+            for j in range(len(sala[i])):
+                if sala[i][j].startswith("|") and sala[i][j].endswith("|"):
+                    sala[i][j] = "XX"
 
 
 

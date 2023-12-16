@@ -13,13 +13,13 @@ class DatosPelicula:
         return self.titulo_pelicula, self.sinopsis, self.duracion, self.genero, self.edad_minima, self.costo_pelicula
 
 class DatosCliente:
-    def __init__(self, identificacion, nombre_cliente, edad_cliente):
-        self.identificacion = identificacion
+    def __init__(self, identificacion_cliente, nombre_cliente, edad_cliente):
+        self.identificacion_cliente = identificacion_cliente
         self.nombre_cliente = nombre_cliente
         self.edad_cliente = edad_cliente
 
     def obtener_datos_cliente(self):
-        return self.identificacion, self.nombre_cliente, self.edad_cliente
+        return self.identificacion_cliente, self.nombre_cliente, self.edad_cliente
 
 class DatosConfiteria:
     def __init__(self, id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto):
