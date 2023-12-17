@@ -18,10 +18,11 @@ def menu_principal():
         print("""
         1.  Sistema de peliculas
         2.  Sistema de confiteria
-        3.  Sistema de ventas
-        4.  Administracion de datos y estadisticas
-        5.  Ver administracion de salas
-        6.  Salir""")
+        3.  Sistema de ventas peliculas
+        4.  Sistema de ventas confiteria
+        5.  Administracion de datos y estadisticas
+        6.  Ver administracion de salas
+        7.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
@@ -29,12 +30,14 @@ def menu_principal():
             elif opcion_seleccionada == 2:
                 sistema_de_confiteria()
             elif opcion_seleccionada == 3:
-                sistema_de_ventas()
+                sistema_de_ventas_peliculas()
             elif opcion_seleccionada == 4:
-                manejo_de_datos()
+                sistema_de_ventas_confiteria()
             elif opcion_seleccionada == 5:
-                abrir_menu.administracion_de_salas()
+                manejo_de_datos()
             elif opcion_seleccionada == 6:
+                abrir_menu.administracion_de_salas()
+            elif opcion_seleccionada == 7:
                 abrir_menu.salir()
                 break
         except ValueError:
@@ -152,11 +155,11 @@ def administracion_de_combos():
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
 
-def sistema_de_ventas():
+def sistema_de_ventas_peliculas():
     while True:
         os.system("cls")
         Funciones.encabezado()
-        Funciones.subtitulo("Sistema de ventas")
+        Funciones.subtitulo("Sistema de ventas peliculas")
         print("""
         1.  Realizar venta
         2.  Modificar venta
@@ -170,15 +173,47 @@ def sistema_de_ventas():
             if opcion_seleccionada == 1:
                 abrir_menu.realizar_venta_pelicula()
             elif opcion_seleccionada == 2:
-                abrir_menu.modificar_venta()
+                abrir_menu.modificar_venta_pelicula()
             elif opcion_seleccionada == 3:
-                abrir_menu.deshacer_venta()
+                abrir_menu.deshacer_venta_pelicula()
             elif opcion_seleccionada == 4:
                 menu_cuadre_de_caja_y_cuentas()
             elif opcion_seleccionada == 5:
-                abrir_menu.buscar_facturas()
+                abrir_menu.buscar_facturas_peliculas()
             elif opcion_seleccionada == 6:
-                abrir_menu.ver_ventas()
+                abrir_menu.ver_ventas_peliculas()
+            elif opcion_seleccionada == 7:
+                break
+        except ValueError:
+            Funciones.mostrar_error("Ingrese una opción válida")
+
+def sistema_de_ventas_confiteria():
+    while True:
+        os.system("cls")
+        Funciones.encabezado()
+        Funciones.subtitulo("Sistema de ventas confiteria")
+        print("""
+        1.  Realizar venta
+        2.  Modificar venta
+        3.  Deshacer venta
+        4.  Menu cuadre de caja y cuentas
+        5.  Buscar facturas
+        6.  Ver ventas
+        7.  Salir""")
+        try:
+            opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
+            if opcion_seleccionada == 1:
+                abrir_menu.realizar_venta_producto()
+            elif opcion_seleccionada == 2:
+                abrir_menu.modificar_venta_producto()
+            elif opcion_seleccionada == 3:
+                abrir_menu.deshacer_venta_producto()
+            elif opcion_seleccionada == 4:
+                menu_cuadre_de_caja_y_cuentas()
+            elif opcion_seleccionada == 5:
+                abrir_menu.buscar_facturas_confiteria()
+            elif opcion_seleccionada == 6:
+                abrir_menu.ver_ventas_confiteria()
             elif opcion_seleccionada == 7:
                 break
         except ValueError:
@@ -191,6 +226,7 @@ def manejo_de_datos():
         Funciones.subtitulo("administracion y datos estadisticos")
         print("""
         1.  Ver archivos
+        2.  Clientes
         2.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
@@ -214,7 +250,7 @@ def menu_archivos():
         3.  Archivos Combos
         4.  Archivos manejo de salas
         5.  Archivos Facturas Confiteria
-        6.  Archivos Facturas Peliculas   
+        6.  Archivos Facturas Peliculas
         7.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
@@ -226,6 +262,8 @@ def menu_archivos():
                 abrir_menu.archivo.mostrar_archivo_combos()
             if opcion_seleccionada == 4:
                 abrir_menu.archivo.mostrar_archivo_ocupacion_sala()
+            elif opcion_seleccionada == 6:
+                abrir_menu.archivo.mostrar_archivo_facturas_peliculas()
             elif opcion_seleccionada == 7:
                 break
         except ValueError:
@@ -238,6 +276,17 @@ def menu_cuadre_de_caja_y_cuentas():
         os.system("cls")
         Funciones.encabezado()
         Funciones.subtitulo("Menu cuadre de caja y cuentas")
-        pass
+        print(f"Dinero en caja: $ {abrir_menu.dinero_en_caja:.2f}")
+        print("""
+        3.  Salir""")
+        try:
+            opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
+            if opcion_seleccionada == 1:
+                menu_archivos()
+            elif opcion_seleccionada == 3:
+                break
+        except ValueError:
+            Funciones.mostrar_error("Ingrese una opción válida")
+
 
 menu_principal()

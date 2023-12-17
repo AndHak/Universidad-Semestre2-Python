@@ -89,4 +89,7 @@ class Archivo:
             print()
             os.system("pause")
 
+    def mostrar_archivo_facturas_peliculas(self):
+        pass
+
     

@@ -1,6 +1,8 @@
 from colorama import init
 from datetime import datetime, timedelta
 from Funciones import *
+from FacturaPelicula import FacturaPelicula
+from FacturaConfiteria import *
 from Datos import *
 from Archivo import *
 from tabulate import *
@@ -9,6 +11,8 @@ import pickle
 
 #Iniciamos colorama con letras blancas
 init(autoreset=True)
+
+factura_pelicula = FacturaPelicula()
 
 class Menus:
 
@@ -23,6 +27,7 @@ class Menus:
         self.inventario_confiteria = {}     #Aqui se guardan los productos de la confiteria
         self.salas = {}     #Aqui se guardan las salas una vez se haya realizado alguna venta
         self.archivo = archivo      #Aqui llamamos a las listas que estan en la clase archivo
+        self.factura_pelicula = factura_pelicula
 
         self.egresos = {}       #Aqui se manejan egresos por pagos luz, agua, aseo, administracion, etc.
         self.dinero_en_caja = 0        #Aqui guardamos el dinero en caja
@@ -1049,70 +1054,130 @@ class Menus:
 
                                 if id_identificacion_sala in self.salas:
 
-                                    print(f"\nAsignacion: {id_identificacion_sala}")
-                                    print(f"\nPelicula: {pelicula_a_comprar}")
-                                    print(f"dia: {dia_de_compra} - hora: {hora_de_compra:02}:{minutos_de_compra:02}")
                                     for id_sala, sala_a_modificar in self.salas.items():
                                         if id_sala == id_identificacion_sala:
                                             sala = sala_a_modificar
-                                            Funciones.imprimir_sala_centro(sala)
 
-                                    sala_llena = Funciones.comprobar_sala_llena(sala_a_modificar)
+                                    sala_llena = Funciones.comprobar_sala_llena(sala)
 
                                     if sala_llena:
                                         Funciones.mostrar_alerta("La sala esta llena, no es posible hacer venta")
 
                                     if not sala_llena:
-                                
-                                        cuantos_boletos_compra = Funciones.hacer_pregunta("\nCuantos asientos (5 max): ")
-                                        if cuantos_boletos_compra.lower() == "c":
-                                            Funciones.mostrar_alerta("La operación se ha cancelado")
-                                            break
-                                        cuantos_boletos_compra = int(cuantos_boletos_compra)
 
-                                        if 0 < cuantos_boletos_compra <= 5:
+                                        asignacion_de_asientos = True
 
-                                            asientos_validos = 0
-                                            cancelacion_compra = False
-                                            validos = []
+                                        while asignacion_de_asientos:
 
-                                            while asientos_validos < cuantos_boletos_compra:
+                                            print(f"\nAsignacion: {id_identificacion_sala}")
+                                            print(f"\nPelicula: {pelicula_a_comprar}")
+                                            print(f"dia: {dia_de_compra} - hora: {hora_de_compra:02}:{minutos_de_compra:02}")
 
-                                                asiento_a_comprar = Funciones.hacer_pregunta("Selecione un asiento: ")
-                                                if asiento_a_comprar.lower() == "c":
+                                            Funciones.imprimir_sala_centro(sala)
+
+
+                                    
+                                            cuantos_boletos_compra = Funciones.hacer_pregunta("\nCuantos asientos (5 max): ")
+                                            if cuantos_boletos_compra.lower() == "c":
+                                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                                                break
+                                            cuantos_boletos_compra = int(cuantos_boletos_compra)
+
+                                            if 0 < cuantos_boletos_compra <= 5:
+
+                                                asientos_validos = 0
+                                                cancelacion_compra = False
+                                                validos = []
+
+                                                while asientos_validos < cuantos_boletos_compra:
+
+                                                    asiento_a_comprar = Funciones.hacer_pregunta("Selecione un asiento: ")
+                                                    if asiento_a_comprar.lower() == "c":
+                                                        cancelacion_compra = True
+                                                        break
+
+                                                    if asiento_a_comprar != "XX":
+
+                                                        for i in range(len(sala)):
+                                                            for j in range(len(sala[i])):
+                                                                if sala[i][j] == asiento_a_comprar:
+                                                                    if sala[i][j] not in validos:
+                                                                        validos.append(sala[i][j])
+                                                                        sala[i][j] = f"|{sala[i][j]}|"
+                                                                        asientos_validos += 1
+                                                                        break         
+                                                                    else:
+                                                                        break
+                                                            else:
+                                                                continue
+                                                            break     
+                                                        else:
+                                                            Funciones.mostrar_error("Este asiento no es válido")
+                                                    else:
+                                                        Funciones.mostrar_error("No se puede seleccionar asientos vendidos")
+
+
+                                                Funciones.imprimir_sala_centro(sala)
+
+                                                valor_total_asientos = cuantos_boletos_compra * pelicula_seleccionada.costo_pelicula
+                                                print(f"\n\nTotal asientos: $ {valor_total_asientos:.2f}")
+
+                                                confirmar_asientos = Funciones.hacer_pregunta("\n¿Confirmar asientos? si/no: ")
+
+                                                if confirmar_asientos.lower() == "c":
+                                                    Funciones.restablecer_asientos_seleccionados(sala)
                                                     cancelacion_compra = True
+                                                    asignacion_de_asientos = False
+
+                                                if confirmar_asientos.lower() == "no":
+                                                    Funciones.restablecer_asientos_seleccionados(sala)
+            
+                                                if confirmar_asientos.lower() == "si":
+                                                    generar_factura = True
                                                     break
 
-                                                if asiento_a_comprar != "XX":
+                                        if cancelacion_compra:
+                                            break
 
-                                                    for i in range(len(sala)):
-                                                        for j in range(len(sala[i])):
-                                                            if sala[i][j] == asiento_a_comprar:
-                                                                if sala[i][j] not in validos:
-                                                                    validos.append(sala[i][j])
-                                                                    sala[i][j] = f"|{sala[i][j]}|"
-                                                                    asientos_validos += 1
-                                                                    break         
-                                                                else:
-                                                                    break
-                                                        else:
-                                                            continue
-                                                        break     
-                                                    else:
-                                                        Funciones.mostrar_error("Este asiento no es válido")
-                                                else:
-                                                    Funciones.mostrar_error("No se puede seleccionar asientos vendidos")
+                                        if generar_factura:
 
-
-                                                if asientos_validos == cuantos_boletos_compra:
-                                                    self.salas[id_identificacion_sala] = sala
-                                                    Funciones.mostrar_exito("La compra se ha realizado correctamente")
-                                                    self.guardar_datos()
-                                                            
-                                            if cancelacion_compra:
+                                            identificacion_cliente = Funciones.hacer_pregunta("ID cliente: ")
+                                            if identificacion_cliente.lower() == "c":
+                                                Funciones.restablecer_asientos_seleccionados(sala)
+                                                Funciones.mostrar_alerta("La operación se ha cancelado")
                                                 break
+                                            int(identificacion_cliente)
 
+                                            if identificacion_cliente not in self.clientes:
+
+                                                nombre_cliente = Funciones.hacer_pregunta("Nombre cliente: ")
+                                                if nombre_cliente.lower() == "c":
+                                                    Funciones.restablecer_asientos_seleccionados(sala)
+                                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                                    break
+
+                                                edad_cliente = Funciones.hacer_pregunta("Edad cliente: ")
+                                                if edad_cliente.lower() == "c":
+                                                    Funciones.restablecer_asientos_seleccionados(sala)
+                                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                                    break
+                                                edad_cliente = int(edad_cliente)
+
+                                                cliente = DatosCliente(identificacion_cliente, nombre_cliente, edad_cliente)
+                                                self.clientes[identificacion_cliente] = cliente
                                             
+                                            else:
+                                                cliente = self.clientes[identificacion_cliente]
+                                        
+
+                                            self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
+
+                                            Funciones.confirmar_asientos_seleccionados(sala)
+                                            self.salas[id_identificacion_sala] = sala
+                                            self.dinero_en_caja += valor_total_asientos
+                                            Funciones.mostrar_exito("La compra se ha realizado correctamente")
+                                            self.guardar_datos()
+                   
                             
                                 else:
                                     for datos in self.ocupacion_sala:
@@ -1175,16 +1240,18 @@ class Menus:
                                                 if confirmar_asientos.lower() == "c":
                                                     Funciones.restablecer_asientos_seleccionados(sala)
                                                     cancelacion_compra = True
+                                                    asignacion_de_asientos = False
 
                                                 if confirmar_asientos.lower() == "no":
                                                     Funciones.restablecer_asientos_seleccionados(sala)
               
                                                 if confirmar_asientos.lower() == "si":
                                                     generar_factura = True
-
-                                                if cancelacion_compra:
                                                     break
-
+                                        
+                                        if cancelacion_compra:
+                                            break
+                                        
                                         if generar_factura:
 
                                             identificacion_cliente = Funciones.hacer_pregunta("ID cliente: ")
@@ -1192,41 +1259,37 @@ class Menus:
                                                 Funciones.restablecer_asientos_seleccionados(sala)
                                                 Funciones.mostrar_alerta("La operación se ha cancelado")
                                                 break
+                                            int(identificacion_cliente)
 
-                                            nombre_cliente = Funciones.hacer_pregunta("Nombre cliente: ")
-                                            if nombre_cliente.lower() == "c":
-                                                Funciones.restablecer_asientos_seleccionados(sala)
-                                                Funciones.mostrar_alerta("La operación se ha cancelado")
-                                                break
+                                            if identificacion_cliente not in self.clientes:
 
-                                            edad_cliente = Funciones.hacer_pregunta("Edad cliente: ")
-                                            if edad_cliente.lower() == "c":
-                                                Funciones.restablecer_asientos_seleccionados(sala)
-                                                Funciones.mostrar_alerta("La operación se ha cancelado")
-                                                break
+                                                nombre_cliente = Funciones.hacer_pregunta("Nombre cliente: ")
+                                                if nombre_cliente.lower() == "c":
+                                                    Funciones.restablecer_asientos_seleccionados(sala)
+                                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                                    break
 
-                                            cliente = DatosCliente(identificacion_cliente, nombre_cliente, edad_cliente)
-                                            self.clientes[identificacion_cliente] = cliente
+                                                edad_cliente = Funciones.hacer_pregunta("Edad cliente: ")
+                                                if edad_cliente.lower() == "c":
+                                                    Funciones.restablecer_asientos_seleccionados(sala)
+                                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                                    break
+                                                edad_cliente = int(edad_cliente)
 
-                                            generar_factura(cliente, pelicula_seleccionada, validos, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
-
-
-
-
-
-
-
-
-
-                                                    
+                                                cliente = DatosCliente(identificacion_cliente, nombre_cliente, edad_cliente)
+                                                self.clientes[identificacion_cliente] = cliente
                                             
+                                            else:
+                                                cliente = self.clientes[identificacion_cliente]
 
-                                            
+                                            self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
 
-                                            
-                                            
-                                            
-                
+                                            Funciones.confirmar_asientos_seleccionados(sala)
+                                            self.salas[id_identificacion_sala] = sala
+                                            Funciones.mostrar_exito("La compra se ha realizado correctamente")
+                                            self.dinero_en_caja += valor_total_asientos
+                                            self.guardar_datos()
+
                                     else:
                                         Funciones.mostrar_alerta("horario incorrecto y/o sala incorrectaa")
 
