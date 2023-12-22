@@ -29,7 +29,8 @@ class Menus:
         self.archivo = archivo      #Aqui llamamos a las listas que estan en la clase archivo
         self.factura_pelicula = factura_pelicula
 
-        self.egresos = {}       #Aqui se manejan egresos por pagos luz, agua, aseo, administracion, etc.
+        self.egresos = []       #Aqui se manejan egresos por pagos luz, agua, aseo, administracion, etc.
+        self.ingresos = []      #Aqui estan todos los ingresos
         self.dinero_en_caja = 0        #Aqui guardamos el dinero en caja
 
         self.cargar_datos()     #Aqui cargamos los datos al constructor de los documentos txt
@@ -1274,7 +1275,7 @@ class Menus:
                                                 cliente = self.clientes[identificacion_cliente]
                                         
                                             #Generamos la factura pasandole los datos que esta clase solicita
-                                            self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
+                                            numero_factura = self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
 
                                             #Confirmamos los asientos seleccionados convirtiendolos a XX
                                             Funciones.confirmar_asientos_seleccionados(sala)
@@ -1282,6 +1283,8 @@ class Menus:
                                             self.salas[id_identificacion_sala] = sala
                                             #Aumentamos el dinero en caja de la venta
                                             self.dinero_en_caja += valor_total_asientos
+                                            ingresos = (numero_factura, valor_total_asientos)
+                                            self.ingresos.append(ingresos)
                                             Funciones.mostrar_exito("La compra se ha realizado correctamente")
                                             self.guardar_datos()
                    
@@ -1392,12 +1395,14 @@ class Menus:
                                             else:
                                                 cliente = self.clientes[identificacion_cliente]
 
-                                            self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
+                                            numero_factura = self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
 
                                             Funciones.confirmar_asientos_seleccionados(sala)
                                             self.salas[id_identificacion_sala] = sala
                                             Funciones.mostrar_exito("La compra se ha realizado correctamente")
                                             self.dinero_en_caja += valor_total_asientos
+                                            ingresos = (numero_factura, valor_total_asientos)
+                                            self.ingresos.append(ingresos)
                                             self.guardar_datos()
 
                                     else:
@@ -1411,6 +1416,7 @@ class Menus:
 
                 except TypeError:
                     Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
+
 
 
     def administracion_de_salas(self):
