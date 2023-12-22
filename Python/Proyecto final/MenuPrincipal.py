@@ -237,6 +237,8 @@ def manejo_de_datos():
             if opcion_seleccionada == 3:
                 menu_cuadre_de_caja_y_cuentas()
             elif opcion_seleccionada == 4:
+                egresos()
+            elif opcion_seleccionada == 5:
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
@@ -286,7 +288,13 @@ def menu_cuadre_de_caja_y_cuentas():
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
-                abrir_menu.dejar_caja_en_0()
+                abrir_menu.vaciar_dinero_caja()
+            elif opcion_seleccionada == 2:
+                abrir_menu.restar_dinero_caja()
+            elif opcion_seleccionada == 3:
+                abrir_menu.aumentar_dinero_caja()
+            elif opcion_seleccionada == 4:
+                abrir_menu.ver_movimientos_caja()
             elif opcion_seleccionada == 5:
                 break
         except ValueError:
@@ -308,6 +316,8 @@ def egresos():
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
                 menu_archivos()
+            elif opcion_seleccionada == 4:
+                abrir_menu.ver_movimientos_caja()
             elif opcion_seleccionada == 5:
                 break
         except ValueError:

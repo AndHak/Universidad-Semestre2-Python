@@ -31,7 +31,8 @@ class Menus:
 
         self.egresos = []       #Aqui se manejan egresos por pagos luz, agua, aseo, administracion, etc.
         self.ingresos = []      #Aqui estan todos los ingresos
-        self.dinero_en_caja = 0        #Aqui guardamos el dinero en caja
+        self.dinero_en_caja = 0       #Aqui guardamos el dinero en caja
+        self.modificaciones_caja = {}   #Aqui guardaremos las modificaciones de caja
 
         self.cargar_datos()     #Aqui cargamos los datos al constructor de los documentos txt
     
@@ -1256,6 +1257,7 @@ class Menus:
                                                     Funciones.restablecer_asientos_seleccionados(sala)
                                                     Funciones.mostrar_alerta("La operación se ha cancelado")
                                                     break
+                                                nombre_cliente = nombre_cliente.title()
                                                 
                                                 #La edad del cliente
                                                 edad_cliente = Funciones.hacer_pregunta("Edad cliente: ")
@@ -1381,6 +1383,7 @@ class Menus:
                                                     Funciones.restablecer_asientos_seleccionados(sala)
                                                     Funciones.mostrar_alerta("La operación se ha cancelado")
                                                     break
+                                                nombre_cliente = nombre_cliente.title()
 
                                                 edad_cliente = Funciones.hacer_pregunta("Edad cliente: ")
                                                 if edad_cliente.lower() == "c":
@@ -1512,7 +1515,99 @@ class Menus:
 
 
 
+#METODOS PARA EL MANEJO DE DINERO EN CAJA
 
-                    
+    def vaciar_dinero_caja(self):
+        fecha = datetime.now().strftime("%Y-%m-%d")
+        hora = datetime.now().strftime("%H:%M:%S")
+        fechayhora = int(fecha) + int(hora)
+        datos = {
+            "Fecha": fecha,
+            "Hora": hora,
+            "Monto": self.dinero_en_caja,
+            "Descripcion": "Se dejo la caja en $ 0",
+        }
+        self.modificaciones_caja[fechayhora] = datos
+        self.dinero_en_caja = 0
+        Funciones.mostrar_exito("La caja a quedado en $ 0")
 
+    def restar_dinero_caja(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Ver asientos salas")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+
+            resta = Funciones.hacer_pregunta("¿Cuanto dinero desea retirar de la caja?: ")
+            if resta.lower() == "c":
+                Funciones.mostrar_alerta("La operación se ha cancelado")
+                break
+            resta = float(resta)
+
+            if resta < self.dinero_en_caja:
+                fecha = datetime.now().strftime("%Y-%m-%d")
+                hora = datetime.now().strftime("%H:%M:%S")
+                fechayhora = int(fecha) + int(hora)
+                datos = {
+                    "Fecha": fecha,
+                    "Hora": hora,
+                    "Monto": self.dinero_en_caja,
+                    "Descripcion": f"Se quitó ${resta:.2f} del dinero en caja",
+                }
+                self.modificaciones_caja[fechayhora] = datos
+                self.dinero_en_caja -= resta
+                Funciones.mostrar_exito(f"La caja quedó en: $ {self.dinero_en_caja:.2f}")
+            elif resta == self.dinero_en_caja:
+                self.vaciar_dinero_caja()
+            else:
+                Funciones.mostrar_error("No se puede quitar mas dinero del que hay en caja")
+    
+    def aumentar_dinero_caja(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Ver asientos salas")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+            
+            suma = Funciones.hacer_pregunta("¿Cuanto dinero desea sumar a la caja?: ")
+            if suma.lower() == "c":
+                Funciones.mostrar_alerta("La operación se ha cancelado")
+                break
+            suma = float(suma)
+
+            if suma > 0:
+                fecha = datetime.now().strftime("%Y-%m-%d")
+                hora = datetime.now().strftime("%H:%M:%S")
+                fechayhora = int(fecha) + int(hora)
+                datos = {
+                    "Fecha": fecha,
+                    "Hora": hora,
+                    "Monto": self.dinero_en_caja,
+                    "Descripcion": f"Se sumó ${suma:.2f} a la caja",
+                }
+                self.modificaciones_caja[fechayhora] = datos
+                self.dinero_en_caja += suma
+                Funciones.mostrar_exito(f"La caja quedó en: ${self.dinero_en_caja:.2f}")
+    
+    def ver_movimientos_caja(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Ver asientos salas")
+            if not self.modificaciones_caja:
+                Funciones.mostrar_alerta("Aun no hay movimientos de caja")
+                break
+            else:
+                print("{:<25} {:<15} {:<20} {:<35}".format("Fecha modificación", "Hora", "Caja original", "Modificación"))
+                for fechayhora, datos in self.modificaciones_caja.items():
+                    fecha = datos["Fecha"]
+                    hora = datos["Hora"]
+                    dinero_en_caja = datos["Monto"]
+                    descripcion_de_modificacion = datos["Descripcion"]
+                    print("{:<25} {:<15} {:<20} {:<35}".format(fecha, hora, dinero_en_caja, descripcion_de_modificacion))
+            print()
+            os.system("pause")
+            break
         
