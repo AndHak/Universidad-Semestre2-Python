@@ -227,17 +227,18 @@ def manejo_de_datos():
         print("""
         1.  Ver archivos
         2.  Clientes
-        2.  Salir""")
+        3.  Cuadre de caja
+        4.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
                 menu_archivos()
-            elif opcion_seleccionada == 2:
+            if opcion_seleccionada == 3:
+                menu_cuadre_de_caja_y_cuentas()
+            elif opcion_seleccionada == 4:
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
-
-
 
 def menu_archivos():
     while True:
@@ -269,8 +270,6 @@ def menu_archivos():
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
 
-
-
 def menu_cuadre_de_caja_y_cuentas():
     while True:
         os.system("cls")
@@ -278,12 +277,16 @@ def menu_cuadre_de_caja_y_cuentas():
         Funciones.subtitulo("Menu cuadre de caja y cuentas")
         print(f"Dinero en caja: $ {abrir_menu.dinero_en_caja:.2f}")
         print("""
-        3.  Salir""")
+        1.  Dejar caja en 0
+        2.  Restar dinero en caja
+        3.  Sumar dinero en caja
+        4.  Ver movimientos de caja
+        5.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
                 menu_archivos()
-            elif opcion_seleccionada == 3:
+            elif opcion_seleccionada == 5:
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")

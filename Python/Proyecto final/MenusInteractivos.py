@@ -212,12 +212,12 @@ class Menus:
             Funciones.subtitulo("Eliminar pelicula")
             #Opcion siempre disponibe
             print("Opción siempre disponible: 'c' para cancelar")
-            año = datetime.now().strftime("%Y")
-            mes = datetime.now().strftime("%m")
-            print(f"\n\nAño: {año}   mes: {mes}\n\n")
+            año = datetime.now().strftime("%Y")     #Saca el año actual
+            mes = datetime.now().strftime("%m")     #Saca el mes actual
+            print(f"\n\nAño: {año}   mes: {mes}\n\n")       #Imprime el año y mes
 
             if not self.cartelera:
-                Funciones.mostrar_alerta("No hay películas disponibles")
+                Funciones.mostrar_alerta("No hay películas disponibles")    
             else:
                 Funciones.mostrar_peliculas(self.cartelera)
 
@@ -235,6 +235,7 @@ class Menus:
 
                     #Agregar cambio al archivo
                     datos = self.cartelera[titulo_pelicula]
+
                     # Agregar cambio al archivo
                     datos_archivo_pelicula_eliminacion = [datos.titulo_pelicula, datos.sinopsis, datos.duracion, datos.genero, datos.edad_minima, datos.costo_pelicula, "ELIMINADO"]
                     self.archivo.archivo_peliculas.append(datos_archivo_pelicula_eliminacion)
@@ -242,6 +243,7 @@ class Menus:
                     #Eliminar pelicula de la cartelera
                     del self.cartelera[titulo_pelicula]
                     
+                    #Cancelamos las salas que tengan la pelicula asignada
                     for datos in self.ocupacion_sala:
                         if datos[7] == titulo_pelicula:
                             datos[7] = f"{titulo_pelicula} CANCELADA"
@@ -275,6 +277,7 @@ class Menus:
 
             try:
 
+                #Preguntamos por la pelicula
                 pelicula_a_asignar_sala = Funciones.hacer_pregunta("¿A qué película se le va a asignar sala?\n\nTítulo de la película:  ")
                 if pelicula_a_asignar_sala.lower() == "c":
                     Funciones.mostrar_alerta("La operación se ha cancelado")
@@ -285,27 +288,34 @@ class Menus:
                     Funciones.mostrar_error("La película no existe en cartelera")
                 else:
 
+                    #Preguntamos el dia que se hara la funcion
                     dia = Funciones.hacer_pregunta("Ingrese el día: ")
                     if dia.lower() == "c":
                         Funciones.mostrar_alerta("La operación se ha cancelado")
                         break
                     dia = int(dia)
 
+
+                    #El dia tiene que estar dentro de los dias del mes
                     if 0 < dia < 31:
 
+                        #Creamos una lista con los datos de la lista ocupacion sala si encuentra el mismo dia
                         cronograma_dia = [datos for datos in self.ocupacion_sala if datos[3] == dia]
-
+                        #Si no hay pues dice que no hay funciones para ese dia
                         if not cronograma_dia:
                             Funciones.mostrar_alerta(f"No hay funciones programadas para el día {dia}")
                         else:
+                            #Llamamos a la funciones del archivo funciones que muestra las ocupaciones para un dia especifico
                             Funciones.mostrar_ocupacion_sala(self.ocupacion_sala, cronograma_dia, dia)
 
+                        #Despues de ser impresa la tabla, pregunta la hora de asignacion
                         hora = Funciones.hacer_pregunta("Ingrese la hora en formato 24h: ")
                         if hora.lower() == "c":
                             Funciones.mostrar_alerta("La operación se ha cancelado")
                             break
                         hora = int(hora)
 
+                        #La hora va en formato 24h desde la 8 am hasta las 9 pm maximo
                         if 8 <= hora < 21:
                             minutos = Funciones.hacer_pregunta("Ingrese los minutos: ")
                             if minutos.lower() == "c":
@@ -313,6 +323,7 @@ class Menus:
                                 break
                             minutos = int(minutos)
 
+                            #Validamos que los minutos no sean mas de 60
                             if 0 <= minutos < 60:
                                 sala = Funciones.hacer_pregunta("Ingrese el número de sala: ")
                                 if sala.lower() == "c":
@@ -320,16 +331,25 @@ class Menus:
                                     break
                                 sala = int(sala)
 
+                                #En el cine contamos con 3 salas por eso la condicion, pero se puede modificar
                                 if 0 < sala < 4:
 
+                                    #Creamos una ID que nos servira de guia sumando el dia, hora, minutos y sala
                                     asignacion_id = str(dia) + str(hora) + str(minutos) + str(sala)
+                                    #Creamos una lista con los datos que preguntamos anteriormente
                                     datos = [asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala]
+                                    #Son los mismos datos solo que agregamos nuevo al final como informacion para el archivo
                                     datos_archivo = [asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala, "NUEVO"]
 
+                                    #Verificamos si la sala puede ser asignada con la siguiente funcion pasandole los parametros preguntados
                                     esta_ocupada = self.verificar_disponibilidad_sala(asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala)
+                                    #Si deuelve un falso entonces paso la prueba de disponibilidad de 3 horas de diferencia entre cada funcion
                                     if not esta_ocupada:
+                                        #Agregamos a la lista ocupacion sala los datos
                                         self.ocupacion_sala.append(datos)
+                                        #Agregamos al archivo de ocupacion sala los datos archivo
                                         self.archivo.archivo_ocupacion_sala.append(datos_archivo)
+                                        #Mostramos el mensaje de que se asigno correctamente y guardamos datos
                                         Funciones.mostrar_exito(f"\nLa película {pelicula_a_asignar_sala} Se presentara en la Sala {sala}\nPara el día {dia} a las {hora:02}:{minutos:02}")
                                         self.guardar_datos()
                                     else:
@@ -349,15 +369,23 @@ class Menus:
             except TypeError:
                 Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
 
+    #Esta funcion permite saber si la sala esta disponible para los datos que le demos
     def verificar_disponibilidad_sala(self, asignacion_id, año, mes, dia, hora, minutos, sala, pelicula_a_asignar_sala):
+        #Creamos un intervalo de tiempo, en este caso de 3 horas
         intervalo_tiempo = timedelta(hours=3)
+        #Convertimos a int los siguientes datos
         hora_nueva_datetime = datetime(int(año), int(mes), int(dia), int(hora), int(minutos))
 
+
         for datos in self.ocupacion_sala:
+            #Extraemos los datos con un nombre para identificarlos facilmente
             asignacion_id_existente, año_existente, mes_existente, dia_existente, hora_existente, minutos_existente, sala_existente, pelicula_a_asignar_sala = datos
 
+            #Si la asignacion dada es diferente a cualquier asignacion de la sala pasa la primera prueba y tienes que ser la misma sala para verificar disponibilidad
             if asignacion_id_existente != asignacion_id and sala_existente == sala:
+                #Convertimos a int los datos que cumplan esos requisitos de la lista en ocupacion sala
                 hora_asignada_datetime = datetime(int(año_existente), int(mes_existente), int(dia_existente), int(hora_existente), int(minutos_existente))
+                #Mientras haya una diferencia de 3 horas entre antes y despues de otra funcion 
                 if not (hora_nueva_datetime >= hora_asignada_datetime + intervalo_tiempo or hora_nueva_datetime + intervalo_tiempo <= hora_asignada_datetime):
                     return True
 
@@ -377,23 +405,26 @@ class Menus:
 
             try:
             
-
+                
                 dia_cronograma = Funciones.hacer_pregunta("Mostrar cronograma del día: ")
                 if dia_cronograma.lower() == "c":
                     Funciones.mostrar_alerta("La operación ha sido cancelada")
                     break
                 if dia_cronograma.lower() == "x":
+                    #Llamamos a una funcion que elimina salas canceladas si se elimino una pelicula
                     self.eliminar_salas_canceladas()
                     Funciones.mostrar_exito("Se eliminaron las funciones canceladas")
                     break
                 dia_cronograma = int(dia_cronograma)
 
                 if 0 < dia_cronograma < 31:
+                    #Creamos una lista con los dias que coincidan con el dia preguntado
                     cronograma_dia = [datos for datos in self.ocupacion_sala if datos[3] == dia_cronograma]
 
                     if not cronograma_dia:
                         Funciones.mostrar_alerta(f"No hay funciones programadas para el día {dia_cronograma}")
                     else:
+                        #Muestra el cronograma del dia seleccionado
                         Funciones.mostrar_ocupacion_sala(self.ocupacion_sala, cronograma_dia, dia_cronograma)
 
                         hora_asignacion_a_eliminar = Funciones.hacer_pregunta("Ingrese la hora: ")
@@ -426,21 +457,25 @@ class Menus:
                             break
                         sala_asignacion_a_eliminar = int(sala_asignacion_a_eliminar)
                         
+                        #Vamos a ver si los datos coinciden con los de alguna asignacion
                         se_puede_eliminar_asignacion = False
                         for datos in self.ocupacion_sala:
                             if datos[3] == dia_cronograma and datos[4] == hora_asignacion_a_eliminar and datos[5] == minutos_asignacion_a_eliminar and datos[6] == sala_asignacion_a_eliminar:
                                 asignacion_a_eliminar = datos
                                 id_asignacion_a_eliminar = datos[0]
+                                #Si los datos coinciden se puede eliminar
                                 se_puede_eliminar_asignacion = True
 
                         if se_puede_eliminar_asignacion:
                             
+                            #Si se elimina la asinacion de sala, se eliminan los asientos de la sala del cine
                             eliminar_de_salas = False
                             if self.salas:
                                 for id_sala, sala in self.salas.items():
                                     if id_sala == id_asignacion_a_eliminar:
                                         eliminar_de_salas = True
 
+                            #Buscamos los datos para agregar al archivo que se hizo una eliminacion de sala
                             for datos_archivo in self.ocupacion_sala:
                                 if datos_archivo[0] == id_asignacion_a_eliminar:
                                     datos_a_eliminar_archivo = [datos_archivo[0], datos_archivo[1], datos_archivo[2], datos_archivo[3], datos_archivo[4], datos_archivo[5], datos_archivo[6], datos_archivo[7], "ELIMINADA"]
@@ -450,6 +485,7 @@ class Menus:
                             if eliminar_de_salas:
                                 del self.salas[id_asignacion_a_eliminar]
 
+                            #Eliminamos la asignacion de la lista ocupacion sala
                             self.ocupacion_sala.remove(asignacion_a_eliminar)
                             Funciones.mostrar_exito("La Asignacion de sala ha sido eliminada")
                             self.guardar_datos()
@@ -462,8 +498,10 @@ class Menus:
             except TypeError:
                 Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
     
+    #Esta funcion se encarga de crear una nueva lista sin las salas canceladas
     def eliminar_salas_canceladas(self):
         self.ocupacion_sala = [datos for datos in self.ocupacion_sala if datos[5] != "XX" and datos[6] != "XX" and datos[7] != "XX"]
+
 
     def modificar_salas(self):
         while True:
@@ -485,11 +523,13 @@ class Menus:
                 dia_cronograma = int(dia_cronograma)
 
                 if 0 < dia_cronograma < 31:
+                    #Creamos una lista con los dias que coincidan con el dia preguntado
                     cronograma_dia = [datos for datos in self.ocupacion_sala if datos[3] == dia_cronograma]
 
                     if not cronograma_dia:
                         Funciones.mostrar_alerta(f"No hay funciones programadas para el día {dia_cronograma}")
                     else:
+                        #Muestra el cronograma del dia seleccionado
                         Funciones.mostrar_ocupacion_sala(self.ocupacion_sala, cronograma_dia, dia_cronograma)
 
                         hora_asignacion_a_modificar = Funciones.hacer_pregunta("Ingrese la hora: ")
@@ -510,18 +550,22 @@ class Menus:
                             break
                         sala_asignacion_a_modificar = int(sala_asignacion_a_modificar)
 
+                        #Comporbamos que la sala buscada este registrada en la lista
                         se_puede_modificar_asignacion = False
                         for datos in self.ocupacion_sala:
                             if datos[3] == dia_cronograma and datos[4] == hora_asignacion_a_modificar and datos[5] == minutos_asignacion_a_modificar and datos[6] == sala_asignacion_a_modificar:
                                 asignacion_a_modificar = datos
                                 id_asignacion_vieja = datos[0]
                                 se_puede_modificar_asignacion = True
-                            
+                        
+                        #Si los datos coinciden se puede modificar
                         if se_puede_modificar_asignacion:
                             Funciones.mostrar_exito("Sala encontrada")
                             
+                            #Tiene que cumplor el requisito del intervalo de tiempo
                             cumple_requisitos_para_modificarse = False
 
+                            #Preguntamos por una nueva hora
                             hora_modificada = Funciones.hacer_pregunta("Nueva hora: ")
                             if hora_modificada.lower() == "c":
                                 Funciones.mostrar_alerta("La operación se ha cancelado")
@@ -534,16 +578,19 @@ class Menus:
                                 break
                             minutos_modificados = int(minutos_modificados)
 
+                            #Preguntamos por la sala
                             sala_modificada = Funciones.hacer_pregunta("Nueva sala: ")
                             if sala_modificada.lower() == "c":
                                 Funciones.mostrar_alerta("La operación se ha cancelado")
                                 break
                             sala_modificada = int(sala_modificada)
 
-                            if 0 < sala_modificada <= 4:
+                            if 0 < sala_modificada < 4:
 
+                                #Creamos una nueva id con los datos modificados
                                 id_asignacion_nueva = str(dia_cronograma) + str(hora_modificada) + str(minutos_modificados) + str(sala_modificada)
                             
+                                #Verificamos si cumple el requisito de 3 horas la modificacion
                                 nueva_fecha_hora = datetime(int(año), int(mes), dia_cronograma, hora_modificada, minutos_modificados)
                                 intervalo_tiempo = timedelta(hours=3)
 
@@ -551,15 +598,19 @@ class Menus:
                                 if not (nueva_fecha_hora >= fecha_hora_asignada + intervalo_tiempo or nueva_fecha_hora + intervalo_tiempo <= fecha_hora_asignada):
                                     cumple_requisitos_para_modificarse = True
 
+                                #Si cumple el requisito entonces modificamos los datos por los nuevos
                                 if cumple_requisitos_para_modificarse:
                                     asignacion_a_modificar[4] = hora_modificada
                                     asignacion_a_modificar[5] = minutos_modificados
                                     asignacion_a_modificar[6] = sala_modificada
                                     asignacion_a_modificar[0] = id_asignacion_nueva
 
+                                    #Si en salas se realizo alguna venta y la asignacion vieja esta en salas pues
                                     if self.salas and id_asignacion_vieja in self.salas:
+                                        #creamos una sala con la asignacion nueva y como valor la matriz de la asignacion vieja
                                         self.salas[id_asignacion_nueva] = self.salas.pop(id_asignacion_vieja, None)
 
+                                    #Registramos la modificacion en el archivo
                                     datos_a_modificar_archivo = [asignacion_a_modificar[0], asignacion_a_modificar[1], asignacion_a_modificar[2], asignacion_a_modificar[3], asignacion_a_modificar[4], asignacion_a_modificar[5], asignacion_a_modificar[6], asignacion_a_modificar[7], "MODIFICADA"]
                                     self.archivo.archivo_ocupacion_sala.append(datos_a_modificar_archivo)
 
@@ -993,13 +1044,16 @@ class Menus:
             Funciones.subtitulo("Venta")
             # Opción siempre disponible
             print("Opción siempre disponible: 'c' para cancelar")
-
+            
+            #Si no hay cartelera no se puede realizar venta
             if not self.cartelera:
                 Funciones.mostrar_alerta("No hay películas disponibles")
             else:
+                #si hay entonces:
                 Funciones.mostrar_peliculas(self.cartelera)
 
                 try:
+                    #Preguntamos por la pelicula a vender
                     pelicula_a_comprar = Funciones.hacer_pregunta("Película: ")
 
                     if pelicula_a_comprar.lower() == "c":
@@ -1007,13 +1061,18 @@ class Menus:
                         break
                     pelicula_a_comprar = pelicula_a_comprar.title()
 
+                    #Si la pelicula esta en cartelera la asignamos a la variable pelicula seleccionada
                     if pelicula_a_comprar in self.cartelera:
 
+                        #Esto nos permite trabajar de forma mas sencilla
                         pelicula_seleccionada = self.cartelera[pelicula_a_comprar]
 
+                        #Vamos a ver el cronograma para la pelicula escogida
                         dias = set()
                         for datos in self.ocupacion_sala:
+                            #Si la pelicula esta en ocupacion sala
                             if datos[7] == pelicula_a_comprar:
+                                #Agrega el dia al set dias
                                 dias.add(int(datos[3]))
                         
                         if not dias:
@@ -1021,94 +1080,122 @@ class Menus:
                         else:
                             print(f"\nHay funciones disponibles para los días {dias}")
                             
+                            #Pedimos que seleccione el dia a comprar el tiquete
                             dia_de_compra = Funciones.hacer_pregunta("Seleccione un día: ")
                             if dia_de_compra.lower() == "c":
                                 Funciones.mostrar_alerta("La venta se ha cancelado")
                                 break
                             dia_de_compra = int(dia_de_compra)
 
+                            #Si esta en dias entonces mostramos los horarios de las funciones para la pelicula escogida en el dia escogido
                             if dia_de_compra in dias:
+                                #Creamos una lista con los datos que coincidan en el dia y en la pelicula y la mostramos
                                 cronograma_dia = [datos for datos in self.ocupacion_sala if datos[3] == dia_de_compra and datos[7] == pelicula_a_comprar]
                                 Funciones.mostrar_ocupacion_sala(self.ocupacion_sala, cronograma_dia, dia_de_compra)
 
+                                #Escoja la hora
                                 hora_de_compra = Funciones.hacer_pregunta("hora: ")
                                 if hora_de_compra.lower() == "c":
                                     Funciones.mostrar_alerta("La operación se ha cancelado")
                                     break
                                 hora_de_compra = int(hora_de_compra)
 
+                                #Escoja los minutos
                                 minutos_de_compra = Funciones.hacer_pregunta("minutos: ")
                                 if minutos_de_compra.lower() == "c":
                                     Funciones.mostrar_alerta("La operación se ha cancelado")
                                     break
                                 minutos_de_compra = int(minutos_de_compra)
 
+                                #Y por ultimos la sala
                                 sala_de_compra = Funciones.hacer_pregunta("sala: ")
                                 if sala_de_compra.lower() == "c":
                                     Funciones.mostrar_alerta("La operación se ha cancelado")
                                     break
                                 sala_de_compra = int(sala_de_compra)
 
+                                #Creamos la ID de la misma manera que en las asignaciones
                                 id_identificacion_sala = str(dia_de_compra) + str(hora_de_compra) + str(minutos_de_compra) + str(sala_de_compra)
                                 primera_compra_de_sala = False
 
+                                #Si la id coincide entonces los datos son correctos
                                 if id_identificacion_sala in self.salas:
 
+                                    #Buscamos en salas la id de la asignacion
                                     for id_sala, sala_a_modificar in self.salas.items():
                                         if id_sala == id_identificacion_sala:
+                                            #si la encuentra entonces la asignamos a una variable sala
                                             sala = sala_a_modificar
 
+                                    #Comprobamos si esta llena la sala encontrada
                                     sala_llena = Funciones.comprobar_sala_llena(sala)
 
+                                    #Si devuelve verdadero entonces no se realizara la venta, la sala esta llena
                                     if sala_llena:
                                         Funciones.mostrar_alerta("La sala esta llena, no es posible hacer venta")
 
+                                    #Si hay hacientos disponibles continuamos
                                     if not sala_llena:
-
+                                        
                                         asignacion_de_asientos = True
 
                                         while asignacion_de_asientos:
 
+                                            #Mostramos los datos de la sala
                                             print(f"\nAsignacion: {id_identificacion_sala}")
                                             print(f"\nPelicula: {pelicula_a_comprar}")
                                             print(f"dia: {dia_de_compra} - hora: {hora_de_compra:02}:{minutos_de_compra:02}")
 
+                                            #Imprimimos los asientos de la sala
                                             Funciones.imprimir_sala_centro(sala)
-
-
-                                    
+                   
+                                            #Preguntamos por cuantos asientos va a comprar maximo 5 porque vi que en royal films tenian un max de 5
                                             cuantos_boletos_compra = Funciones.hacer_pregunta("\nCuantos asientos (5 max): ")
                                             if cuantos_boletos_compra.lower() == "c":
                                                 Funciones.mostrar_alerta("La operación se ha cancelado")
                                                 break
                                             cuantos_boletos_compra = int(cuantos_boletos_compra)
 
+                                            #Evaluamos que se cumpla la condicion
                                             if 0 < cuantos_boletos_compra <= 5:
 
                                                 asientos_validos = 0
                                                 cancelacion_compra = False
                                                 validos = []
 
+                                                #Vamos a preguntar el numero de asiento las veces de el numero de asientos comprados
                                                 while asientos_validos < cuantos_boletos_compra:
 
+                                                    #Pregunta por el numero de asiento
                                                     asiento_a_comprar = Funciones.hacer_pregunta("Selecione un asiento: ")
+                                                    #Si cancela la compra activamos una cancelacion que se ejecutara fuera del while
                                                     if asiento_a_comprar.lower() == "c":
                                                         cancelacion_compra = True
                                                         break
 
+                                                    #Mientras el asiento sea diferente de XX porque son asientos vendidos
                                                     if asiento_a_comprar != "XX":
 
+                                                        #Recorremos las filas de la sala
                                                         for i in range(len(sala)):
+                                                            #Recorremos los asientos por fila
                                                             for j in range(len(sala[i])):
+                                                                #Si el asiento a comprar coincide con uno de la sala
                                                                 if sala[i][j] == asiento_a_comprar:
+                                                                    #Y si el asiento ya no se escogio antes
                                                                     if sala[i][j] not in validos:
+                                                                        #Agregamos el asientos a Validos
                                                                         validos.append(sala[i][j])
+                                                                        #Cambiamos la presentacion para ser facil de identificar
                                                                         sala[i][j] = f"|{sala[i][j]}|"
+                                                                        #Agregamos un asiento valido
                                                                         asientos_validos += 1
+                                                                        #Salimos del for
                                                                         break         
                                                                     else:
                                                                         break
                                                             else:
+                                                                #Salimos del segundo for ya roto el primer for
                                                                 continue
                                                             break     
                                                         else:
@@ -1116,31 +1203,42 @@ class Menus:
                                                     else:
                                                         Funciones.mostrar_error("No se puede seleccionar asientos vendidos")
 
-
+                                                #Imprimos la sala con los asientos seleccionados
                                                 Funciones.imprimir_sala_centro(sala)
 
+                                                #Mostramos el valor total de la pelicula para los asientos seleccionados
                                                 valor_total_asientos = cuantos_boletos_compra * pelicula_seleccionada.costo_pelicula
                                                 print(f"\n\nTotal asientos: $ {valor_total_asientos:.2f}")
 
+                                                #Preguntamos por confirmar los asientos
                                                 confirmar_asientos = Funciones.hacer_pregunta("\n¿Confirmar asientos? si/no: ")
 
+                                                #Si cancela la compra
                                                 if confirmar_asientos.lower() == "c":
+                                                    #Volvemos los asientos a la letra y el numero 
                                                     Funciones.restablecer_asientos_seleccionados(sala)
+                                                    #La variable que se ejecutara cuand se cierre el while 
                                                     cancelacion_compra = True
+                                                    #Cerramos el while
                                                     asignacion_de_asientos = False
 
+                                                #Si "no" entonces cambio de asientos, volvemos los asientos a la normalidad sin salir del while
                                                 if confirmar_asientos.lower() == "no":
                                                     Funciones.restablecer_asientos_seleccionados(sala)
             
+                                                #Creamos una variable verdadera para generar la facutura
                                                 if confirmar_asientos.lower() == "si":
                                                     generar_factura = True
                                                     break
 
+                                        #En caso de que se cancele la compra dentro de los otros while
                                         if cancelacion_compra:
                                             break
 
+                                        #Si se confirmo los asintos entonces
                                         if generar_factura:
 
+                                            #Preguntamos al cliente su identificacion para el registro
                                             identificacion_cliente = Funciones.hacer_pregunta("ID cliente: ")
                                             if identificacion_cliente.lower() == "c":
                                                 Funciones.restablecer_asientos_seleccionados(sala)
@@ -1148,14 +1246,17 @@ class Menus:
                                                 break
                                             int(identificacion_cliente)
 
+                                            #Buscamos si el cliente no esta regisrado de antes
                                             if identificacion_cliente not in self.clientes:
 
+                                                #Si no entonces preguntamos por su noombre
                                                 nombre_cliente = Funciones.hacer_pregunta("Nombre cliente: ")
                                                 if nombre_cliente.lower() == "c":
                                                     Funciones.restablecer_asientos_seleccionados(sala)
                                                     Funciones.mostrar_alerta("La operación se ha cancelado")
                                                     break
-
+                                                
+                                                #La edad del cliente
                                                 edad_cliente = Funciones.hacer_pregunta("Edad cliente: ")
                                                 if edad_cliente.lower() == "c":
                                                     Funciones.restablecer_asientos_seleccionados(sala)
@@ -1163,30 +1264,39 @@ class Menus:
                                                     break
                                                 edad_cliente = int(edad_cliente)
 
+                                                #Creamos el objeto con los datos del cleinte
                                                 cliente = DatosCliente(identificacion_cliente, nombre_cliente, edad_cliente)
+                                                #Lo agregamos a clientes con la id como clave y los datos como valor
                                                 self.clientes[identificacion_cliente] = cliente
                                             
                                             else:
+                                                #Si esta registrado de antes solamente lo buscamos y lo asignamos a la variable cliente
                                                 cliente = self.clientes[identificacion_cliente]
                                         
-
+                                            #Generamos la factura pasandole los datos que esta clase solicita
                                             self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
 
+                                            #Confirmamos los asientos seleccionados convirtiendolos a XX
                                             Funciones.confirmar_asientos_seleccionados(sala)
+                                            #Esa identificacion sala va a cambiar po la nueva sala
                                             self.salas[id_identificacion_sala] = sala
+                                            #Aumentamos el dinero en caja de la venta
                                             self.dinero_en_caja += valor_total_asientos
                                             Funciones.mostrar_exito("La compra se ha realizado correctamente")
                                             self.guardar_datos()
                    
                             
                                 else:
+                                    #Verificamos que los datos cumplan con los de la asignacion sala
                                     for datos in self.ocupacion_sala:
                                         if id_identificacion_sala == datos[0] and dia_de_compra == datos[3] and hora_de_compra == datos[4] and minutos_de_compra == datos[5] \
                                             and sala_de_compra == datos[6] and pelicula_a_comprar == datos[7]:
+                                            #Si es la primera compra no estanba registrada en salas anteriormente
                                             primera_compra_de_sala = True
 
                                     if primera_compra_de_sala:
 
+                                        #Realizamos el mismo proceso anteriormente visto
                                         asignacion_de_asientos = True
 
                                         while asignacion_de_asientos:
