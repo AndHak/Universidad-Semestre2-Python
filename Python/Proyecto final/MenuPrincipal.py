@@ -234,6 +234,8 @@ def manejo_de_datos():
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
                 menu_archivos()
+            elif opcion_seleccionada == 2:
+                menu_clientes()
             if opcion_seleccionada == 3:
                 menu_cuadre_de_caja_y_cuentas()
             elif opcion_seleccionada == 4:
@@ -255,7 +257,8 @@ def menu_archivos():
         4.  Archivos manejo de salas
         5.  Archivos Facturas Confiteria
         6.  Archivos Facturas Peliculas
-        7.  Salir""")
+        7.  Archivos Egresos
+        8.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
@@ -267,11 +270,40 @@ def menu_archivos():
             if opcion_seleccionada == 4:
                 abrir_menu.archivo.mostrar_archivo_ocupacion_sala()
             elif opcion_seleccionada == 6:
-                abrir_menu.archivo.mostrar_archivo_facturas_peliculas()
+                abrir_menu.archivo.mostrar_archivo_facturas_peliculas() #
             elif opcion_seleccionada == 7:
+                abrir_menu.archivo.mostrar_archivo_egresos()
+            elif opcion_seleccionada == 8:
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
+
+def menu_clientes():
+    while True:
+        os.system("cls")
+        Funciones.encabezado()
+        Funciones.subtitulo("Manejo de clientes")
+        print("""
+        1.  Agregar un cliente
+        2.  Eliminar un cliente
+        3.  Modificar un cliente
+        4.  Ver clientes
+        5.  Salir""")
+        try:
+            opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
+            if opcion_seleccionada == 1:
+                abrir_menu.agregar_un_cliente()
+            elif opcion_seleccionada == 2:
+                abrir_menu.eliminar_un_cliente()
+            elif opcion_seleccionada == 3:
+                abrir_menu.modificar_un_cliente()
+            elif opcion_seleccionada == 4:
+                abrir_menu.ver_clientes()
+            elif opcion_seleccionada == 5:
+                break
+        except ValueError:
+            Funciones.mostrar_error("Ingrese una opción válida")
+
 
 def menu_cuadre_de_caja_y_cuentas():
     while True:
@@ -309,16 +341,17 @@ def egresos():
         print("""
         1.  Registrar un egreso
         2.  Cancelar un egreso
-        3.  Ver egresos e ingresos
-        4.  Ver movimientos de caja
-        5.  Salir""")
+        3.  Ver egresos
+        4.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
-                menu_archivos()
+                abrir_menu.registrar_un_egreso()
+            elif opcion_seleccionada == 2:
+                abrir_menu.cancelar_un_egreso()
+            elif opcion_seleccionada == 3:
+                abrir_menu.ver_egresos()
             elif opcion_seleccionada == 4:
-                abrir_menu.ver_movimientos_caja()
-            elif opcion_seleccionada == 5:
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")

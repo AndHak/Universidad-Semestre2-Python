@@ -180,6 +180,35 @@ class Funciones:
                     sala[i][j] = "XX"
 
 
+    def mostrar_egresos(egresos):
+        # Definir colores y estilos
+        color_titulo = Fore.LIGHTCYAN_EX
+        color_headers = Fore.LIGHTYELLOW_EX
+        estilo_reset = Style.RESET_ALL
+
+        titulo = f"{color_titulo}E G R E S O S{estilo_reset}"
+        egresos_data = []
+
+        for i, (fecha, datos_egreso) in enumerate(egresos.items(), start=1):
+            egresos_data.append([i, fecha, datos_egreso.numero_factura, datos_egreso.valor_egreso, datos_egreso.descripcion_egreso, datos_egreso.el_dinero_sale_de])
+
+        headers = [f"{color_headers}Índice", "Fecha", "Número de Factura", "Valor", "Descripción", f"De dónde se paga{estilo_reset}"]
+        data = [[fila[0], fila[1], fila[2], fila[3], fila[4], fila[5]] for fila in egresos_data]
+
+        # Obtener la tabla de egresos utilizando tabulate sin imprimir
+        tabla_egresos = tabulate(data, headers=headers, tablefmt="fancy_grid")
+
+        # Imprimir el título centrado sobre la tabla
+        print("\n" + titulo.center(len(tabla_egresos.split('\n')[0])) + "\n")
+
+        # Imprimir la tabla de egresos utilizando tabulate
+        print(tabla_egresos)
+        print()
+
+
+    
+
+
 
 
 

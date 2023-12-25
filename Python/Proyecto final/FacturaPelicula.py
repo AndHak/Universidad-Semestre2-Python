@@ -76,7 +76,7 @@ class FacturaPelicula:
             except TypeError:
                 Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
             
-        return numero_factura
+        return fecha_venta, numero_factura, total_venta
 
     def imprimir_factura(self, numero_factura):
         for numeros_facturas, datos_facturas in self.facturas_peliculas.items():

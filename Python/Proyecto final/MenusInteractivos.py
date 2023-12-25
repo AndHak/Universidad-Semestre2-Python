@@ -20,24 +20,24 @@ class Menus:
     def __init__(self, archivo):
         
         self.cartelera = {}     #Aqui se van a guardar las peliculas disponibles
-        self.ventas_peliculas = {}      #Aqui se van a registrar las peliculas vendidas
-        self.ventas_confiteria = {}     #Aqui se registran los productos vendidos
         self.clientes = {}      #Aqui se registran los clientes con las compras que hacen en confiteria y peliculas
         self.ocupacion_sala = []        #Aqui se almacenan los horarios de funcion
         self.inventario_confiteria = {}     #Aqui se guardan los productos de la confiteria
         self.salas = {}     #Aqui se guardan las salas una vez se haya realizado alguna venta
         self.archivo = archivo      #Aqui llamamos a las listas que estan en la clase archivo
-        self.factura_pelicula = factura_pelicula
+        self.factura_pelicula = factura_pelicula    #Aqui asignamos la variable para la clase pelicula
 
-        self.egresos = []       #Aqui se manejan egresos por pagos luz, agua, aseo, administracion, etc.
-        self.ingresos = []      #Aqui estan todos los ingresos
+        self.egresos = {}       #Aqui se manejan egresos por pagos luz, agua, aseo, administracion, etc.
+        self.ingresos = {}      #Aqui estan todos los ingresos
         self.dinero_en_caja = 0       #Aqui guardamos el dinero en caja
         self.modificaciones_caja = {}   #Aqui guardaremos las modificaciones de caja
 
         self.cargar_datos()     #Aqui cargamos los datos al constructor de los documentos txt
     
+
     def salir(self):
         self.guardar_datos()    #Antes de salir guardamos datos, se guardan datos cuando cerramos el programa corractamente
+
 
     def guardar_datos(self):
         directorio_actual = os.path.dirname(os.path.abspath(__file__))
@@ -58,14 +58,74 @@ class Menus:
             pickle.dump(self.ocupacion_sala, file)
 
         # Guardar datos de la ocupacion de sala
-        #ruta_ocupacion_asientos = os.path.join(directorio_actual, "datos_cine", "ocupacion_salas_asientos.pkl")
-        #with open(ruta_ocupacion_asientos, "wb") as file:
-            #pickle.dump(self.salas, file)
+        ruta_ocupacion_asientos = os.path.join(directorio_actual, "datos_cine", "ocupacion_salas_asientos.pkl")
+        with open(ruta_ocupacion_asientos, "wb") as file:
+            pickle.dump(self.salas, file)
 
+        # Guardar datos de los clientes
+        ruta_clientes = os.path.join(directorio_actual, "datos_cine", "clientes.pkl")
+        with open(ruta_clientes, "wb") as file:
+            pickle.dump(self.clientes, file)
+
+        # Guardar datos de los egresos
+        ruta_egresos = os.path.join(directorio_actual, "datos_cine", "egresos.pkl")
+        with open(ruta_egresos, "wb") as file:
+            pickle.dump(self.egresos, file)
+
+        # Guardar datos de los ingresos
+        ruta_ingresos = os.path.join(directorio_actual, "datos_cine", "ingresos.pkl")
+        with open(ruta_ingresos, "wb") as file:
+            pickle.dump(self.ingresos, file)
+
+        # Guardar datos del dinero en caja
+        ruta_dinero_en_caja = os.path.join(directorio_actual, "datos_cine", "dinero_en_caja.pkl")
+        with open(ruta_dinero_en_caja, "wb") as file:
+            pickle.dump(self.dinero_en_caja, file)
+
+        # Guardar datos de las modificaciones de caja
+        ruta_modificaciones_caja = os.path.join(directorio_actual, "datos_cine", "modificaciones_caja.pkl")
+        with open(ruta_modificaciones_caja, "wb") as file:
+            pickle.dump(self.modificaciones_caja, file)
+
+
+
+        #GUARDAR ARCHIVOS
+        ###########################################################################################################
         # Guardar datos del archivo de peliculas
         ruta_archivo_peliculas = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_peliculas.pkl")
         with open(ruta_archivo_peliculas, "wb") as file:
             pickle.dump(self.archivo.archivo_peliculas, file)
+
+        # Guardar datos del archivo de productos
+        ruta_archivo_productos = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_productos.pkl")
+        with open(ruta_archivo_productos, "wb") as file:
+            pickle.dump(self.archivo.archivo_productos, file)
+
+        # Guardar datos del archivo de combos
+        ruta_archivo_combos = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_combos.pkl")
+        with open(ruta_archivo_combos, "wb") as file:
+            pickle.dump(self.archivo.archivo_combos, file)
+
+        # Guardar datos del archivo de ocupación de sala
+        ruta_archivo_ocupacion_sala = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_ocupacion_sala.pkl")
+        with open(ruta_archivo_ocupacion_sala, "wb") as file:
+            pickle.dump(self.archivo.archivo_ocupacion_sala, file)
+
+        # Guardar datos del archivo de facturas de confitería
+        ruta_archivo_facturas_confiteria = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_facturas_confiteria.pkl")
+        with open(ruta_archivo_facturas_confiteria, "wb") as file:
+            pickle.dump(self.archivo.archivo_facturas_confiteria, file)
+
+        # Guardar datos del archivo de facturas de películas
+        ruta_archivo_factura_peliculas = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_factura_peliculas.pkl")
+        with open(ruta_archivo_factura_peliculas, "wb") as file:
+            pickle.dump(self.archivo.archivo_factura_peliculas, file)
+
+        # Guardar datos del archivo de egresos
+        ruta_archivo_egresos = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_egresos.pkl")
+        with open(ruta_archivo_egresos, "wb") as file:
+            pickle.dump(self.archivo.archivo_egresos, file)
+
 
     def cargar_datos(self):
         directorio_actual = os.path.dirname(os.path.abspath(__file__))      #Buscamos el directorio donde está este documento python
@@ -100,7 +160,72 @@ class Menus:
         except Exception as e:
             print(f"Error al leer 'ocupacion_sala.pkl': {e}")
 
-        #Cargar datos al archivo de peliculas
+        # Cargar datos de la ocupacion de asientos
+        try:
+            ruta_ocupacion_asientos = os.path.join(directorio_actual, "datos_cine", "ocupacion_salas_asientos.pkl")
+            with open(ruta_ocupacion_asientos, "rb") as file:
+                self.salas = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'ocupacion_salas_asientos.pkl' no fue encontrado. Se creará por primera vez al asignar salas.")
+        except Exception as e:
+            print(f"Error al leer 'ocupacion_salas_asientos.pkl': {e}")
+
+        # Cargar datos de los clientes
+        try:
+            ruta_clientes = os.path.join(directorio_actual, "datos_cine", "clientes.pkl")
+            with open(ruta_clientes, "rb") as file:
+                self.clientes = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'clientes.pkl' no fue encontrado. Se creará por primera vez al agregar clientes.")
+        except Exception as e:
+            print(f"Error al leer 'clientes.pkl': {e}")
+
+        # Cargar datos de los egresos
+        try:
+            ruta_egresos = os.path.join(directorio_actual, "datos_cine", "egresos.pkl")
+            with open(ruta_egresos, "rb") as file:
+                self.egresos = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'egresos.pkl' no fue encontrado. Se creará por primera vez al agregar egresos.")
+        except Exception as e:
+            print(f"Error al leer 'egresos.pkl': {e}")
+
+        # Cargar datos de los ingresos
+        try:
+            ruta_ingresos = os.path.join(directorio_actual, "datos_cine", "ingresos.pkl")
+            with open(ruta_ingresos, "rb") as file:
+                self.ingresos = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'ingresos.pkl' no fue encontrado. Se creará por primera vez al agregar ingresos.")
+        except Exception as e:
+            print(f"Error al leer 'ingresos.pkl': {e}")
+
+        # Cargar datos del dinero en caja
+        try:
+            ruta_dinero_en_caja = os.path.join(directorio_actual, "datos_cine", "dinero_en_caja.pkl")
+            with open(ruta_dinero_en_caja, "rb") as file:
+                self.dinero_en_caja = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'dinero_en_caja.pkl' no fue encontrado. Se creará por primera vez al iniciar el programa.")
+        except Exception as e:
+            print(f"Error al leer 'dinero_en_caja.pkl': {e}")
+
+        # Cargar datos de las modificaciones de caja
+        try:
+            ruta_modificaciones_caja = os.path.join(directorio_actual, "datos_cine", "modificaciones_caja.pkl")
+            with open(ruta_modificaciones_caja, "rb") as file:
+                self.modificaciones_caja = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'modificaciones_caja.pkl' no fue encontrado. Se creará por primera vez al iniciar el programa.")
+        except Exception as e:
+            print(f"Error al leer 'modificaciones_caja.pkl': {e}")
+
+
+
+        #GUARDAR ARCHIVOS
+        ###########################################################################################################
+            
+        # Cargar datos para archivo_peliculas
         try:
             ruta_archivo_peliculas = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_peliculas.pkl")
             with open(ruta_archivo_peliculas, "rb") as file:
@@ -109,6 +234,67 @@ class Menus:
             print("El archivo 'archivo_peliculas.pkl' no fue encontrado. Se creará por primera vez al asignar salas.")
         except Exception as e:
             print(f"Error al leer 'archivo_peliculas.pkl': {e}")
+
+        # Cargar datos para archivo_productos
+        try:
+            ruta_archivo_productos = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_productos.pkl")
+            with open(ruta_archivo_productos, "rb") as file:
+                self.archivo.archivo_productos = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'archivo_productos.pkl' no fue encontrado. Se creará por primera vez al asignar productos.")
+        except Exception as e:
+            print(f"Error al leer 'archivo_productos.pkl': {e}")
+
+        # Cargar datos para archivo_combos
+        try:
+            ruta_archivo_combos = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_combos.pkl")
+            with open(ruta_archivo_combos, "rb") as file:
+                self.archivo.archivo_combos = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'archivo_combos.pkl' no fue encontrado. Se creará por primera vez al asignar combos.")
+        except Exception as e:
+            print(f"Error al leer 'archivo_combos.pkl': {e}")
+
+        # Cargar datos para archivo_ocupacion_sala
+        try:
+            ruta_archivo_ocupacion_sala = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_ocupacion_sala.pkl")
+            with open(ruta_archivo_ocupacion_sala, "rb") as file:
+                self.archivo.archivo_ocupacion_sala = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'archivo_ocupacion_sala.pkl' no fue encontrado. Se creará por primera vez al asignar salas.")
+        except Exception as e:
+            print(f"Error al leer 'archivo_ocupacion_sala.pkl': {e}")
+
+        # Cargar datos para archivo_facturas_confiteria
+        try:
+            ruta_archivo_facturas_confiteria = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_facturas_confiteria.pkl")
+            with open(ruta_archivo_facturas_confiteria, "rb") as file:
+                self.archivo.archivo_facturas_confiteria = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'archivo_facturas_confiteria.pkl' no fue encontrado. Se creará por primera vez al asignar facturas de confitería.")
+        except Exception as e:
+            print(f"Error al leer 'archivo_facturas_confiteria.pkl': {e}")
+
+        # Cargar datos para archivo_factura_peliculas
+        try:
+            ruta_archivo_factura_peliculas = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_factura_peliculas.pkl")
+            with open(ruta_archivo_factura_peliculas, "rb") as file:
+                self.archivo.archivo_factura_peliculas = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'archivo_factura_peliculas.pkl' no fue encontrado. Se creará por primera vez al asignar facturas de películas.")
+        except Exception as e:
+            print(f"Error al leer 'archivo_factura_peliculas.pkl': {e}")
+
+        # Cargar datos para archivo_egresos
+        try:
+            ruta_archivo_egresos = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_egresos.pkl")
+            with open(ruta_archivo_egresos, "rb") as file:
+                self.archivo.archivo_egresos = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'archivo_egresos.pkl' no fue encontrado. Se creará por primera vez al asignar egresos.")
+        except Exception as e:
+            print(f"Error al leer 'archivo_egresos.pkl': {e}")
+        
 
 
 
@@ -1035,7 +1221,7 @@ class Menus:
 
 
 
-#METODOS PARA EL SISTEMA DE VENTAS
+#METODOS PARA EL SISTEMA DE VENTAS PELICULAS
 
 #######################################################################################
 
@@ -1246,7 +1432,7 @@ class Menus:
                                                 Funciones.restablecer_asientos_seleccionados(sala)
                                                 Funciones.mostrar_alerta("La operación se ha cancelado")
                                                 break
-                                            int(identificacion_cliente)
+                                            identificacion_cliente = int(identificacion_cliente)
 
                                             #Buscamos si el cliente no esta regisrado de antes
                                             if identificacion_cliente not in self.clientes:
@@ -1277,7 +1463,7 @@ class Menus:
                                                 cliente = self.clientes[identificacion_cliente]
                                         
                                             #Generamos la factura pasandole los datos que esta clase solicita
-                                            numero_factura = self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
+                                            fecha, numero_factura, valor_total_factura = self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
 
                                             #Confirmamos los asientos seleccionados convirtiendolos a XX
                                             Funciones.confirmar_asientos_seleccionados(sala)
@@ -1285,8 +1471,8 @@ class Menus:
                                             self.salas[id_identificacion_sala] = sala
                                             #Aumentamos el dinero en caja de la venta
                                             self.dinero_en_caja += valor_total_asientos
-                                            ingresos = (numero_factura, valor_total_asientos)
-                                            self.ingresos.append(ingresos)
+                                            ingresos = [fecha, numero_factura, valor_total_factura]
+                                            self.ingresos[fecha] = ingresos
                                             Funciones.mostrar_exito("La compra se ha realizado correctamente")
                                             self.guardar_datos()
                    
@@ -1374,7 +1560,7 @@ class Menus:
                                                 Funciones.restablecer_asientos_seleccionados(sala)
                                                 Funciones.mostrar_alerta("La operación se ha cancelado")
                                                 break
-                                            int(identificacion_cliente)
+                                            identificacion_cliente = int(identificacion_cliente)
 
                                             if identificacion_cliente not in self.clientes:
 
@@ -1398,14 +1584,14 @@ class Menus:
                                             else:
                                                 cliente = self.clientes[identificacion_cliente]
 
-                                            numero_factura = self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
+                                            fecha, numero_factura, valor_total_factura = self.factura_pelicula.generar_factura(cliente, pelicula_seleccionada, validos, id_identificacion_sala, dia_de_compra, hora_de_compra, minutos_de_compra, sala_de_compra)
 
                                             Funciones.confirmar_asientos_seleccionados(sala)
                                             self.salas[id_identificacion_sala] = sala
                                             Funciones.mostrar_exito("La compra se ha realizado correctamente")
                                             self.dinero_en_caja += valor_total_asientos
-                                            ingresos = (numero_factura, valor_total_asientos)
-                                            self.ingresos.append(ingresos)
+                                            ingresos = [fecha, numero_factura, valor_total_factura]
+                                            self.ingresos[fecha] = ingresos
                                             self.guardar_datos()
 
                                     else:
@@ -1419,6 +1605,8 @@ class Menus:
 
                 except TypeError:
                     Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
+
+
 
 
 
@@ -1498,8 +1686,20 @@ class Menus:
                     Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
 
 
+#######################################################################################
+
+
+
+#METODOS PARA EL SISTEMA DE VENTAS CONFITERIA
 
 #######################################################################################
+
+
+
+
+
+#######################################################################################
+
 
 
 
@@ -1509,24 +1709,13 @@ class Menus:
 #######################################################################################
 
 
-
-#######################################################################################
-
-
-
-
 #METODOS PARA EL MANEJO DE DINERO EN CAJA
 
     def vaciar_dinero_caja(self):
         fecha = datetime.now().strftime("%Y-%m-%d")
         hora = datetime.now().strftime("%H:%M:%S")
-        fechayhora = int(fecha) + int(hora)
-        datos = {
-            "Fecha": fecha,
-            "Hora": hora,
-            "Monto": self.dinero_en_caja,
-            "Descripcion": "Se dejo la caja en $ 0",
-        }
+        fechayhora = str(fecha) + str(hora)
+        datos = [fecha, hora, self.dinero_en_caja, "Se dejo la caja en 0"]
         self.modificaciones_caja[fechayhora] = datos
         self.dinero_en_caja = 0
         Funciones.mostrar_exito("La caja a quedado en $ 0")
@@ -1538,26 +1727,27 @@ class Menus:
             Funciones.subtitulo("Ver asientos salas")
             # Opción siempre disponible
             print("Opción siempre disponible: 'c' para cancelar")
+            print("                           'v' para vaciar caja")
 
             resta = Funciones.hacer_pregunta("¿Cuanto dinero desea retirar de la caja?: ")
             if resta.lower() == "c":
                 Funciones.mostrar_alerta("La operación se ha cancelado")
+                break
+            if resta.lower() == "v":
+                self.vaciar_dinero_caja()
                 break
             resta = float(resta)
 
             if resta < self.dinero_en_caja:
                 fecha = datetime.now().strftime("%Y-%m-%d")
                 hora = datetime.now().strftime("%H:%M:%S")
-                fechayhora = int(fecha) + int(hora)
-                datos = {
-                    "Fecha": fecha,
-                    "Hora": hora,
-                    "Monto": self.dinero_en_caja,
-                    "Descripcion": f"Se quitó ${resta:.2f} del dinero en caja",
-                }
+                fechayhora = str(fecha) + str(hora)
+                datos = [fecha, hora, self.dinero_en_caja, f"Se quitó ${resta:.2f} del dinero en caja"]
+
                 self.modificaciones_caja[fechayhora] = datos
                 self.dinero_en_caja -= resta
                 Funciones.mostrar_exito(f"La caja quedó en: $ {self.dinero_en_caja:.2f}")
+                break
             elif resta == self.dinero_en_caja:
                 self.vaciar_dinero_caja()
             else:
@@ -1580,34 +1770,174 @@ class Menus:
             if suma > 0:
                 fecha = datetime.now().strftime("%Y-%m-%d")
                 hora = datetime.now().strftime("%H:%M:%S")
-                fechayhora = int(fecha) + int(hora)
-                datos = {
-                    "Fecha": fecha,
-                    "Hora": hora,
-                    "Monto": self.dinero_en_caja,
-                    "Descripcion": f"Se sumó ${suma:.2f} a la caja",
-                }
+                fechayhora = str(fecha) + str(hora)
+                datos = [fecha, hora, self.dinero_en_caja, f"Se sumó ${suma:.2f} a la caja"]
                 self.modificaciones_caja[fechayhora] = datos
                 self.dinero_en_caja += suma
                 Funciones.mostrar_exito(f"La caja quedó en: ${self.dinero_en_caja:.2f}")
+                break
     
     def ver_movimientos_caja(self):
         while True:
-            os.system("cls")
-            Funciones.encabezado()
-            Funciones.subtitulo("Ver asientos salas")
             if not self.modificaciones_caja:
                 Funciones.mostrar_alerta("Aun no hay movimientos de caja")
                 break
             else:
-                print("{:<25} {:<15} {:<20} {:<35}".format("Fecha modificación", "Hora", "Caja original", "Modificación"))
+                color_headers = Fore.LIGHTYELLOW_EX
+                estilo_reset = Style.RESET_ALL
+                os.system("cls")
+                Funciones.encabezado()
+                Funciones.subtitulo("Movimientos de caja")
+                headers = [f"{color_headers}Fecha modificación", "Hora", "Caja original", f"Modificación{estilo_reset}"]
+                data = []
+
                 for fechayhora, datos in self.modificaciones_caja.items():
-                    fecha = datos["Fecha"]
-                    hora = datos["Hora"]
-                    dinero_en_caja = datos["Monto"]
-                    descripcion_de_modificacion = datos["Descripcion"]
-                    print("{:<25} {:<15} {:<20} {:<35}".format(fecha, hora, dinero_en_caja, descripcion_de_modificacion))
+                    fecha = datos[0]
+                    hora = datos[1]
+                    dinero_en_caja = datos[2]
+                    descripcion_de_modificacion = datos[3]
+                    data.append([fecha, hora, dinero_en_caja, descripcion_de_modificacion])
+
+                table = tabulate(data, headers, tablefmt="fancy_grid")
+                print(table)
+
             print()
             os.system("pause")
             break
-        
+            
+
+#METODOS PARA EL MANEJO DE EGRESOS
+
+#--------------------------------------------------------------------------------------
+
+    def registrar_un_egreso(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Registro de un egreso")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+            try:
+                numero_factura = Funciones.hacer_pregunta("Numero Factura: ")
+                if numero_factura.lower() == "c":
+                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                    break
+                
+                valor_egreso = Funciones.hacer_pregunta("Valor del pago: ")
+                if valor_egreso.lower() == "c":
+                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                    break
+                valor_egreso = float(valor_egreso)
+
+                descripcion_egreso = Funciones.hacer_pregunta("Descripcion del pago: ")
+                if descripcion_egreso.lower() == "c":
+                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                    break
+
+
+                de_donde_sale_el_dinero = Funciones.hacer_pregunta("De donde sa paga: \n\n1.  De la caja\n2.  Otro\n\n: ")
+
+                if de_donde_sale_el_dinero.lower() == "c":
+                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                    break
+
+                de_donde_sale_el_dinero = int(de_donde_sale_el_dinero)
+                el_dinero_sale_de = None
+                
+                while True:
+                    if de_donde_sale_el_dinero == 1:
+                        if self.dinero_en_caja >= valor_egreso:
+                            self.dinero_en_caja -= valor_egreso
+                            el_dinero_sale_de = "De la caja"
+                            break
+
+                    elif de_donde_sale_el_dinero == 2:
+                        el_dinero_sale_de = "otro"
+                        break
+
+                fecha_egreso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                egreso = DatosEgreso(numero_factura, valor_egreso, descripcion_egreso, el_dinero_sale_de)
+                egreso_archivo = [fecha_egreso, numero_factura, valor_egreso, descripcion_egreso, el_dinero_sale_de, "NUEVO"]
+
+                self.egresos[fecha_egreso] = egreso
+                self.archivo.archivo_egresos.append(egreso_archivo)
+
+                Funciones.mostrar_exito("Egreso agregado con exito")
+
+            except ValueError:
+                    Funciones.mostrar_error("Error de valor: Ingrese un número válido")
+
+            except TypeError:
+                Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
+
+
+    def cancelar_un_egreso(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Eliminar un egreso")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+            if not self.egresos:
+                Funciones.mostrar_alerta("No hay egresos registrados")
+                break
+            else:
+                Funciones.mostrar_egresos(self.egresos)
+                try:
+                    seleccion = Funciones.hacer_pregunta("Seleccione el egreso a eliminar (número): ")
+                    if seleccion.lower() == "c":
+                        Funciones.mostrar_alerta("La operación se ha cancelado")
+                        break
+                    seleccion = int(seleccion)
+
+                    #Se va a seleccionar el egreso a eliminar por item
+                    if 1 <= seleccion <= len(self.egresos):
+                        #La fecha va a ser igual a la seleccion de la lista de claves de egresos
+                        fecha_egreso_a_eliminar = list(self.egresos.keys())[seleccion - 1]
+                        #Obtenemos el objeto buscado por la fecha
+                        egreso_eliminar = self.egresos[fecha_egreso_a_eliminar]
+                        #Lo registramos en el archivo como eliminado
+                        egreso_eliminar_archivo = [fecha_egreso_a_eliminar, egreso_eliminar.numero_factura, egreso_eliminar.valor_egreso, egreso_eliminar.descripcion_egreso, egreso_eliminar.el_dinero_sale_de, "ELIMINADO"]
+                        self.dinero_en_caja += egreso_eliminar.valor_egreso  #Asumiendo que se debe devolver el dinero a la caja
+                        self.archivo.archivo_egresos.append(egreso_eliminar_archivo)
+                        del self.egresos[fecha_egreso_a_eliminar] #Eliminamos el egreso
+                        Funciones.mostrar_exito("Egreso eliminado con éxito")
+                        Funciones.mostrar_exito("El dinero se sumó a la caja")
+                    else:
+                        Funciones.mostrar_alerta("Selección no válida. Intente nuevamente.")
+
+                except ValueError:
+                    Funciones.mostrar_error("Error de valor: Ingrese un número válido")
+
+
+    def ver_egresos(self):
+        # Definir colores y estilos
+        color_titulo = Fore.LIGHTCYAN_EX
+        color_headers = Fore.LIGHTYELLOW_EX
+        estilo_reset = Style.RESET_ALL
+
+        titulo = f"{color_titulo}I N G R E S O S    Y    E G R E S O S{estilo_reset}"
+        ingresos_data = []
+        egresos_data = []
+
+        for fecha, datos_egreso in self.egresos.items():
+            egresos_data.append([fecha, datos_egreso.numero_factura, datos_egreso.valor_egreso, datos_egreso.descripcion_egreso, datos_egreso.el_dinero_sale_de])
+
+        headers = [f"{color_headers}Fecha", "Número de Factura", "Valor", "Descripción", f"De dónde se paga{estilo_reset}"]
+
+        # Obtener la tabla de egresos utilizando tabulate sin imprimir
+        tabla_egresos = tabulate(egresos_data, headers=headers, tablefmt="fancy_grid")
+
+        # Imprimir el título centrado sobre la tabla
+        print("\n" + titulo.center(len(tabla_egresos.split('\n')[0])) + "\n")
+
+        # Imprimir la tabla de egresos utilizando tabulate
+        print(tabla_egresos)
+        print()
+        os.system("pause")
+
+#######################################################################################
+
+
+#######################################################################################

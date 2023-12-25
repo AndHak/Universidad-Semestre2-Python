@@ -33,3 +33,14 @@ class DatosConfiteria:
     def obtener_datos_producto(self):
         return self.id_producto, self.nombre_producto, self.categoria_producto, self.precio_compra_producto, self.precio_venta_producto, self.cantidad_producto
 
+class DatosEgreso:
+    def __init__(self, numero_factura, valor_egreso, descripcion_egreso, el_dinero_sale_de):
+        self.numero_factura = numero_factura
+        self.valor_egreso = valor_egreso
+        self.descripcion_egreso = descripcion_egreso
+        self.el_dinero_sale_de = el_dinero_sale_de
+
+    def obtener_datos_egreso(self):
+        return self.numero_factura, self.valor_egreso, self.descripcion_egreso, self.el_dinero_sale_de
+    
+

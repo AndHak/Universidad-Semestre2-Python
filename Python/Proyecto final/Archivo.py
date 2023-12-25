@@ -9,7 +9,7 @@ class Archivo:
         self.archivo_ocupacion_sala = []
         self.archivo_facturas_confiteria = []
         self.archivo_factura_peliculas = []
-        self.modificaciones_caja = []
+        self.archivo_egresos = []
 
     def mostrar_archivo_peliculas(self):
         if not self.archivo_peliculas:
@@ -89,7 +89,28 @@ class Archivo:
             print()
             os.system("pause")
 
-    def mostrar_archivo_facturas_peliculas(self):
-        pass
+    def mostrar_archivo_egresos(self):
+        if not self.archivo_egresos:
+            Funciones.mostrar_alerta("No hay datos en el archivo de egresos.")
+        else:
+            color_titulo = Fore.LIGHTCYAN_EX
+            color_headers = Fore.LIGHTYELLOW_EX
+            estilo_reset = Style.RESET_ALL
+
+            titulo = f"{color_titulo}A R C H I V O   D E   E G R E S O S{estilo_reset}"
+
+            headers = [f"{color_headers}Fecha", "Número de Factura", "Valor", "Descripción", "De dónde se paga", f"Caso{estilo_reset}"]
+            data = [[fila[0], fila[1], fila[2], fila[3], fila[4], fila[5]] for fila in self.archivo_egresos]
+
+            # Obtener la tabla del archivo de egresos utilizando tabulate sin imprimir
+            tabla_archivo_egresos = tabulate(data, headers=headers, tablefmt="fancy_grid")
+
+            # Imprimir el título centrado sobre la tabla
+            print("\n" + titulo.center(len(tabla_archivo_egresos.split('\n')[0])) + "\n")
+
+            # Imprimir la tabla del archivo de egresos utilizando tabulate
+            print(tabla_archivo_egresos)
+            print()
+            os.system("pause")
 
     
