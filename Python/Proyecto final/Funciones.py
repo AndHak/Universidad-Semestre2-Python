@@ -205,7 +205,28 @@ class Funciones:
         print(tabla_egresos)
         print()
 
+    def mostrar_facturas_peliculas(facturas_peliculas):
+        color_titulo = Fore.LIGHTCYAN_EX
+        color_headers = Fore.LIGHTYELLOW_EX
+        estilo_reset = Style.RESET_ALL
 
+        titulo = f"{color_titulo}F A C T U R A S     P E L I C U L A S{estilo_reset}"
+        facturas_data = []
+
+        for numero_factura, datos_factura in facturas_peliculas.items():
+            fecha_venta, cliente, pelicula, asientos, id_sala, dia_compra, hora_compra, minutos_compra, sala_de_compra = datos_factura
+            identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+            titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula = pelicula.obtener_datos_pelicula()
+            total_venta = costo_pelicula * len(asientos)
+            facturas_data.append([numero_factura, fecha_venta, nombre_cliente, titulo_pelicula, asientos, dia_compra, hora_compra, minutos_compra, sala_de_compra, total_venta])
+
+            headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Pelicula", "Asientos", "Dia", "Hora", "Sala", f"Total Venta{estilo_reset}"]
+            data = [[f"{a[0]:04}", a[1], a[2], a[3], " ".join(a[4]), a[5], f"{a[6]:02}:{a[7]:02}", a[8], f"{a[9]:.2f}"] for a in facturas_data]
+
+        tabla_facturas = tabulate(data, headers=headers, tablefmt="fancy_grid")
+
+        print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
+        print(tabla_facturas)
     
 
 

@@ -44,3 +44,4 @@ class DatosEgreso:
         return self.numero_factura, self.valor_egreso, self.descripcion_egreso, self.el_dinero_sale_de
     
 
+

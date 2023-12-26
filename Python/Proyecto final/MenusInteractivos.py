@@ -88,6 +88,15 @@ class Menus:
             pickle.dump(self.modificaciones_caja, file)
 
 
+        #GUARDAR FACTURAS
+        ###########################################################################################################
+        ruta_facturas_peliculas = os.path.join(directorio_actual, "datos_cine", "facturas", "facturas_peliculas.pkl")
+        with open(ruta_facturas_peliculas, "wb") as file:
+            pickle.dump(self.factura_pelicula.facturas_peliculas, file)
+
+        ruta_numero_factura = os.path.join(directorio_actual, "datos_cine", "facturas", "numero_factura.pkl")
+        with open(ruta_numero_factura, "wb") as file:
+            pickle.dump(self.factura_pelicula.numero_de_factura_peliculas, file)
 
         #GUARDAR ARCHIVOS
         ###########################################################################################################
@@ -125,6 +134,11 @@ class Menus:
         ruta_archivo_egresos = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_egresos.pkl")
         with open(ruta_archivo_egresos, "wb") as file:
             pickle.dump(self.archivo.archivo_egresos, file)
+
+        # Guardar datos de los ingresos
+        ruta_archivo_ingresos = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_ingresos.pkl")
+        with open(ruta_archivo_ingresos, "wb") as file:
+            pickle.dump(self.archivo.archivo_ingresos, file)
 
 
     def cargar_datos(self):
@@ -222,6 +236,29 @@ class Menus:
 
 
 
+        #GUARDAR FACTURAS
+        ###########################################################################################################
+        try:
+            ruta_facturas_peliculas = os.path.join(directorio_actual, "datos_cine", "facturas", "facturas_peliculas.pkl")
+            with open(ruta_facturas_peliculas, "rb") as file:
+                self.factura_pelicula.facturas_peliculas = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'modificaciones_caja.pkl' no fue encontrado. Se creará por primera vez al iniciar el programa.")
+        except Exception as e:
+            print(f"Error al leer 'modificaciones_caja.pkl': {e}")
+
+
+        try:
+            ruta_numero_factura = os.path.join(directorio_actual, "datos_cine", "facturas", "numero_factura.pkl")
+            with open(ruta_numero_factura, "rb") as file:
+                self.factura_pelicula.numero_de_factura_peliculas = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'modificaciones_caja.pkl' no fue encontrado. Se creará por primera vez al iniciar el programa.")
+        except Exception as e:
+            print(f"Error al leer 'modificaciones_caja.pkl': {e}")
+
+
+
         #GUARDAR ARCHIVOS
         ###########################################################################################################
             
@@ -295,8 +332,15 @@ class Menus:
         except Exception as e:
             print(f"Error al leer 'archivo_egresos.pkl': {e}")
         
-
-
+        # Guardar datos de los ingresos
+        try:
+            ruta_archivo_ingresos = os.path.join(directorio_actual, "datos_cine", "archivos", "archivo_ingresos.pkl")
+            with open(ruta_archivo_ingresos, "rb") as file:
+                self.archivo.archivo_ingresos = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'archivo_egresos.pkl' no fue encontrado. Se creará por primera vez al asignar egresos.")
+        except Exception as e:
+            print(f"Error al leer 'archivo_egresos.pkl': {e}")
 
 
 
@@ -319,6 +363,7 @@ class Menus:
 
             if not self.cartelera:
                 Funciones.mostrar_alerta("No hay películas disponibles")
+                break
             else:
                 Funciones.mostrar_peliculas(self.cartelera)
 
@@ -405,7 +450,8 @@ class Menus:
             print(f"\n\nAño: {año}   mes: {mes}\n\n")       #Imprime el año y mes
 
             if not self.cartelera:
-                Funciones.mostrar_alerta("No hay películas disponibles")    
+                Funciones.mostrar_alerta("No hay películas disponibles")  
+                break  
             else:
                 Funciones.mostrar_peliculas(self.cartelera)
 
@@ -690,7 +736,6 @@ class Menus:
     def eliminar_salas_canceladas(self):
         self.ocupacion_sala = [datos for datos in self.ocupacion_sala if datos[5] != "XX" and datos[6] != "XX" and datos[7] != "XX"]
 
-
     def modificar_salas(self):
         while True:
             os.system("cls")
@@ -819,36 +864,38 @@ class Menus:
 #--------------------------------------------------------------------------------------
 
     def mostrar_cartelera_y_cronograma(self):
-        os.system("cls")
-        Funciones.encabezado()
-        Funciones.subtitulo("Cartelera y cronograma")
-        print("Opción siempre disponible: 's' para salir")
-        año = datetime.now().strftime("%Y")
-        mes = datetime.now().strftime("%m")
-        print(f"\n\nAño: {año}   mes: {mes}\n\n")
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Cartelera y cronograma")
+            print("Opción siempre disponible: 's' para salir")
+            año = datetime.now().strftime("%Y")
+            mes = datetime.now().strftime("%m")
+            print(f"\n\nAño: {año}   mes: {mes}\n\n")
 
-        if not self.cartelera:
-            Funciones.mostrar_alerta("No hay películas disponibles")
-        else:
-            Funciones.mostrar_peliculas(self.cartelera)
-            while True:
-                try:
-                    dia_cronograma = Funciones.hacer_pregunta("Mostrar cronograma del día: ")
-                    if dia_cronograma.lower() == "s":
-                        Funciones.mostrar_alerta("Saliendo")
-                        break
-                    dia_cronograma = int(dia_cronograma)
+            if not self.cartelera:
+                Funciones.mostrar_alerta("No hay películas disponibles")
+                break
+            else:
+                Funciones.mostrar_peliculas(self.cartelera)
+                while True:
+                    try:
+                        dia_cronograma = Funciones.hacer_pregunta("Mostrar cronograma del día: ")
+                        if dia_cronograma.lower() == "s":
+                            Funciones.mostrar_alerta("Saliendo")
+                            break
+                        dia_cronograma = int(dia_cronograma)
 
-                    if 0 < dia_cronograma < 31:
-                        cronograma_dia = [datos for datos in self.ocupacion_sala if datos[3] == dia_cronograma]
+                        if 0 < dia_cronograma < 31:
+                            cronograma_dia = [datos for datos in self.ocupacion_sala if datos[3] == dia_cronograma]
 
-                        if not cronograma_dia:
-                            Funciones.mostrar_alerta(f"No hay funciones programadas para el día {dia_cronograma}")
-                        else:
-                            Funciones.mostrar_ocupacion_sala(self.ocupacion_sala, cronograma_dia, dia_cronograma)
+                            if not cronograma_dia:
+                                Funciones.mostrar_alerta(f"No hay funciones programadas para el día {dia_cronograma}")
+                            else:
+                                Funciones.mostrar_ocupacion_sala(self.ocupacion_sala, cronograma_dia, dia_cronograma)
 
-                except ValueError:
-                    Funciones.mostrar_error("Ingrese una opción válida")
+                    except ValueError:
+                        Funciones.mostrar_error("Ingrese una opción válida")
 
 #######################################################################################
 
@@ -870,6 +917,7 @@ class Menus:
             try:
                 if not self.inventario_confiteria:
                     Funciones.mostrar_alerta("No hay productos en confiteria")
+                    break
                 else:
                     Funciones.mostrar_productos(self.inventario_confiteria)
                         
@@ -944,6 +992,7 @@ class Menus:
             try:
                 if not self.inventario_confiteria:
                     Funciones.mostrar_alerta("No hay productos en confiteria")
+                    break
                 else:
                     Funciones.mostrar_productos(self.inventario_confiteria)
 
@@ -1003,6 +1052,7 @@ class Menus:
             try:
                 if not self.inventario_confiteria:
                     Funciones.mostrar_alerta("No hay productos en confiteria")
+                    break
                 else:
                     Funciones.mostrar_productos(self.inventario_confiteria)
 
@@ -1125,6 +1175,7 @@ class Menus:
 
             if not self.inventario_confiteria:
                 Funciones.mostrar_alerta("No hay productos en confiteria")
+                break
             else:
                 if mostrar_productos_orden:
                     Funciones.mostrar_productos(mostrar_productos_orden)
@@ -1236,6 +1287,7 @@ class Menus:
             #Si no hay cartelera no se puede realizar venta
             if not self.cartelera:
                 Funciones.mostrar_alerta("No hay películas disponibles")
+                break
             else:
                 #si hay entonces:
                 Funciones.mostrar_peliculas(self.cartelera)
@@ -1471,8 +1523,10 @@ class Menus:
                                             self.salas[id_identificacion_sala] = sala
                                             #Aumentamos el dinero en caja de la venta
                                             self.dinero_en_caja += valor_total_asientos
-                                            ingresos = [fecha, numero_factura, valor_total_factura]
+                                            ingresos = [fecha, numero_factura, valor_total_factura, "CARTELERA"]
+                                            ingresos_archivo = [fecha, numero_factura, valor_total_factura, "CARTELERA", "NUEVO"]
                                             self.ingresos[fecha] = ingresos
+                                            self.archivo.archivo_ingresos.append(ingresos_archivo)
                                             Funciones.mostrar_exito("La compra se ha realizado correctamente")
                                             self.guardar_datos()
                    
@@ -1590,8 +1644,10 @@ class Menus:
                                             self.salas[id_identificacion_sala] = sala
                                             Funciones.mostrar_exito("La compra se ha realizado correctamente")
                                             self.dinero_en_caja += valor_total_asientos
-                                            ingresos = [fecha, numero_factura, valor_total_factura]
+                                            ingresos = [fecha, numero_factura, valor_total_factura, "CARTELERA"]
+                                            ingresos_archivo = [fecha, numero_factura, valor_total_factura, "CARTELERA","NUEVO"]
                                             self.ingresos[fecha] = ingresos
+                                            self.archivo.archivo_ingresos.append(ingresos_archivo)
                                             self.guardar_datos()
 
                                     else:
@@ -1606,9 +1662,119 @@ class Menus:
                 except TypeError:
                     Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
 
+    def deshacer_venta_pelicula(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Cancelar Venta")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
 
+            if not self.factura_pelicula.facturas_peliculas:
+                Funciones.mostrar_alerta("No hay ventas realizadas")
+                break
+            else:
+                Funciones.mostrar_facturas_peliculas(self.factura_pelicula.facturas_peliculas)
 
+                try:
+                    factura_a_eliminar = Funciones.hacer_pregunta("Numero Factura: ")
+                    if factura_a_eliminar.lower() == "c":
+                        Funciones.mostrar_alerta("La operación se ha cancelado")
+                        break
+                    factura_a_eliminar = int(factura_a_eliminar)
 
+                    for numero_factura, datos_factura in self.factura_pelicula.facturas_peliculas.items():
+                        if numero_factura == factura_a_eliminar:
+                            fecha_venta, cliente, pelicula, asientos, id_sala_venta, dia_compra, hora_compra, minutos_compra, sala_de_compra = datos_factura
+                            identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                            titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula = pelicula.obtener_datos_pelicula()
+                            total_venta = costo_pelicula * len(asientos)
+
+                            Funciones.mostrar_exito("Factura encontrada")
+
+                            boleto = f"""
+                            ------------------------------------------------
+                                    CINE UDENAR - FACTURA DE VENTA
+                            ------------------------------------------------
+                            Número de factura: {numero_factura:04}
+                            Fecha de venta: {fecha_venta}
+                            ------------------------------------------------
+                            Película: {titulo_pelicula}        {edad_minima}+
+                            Duración: {duracion} minutos
+                            Sala: {sala_de_compra}
+                            Día y hora: {dia_compra} - {hora_compra:02}:{minutos_compra:02}
+                            Asientos: {' '.join(asientos)}
+                            ------------------------------------------------
+                            Cliente: {nombre_cliente} ({edad_cliente} años)
+                            C.C/I.T: {identificacion_cliente}
+                            ------------------------------------------------
+                            Total: ${total_venta:.2f}
+                            ------------------------------------------------
+                            ¡Gracias por su compra!
+                            ------------------------------------------------
+                            """
+
+                            # Imprimir el boleto
+                            print(boleto)
+
+                            cancelar_factura = False
+
+                            while True:
+
+                                imprimir_factura_pregunta = Funciones.hacer_pregunta("¿Cancelar esta compra?  si/no: ")
+                                if imprimir_factura_pregunta.lower() == "no":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                elif imprimir_factura_pregunta.lower() == "si":
+                                    cancelar_factura = True
+                                    break
+                                else:
+                                    Funciones.mostrar_alerta("Respuesta no válida. Por favor, ingrese 'si' o 'no'.")
+
+                            if cancelar_factura:
+                                
+                                sala_original = Funciones.generar_sala()
+
+                                for id_sala, sala in self.salas.items():
+                                    if id_sala == id_sala_venta:
+                                        sala_venta = sala
+
+                                Funciones.imprimir_sala_centro(sala_venta)
+
+                                for asiento in asientos:
+                                    for i in range(len(sala_original)):
+                                        for j in range(len(sala_original[i])):
+                                            if sala_original[i][j] == asiento:
+                                                # Restaurar el asiento en la sala de venta
+                                                sala_venta[i][j] = sala_original[i][j]
+
+                                for fecha, datos_ingreso in self.ingresos.items():
+                                    if numero_factura == datos_ingreso[1] and datos_ingreso[3] == "CARTELERA":
+                                        ingreso_eliminado_archivo = [fecha, datos_ingreso[1], datos_ingreso[2], datos_ingreso[3], "ELIMINADO"]
+                                        self.archivo.archivo_ingresos.append(ingreso_eliminado_archivo)
+                                        fecha_a_eliminar_ingresos = fecha
+
+                                del self.ingresos[fecha_a_eliminar_ingresos]
+                                        
+                                Funciones.mostrar_exito("Ingreso eliminado con exito")
+                                
+                                self.dinero_en_caja -= total_venta
+
+                                datos_archivo = [fecha_venta, cliente, pelicula, asientos, id_sala_venta, dia_compra, hora_compra, minutos_compra, sala_de_compra, "ELIMINADA"]
+                                self.archivo.archivo_factura_peliculas.append(datos_archivo)
+
+                                del self.factura_pelicula.facturas_peliculas[numero_factura]
+
+                                Funciones.mostrar_exito("Venta eliminada") 
+
+                                print("\nLa sala ha quedado asi:\n")
+                                Funciones.imprimir_sala_centro(sala_venta)
+                                
+                                os.system("pause")
+                                break
+
+                except Exception as e:
+                    print(f"Error {e}")
 
     def administracion_de_salas(self):
         while True:
@@ -1684,6 +1850,12 @@ class Menus:
 
                 except TypeError:
                     Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
+    
+    def ver_ventas_peliculas(self):
+        pass
+
+
+
 
 
 #######################################################################################
@@ -1871,7 +2043,6 @@ class Menus:
             except TypeError:
                 Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
 
-
     def cancelar_un_egreso(self):
         while True:
             os.system("cls")
@@ -1910,34 +2081,48 @@ class Menus:
                 except ValueError:
                     Funciones.mostrar_error("Error de valor: Ingrese un número válido")
 
-
     def ver_egresos(self):
         # Definir colores y estilos
         color_titulo = Fore.LIGHTCYAN_EX
         color_headers = Fore.LIGHTYELLOW_EX
         estilo_reset = Style.RESET_ALL
 
-        titulo = f"{color_titulo}I N G R E S O S    Y    E G R E S O S{estilo_reset}"
-        ingresos_data = []
-        egresos_data = []
+        titulo = f"{color_titulo}I N G R E S O S               |               E G R E S O S            {estilo_reset}"
 
+        ingresos_data = []
+        for fecha, datos_ingreso in self.ingresos.items():
+            ingresos_data.append([datos_ingreso[0], datos_ingreso[1], datos_ingreso[2], datos_ingreso[3]])
+
+        egresos_data = []
         for fecha, datos_egreso in self.egresos.items():
             egresos_data.append([fecha, datos_egreso.numero_factura, datos_egreso.valor_egreso, datos_egreso.descripcion_egreso, datos_egreso.el_dinero_sale_de])
 
-        headers = [f"{color_headers}Fecha", "Número de Factura", "Valor", "Descripción", f"De dónde se paga{estilo_reset}"]
+        headers_ingresos = [f"{color_headers}Fecha", " Numero de Factura", "Total", "Descripcion"]
+        headers_egresos = [f"{color_headers}Fecha", "Número de Factura", "Valor", "Descripción", f"De dónde se paga{estilo_reset}"]
 
-        # Obtener la tabla de egresos utilizando tabulate sin imprimir
-        tabla_egresos = tabulate(egresos_data, headers=headers, tablefmt="fancy_grid")
+        # Obtener la tabla de ingresos y egresos utilizando tabulate sin imprimir
+        tabla_ingresos = tabulate(ingresos_data, headers=headers_ingresos, tablefmt="fancy_grid")
+        tabla_egresos = tabulate(egresos_data, headers=headers_egresos, tablefmt="fancy_grid")
+
+        # Convertir las tablas en listas de filas
+        filas_ingresos = tabla_ingresos.split('\n')
+        filas_egresos = tabla_egresos.split('\n')
+
+        # Asegurar que ambas tablas tengan la misma longitud
+        max_filas = max(len(filas_ingresos), len(filas_egresos))
+        filas_ingresos.extend([''] * (max_filas - len(filas_ingresos)))
+        filas_egresos.extend([''] * (max_filas - len(filas_egresos)))
 
         # Imprimir el título centrado sobre la tabla
-        print("\n" + titulo.center(len(tabla_egresos.split('\n')[0])) + "\n")
+        print("\n" + titulo.center(len(filas_ingresos[0]) + len(filas_egresos[0])) + "\n")
 
-        # Imprimir la tabla de egresos utilizando tabulate
-        print(tabla_egresos)
+        # Imprimir la tabla de ingresos y egresos una al lado de la otra
+        for fila_ingresos, fila_egresos in zip(filas_ingresos, filas_egresos):
+            print(fila_ingresos + "  " + fila_egresos)
+
         print()
-        os.system("pause")
 
-#######################################################################################
+        os.system("pause")
 
 
 #######################################################################################
