@@ -117,7 +117,6 @@ class Archivo:
             print(tabla_facturas)
 
 
-
     def mostrar_archivo_egresos(self):
         if not self.archivo_egresos:
             Funciones.mostrar_alerta("No hay datos en el archivo de egresos.")

@@ -1852,7 +1852,266 @@ class Menus:
                     Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
     
     def ver_ventas_peliculas(self):
-        pass
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Ventas Peliculas")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+            print("'vc' para ver ventas por cliente")
+            print("'vp' para ver ventas por cartelera")
+            print("'f' para buscar ventas por fecha")
+            print("'top' para ver el top 10 de clientes y peliculas")
+            print("Busqueda por N° Factura por defecto")
+
+            if not self.factura_pelicula.facturas_peliculas:
+                Funciones.mostrar_alerta("No hay Ventas realizadas")
+            else:
+                try:
+                    color_titulo = Fore.LIGHTCYAN_EX
+                    color_headers = Fore.LIGHTYELLOW_EX
+                    estilo_reset = Style.RESET_ALL
+
+                    Funciones.mostrar_facturas_peliculas(self.factura_pelicula.facturas_peliculas)
+
+                    buscar = Funciones.hacer_pregunta("Buscar: ")
+                    if buscar.isalpha():
+                        if buscar.lower() == "c":
+                            Funciones.mostrar_alerta("La operacion se ha cancelado")
+                            break
+
+                        if buscar.lower() == "vc":
+                            buscar = Funciones.hacer_pregunta("Cliente id: ")
+                            if buscar.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+
+                            titulo = f"{color_titulo}F A C T U R A S    P O R    C L I E N T E{estilo_reset}"
+                            facturas_cliente = []
+                            total_ventas = 0
+                            numero_de_ventas = 0
+                            cliente_encontrado = False
+                            for numero_factura, datos_factura in self.factura_pelicula.facturas_peliculas.items():
+                                fecha_venta, cliente, pelicula, asientos, id_sala, dia_compra, hora_compra, minutos_compra, sala_de_compra = datos_factura
+                                identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula = pelicula.obtener_datos_pelicula()
+                                total_venta = costo_pelicula * len(asientos)
+                                if identificacion_cliente == int(buscar):
+                                    cliente_encontrado = True
+
+                                    facturas_cliente.append([numero_factura, fecha_venta, nombre_cliente, titulo_pelicula, asientos, dia_compra, hora_compra, minutos_compra, sala_de_compra, total_venta])
+
+                                    headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Pelicula", "Asientos", "Dia", "Hora", "Sala", f"Total Venta{estilo_reset}"]
+                                    data = [[f"{a[0]:04}", a[1], a[2], a[3], " ".join(a[4]), a[5], f"{a[6]:02}:{a[7]:02}", a[8], f"{a[9]:.2f}"] for a in facturas_cliente]
+                                    total_ventas += total_venta
+                                    numero_de_ventas += len(asientos)
+
+                            
+                            if cliente_encontrado:
+                                tabla_facturas = tabulate(data, headers=headers, tablefmt="fancy_grid")
+                                print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
+                                print(f"Total ventas: ${total_ventas:.2f}        Numero de ventas:  {numero_de_ventas}")
+                                print(tabla_facturas)
+                                print()
+                                os.system("pause")
+                            else:
+                                Funciones.mostrar_alerta("No existe el cliente buscado")
+
+                        if buscar.lower() == "vp":
+                            buscar = Funciones.hacer_pregunta("Pelicula: ")
+                            if buscar.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+                            buscar = buscar.title()
+
+                            titulo = f"{color_titulo}F A C T U R A S    P O R    P E L I C U L A{estilo_reset}"
+                            facturas_peliculas = []
+                            total_ventas = 0
+                            numero_de_ventas = 0
+                            pelicula_encontrada = False
+                            for numero_factura, datos_factura in self.factura_pelicula.facturas_peliculas.items():
+                                fecha_venta, cliente, pelicula, asientos, id_sala, dia_compra, hora_compra, minutos_compra, sala_de_compra = datos_factura
+                                identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula = pelicula.obtener_datos_pelicula()
+                                total_venta = costo_pelicula * len(asientos)
+                                if titulo_pelicula == buscar:
+                                    pelicula_encontrada = True
+                                    facturas_peliculas.append([numero_factura, fecha_venta, nombre_cliente, titulo_pelicula, asientos, dia_compra, hora_compra, minutos_compra, sala_de_compra, total_venta])
+
+                                    headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Pelicula", "Asientos", "Dia", "Hora", "Sala", f"Total Venta{estilo_reset}"]
+                                    data = [[f"{a[0]:04}", a[1], a[2], a[3], " ".join(a[4]), a[5], f"{a[6]:02}:{a[7]:02}", a[8], f"{a[9]:.2f}"] for a in facturas_peliculas]
+                                    total_ventas += total_venta
+                                    numero_de_ventas += len(asientos)
+
+                            
+
+                            if pelicula_encontrada:
+                                tabla_facturas = tabulate(data, headers=headers, tablefmt="fancy_grid")
+                                print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
+                                print(f"Total ventas: ${total_ventas:.2f}        Numero de ventas:  {numero_de_ventas}")
+                                print(tabla_facturas)
+                                print()
+                                os.system("pause")
+                            else:
+                                Funciones.mostrar_alerta("No se encontro la pelicula buscada")
+                            
+                        if buscar.lower() == "f":
+                            buscar_año = Funciones.hacer_pregunta("Año: ")
+                            if buscar_año.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+                            buscar_año = int(buscar_año)
+
+                            buscar_mes = Funciones.hacer_pregunta("Mes: ")
+                            if buscar_mes.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+                            buscar_mes = int(buscar_mes)
+
+                            buscar_dia = Funciones.hacer_pregunta("Día: ")
+                            if buscar_dia.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+                            buscar_dia = int(buscar_dia)
+
+                            titulo = f"{color_titulo}F A C T U R A S    D E L   {buscar_año}/{buscar_mes}/{buscar_dia}{estilo_reset}"
+                            facturas_fecha = []
+                            total_ventas = 0
+                            numero_de_ventas = 0
+                            fechas_encontradas = False
+                            for numero_factura, datos_factura in self.factura_pelicula.facturas_peliculas.items():
+                                fecha_venta, cliente, pelicula, asientos, id_sala, dia_compra, hora_compra, minutos_compra, sala_de_compra = datos_factura
+                                identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula = pelicula.obtener_datos_pelicula()
+                                total_venta = costo_pelicula * len(asientos)
+                                if fecha_venta.startswith(f"{buscar_año:04}-{buscar_mes:02}-{buscar_dia:02}"):
+
+                                    fechas_encontradas = True
+                                    facturas_fecha.append([numero_factura, fecha_venta, nombre_cliente, titulo_pelicula, asientos, dia_compra, hora_compra, minutos_compra, sala_de_compra, total_venta])
+
+                                    headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Pelicula", "Asientos", "Dia", "Hora", "Sala", f"Total Venta{estilo_reset}"]
+                                    data = [[f"{a[0]:04}", a[1], a[2], a[3], " ".join(a[4]), a[5], f"{a[6]:02}:{a[7]:02}", a[8], f"{a[9]:.2f}"] for a in facturas_fecha]
+                                    total_ventas += total_venta
+                                    numero_de_ventas += len(asientos)
+
+                            
+
+                            if fechas_encontradas:
+                                tabla_facturas = tabulate(data, headers=headers, tablefmt="fancy_grid")
+                                print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
+                                print(f"Total ventas: ${total_ventas:.2f}        Numero de ventas:  {numero_de_ventas}")
+                                print(tabla_facturas)
+                                print()
+                                os.system("pause")
+                            else:
+                                Funciones.mostrar_alerta("No se encontro la fecha buscada")       
+                                
+                        if buscar.lower() == "top":
+                            titulo_clientes = f"{color_titulo}T O P    1 0    C L I E N T E S{estilo_reset}"
+                            top_clientes = {}
+                            for id_cliente, datos_cliente in self.clientes.items():
+                                for numero_factura, datos_factura in self.factura_pelicula.facturas_peliculas.items():
+                                    fecha_venta, cliente, pelicula, asientos, id_sala, dia_compra, hora_compra, minutos_compra, sala_de_compra = datos_factura
+                                    identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                    titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula = pelicula.obtener_datos_pelicula()
+                                    total_venta = costo_pelicula * len(asientos)
+                                    compras = 0
+                                    compras_valor = 0
+                                    if id_cliente == identificacion_cliente:
+                                        compras += len(asientos)
+                                        compras_valor += total_venta
+                                        if id_cliente not in top_clientes:
+                                            datos_cliente_top = [nombre_cliente, edad_cliente, compras, compras_valor]
+                                            top_clientes[identificacion_cliente] = datos_cliente_top
+                                        else:
+                                            for id_cliente_top, datos_cliente_top in top_clientes.items():
+                                                if id_cliente_top == id_cliente:
+                                                    datos_cliente_top[2] += compras
+                                                    datos_cliente_top[3] += compras_valor
+                                            
+                            data_clientes = []
+                            for id_cliente, datos_cliente in top_clientes.items():
+                                data_clientes.append([datos_cliente[0], datos_cliente[1], datos_cliente[2], datos_cliente[3]])
+                                headers_clientes = [f"{color_headers}Nombre", "Edad", "Boletas compradas", f"Total compras{estilo_reset}"]
+                                data_top_clientes = [[a[0], a[1], a[2], f"{a[3]:.2f}"] for a in data_clientes]
+
+                            data_top_clientes = sorted(data_top_clientes, key=lambda x: x[2], reverse=True)[:10]
+                            tabla_top_clientes = tabulate(data_top_clientes, headers=headers_clientes, tablefmt="fancy_grid")
+                            print("\n" + titulo_clientes.center(len(tabla_top_clientes.split('\n')[0])) + "\n")
+                            print(tabla_top_clientes)
+                            print()
+
+
+                            titulo_peliculas = f"{color_titulo}T O P    1 0    P E L Í C U L A S{estilo_reset}"
+                            top_peliculas = {}
+
+                            for numero_factura, datos_factura in self.factura_pelicula.facturas_peliculas.items():
+                                _, _, pelicula, asientos, _, _, _, _, _ = datos_factura
+                                titulo_pelicula, _, _, _, _, costo_pelicula = pelicula.obtener_datos_pelicula()
+                                total_venta = costo_pelicula * len(asientos)
+
+                                if titulo_pelicula not in top_peliculas:
+                                    top_peliculas[titulo_pelicula] = [len(asientos), total_venta]
+                                else:
+                                    top_peliculas[titulo_pelicula][0] += len(asientos)
+                                    top_peliculas[titulo_pelicula][1] += total_venta
+
+                            data_peliculas = []
+                            for titulo_pelicula, datos_pelicula in top_peliculas.items():
+                                data_peliculas.append([titulo_pelicula, datos_pelicula[0], f"{datos_pelicula[1]:.2f}"])
+
+                            headers_peliculas = [f"{color_headers}Título", "Boletas vendidas", f"Total recaudado{estilo_reset}"]
+                            data_top_peliculas = sorted(data_peliculas, key=lambda x: x[1], reverse=True)[:10]
+
+                            tabla_top_peliculas = tabulate(data_top_peliculas, headers=headers_peliculas, tablefmt="fancy_grid")
+                            print("\n" + titulo_peliculas.center(len(tabla_top_peliculas.split('\n')[0])) + "\n")
+                            print(tabla_top_peliculas)
+                            print()
+                            os.system("pause")
+
+
+                    if buscar.isnumeric():
+                        buscar = int(buscar)
+                        for numero_factura, datos_factura in self.factura_pelicula.facturas_peliculas.items():
+                            if numero_factura == buscar:
+                                fecha_venta, cliente, pelicula, asientos, id_sala_venta, dia_compra, hora_compra, minutos_compra, sala_de_compra = datos_factura
+                                identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula = pelicula.obtener_datos_pelicula()
+                                total_venta = costo_pelicula * len(asientos)
+
+                                Funciones.mostrar_exito("Factura encontrada")
+
+                                boleto = f"""
+                                ------------------------------------------------
+                                        CINE UDENAR - FACTURA DE VENTA
+                                ------------------------------------------------
+                                Número de factura: {numero_factura:04}
+                                Fecha de venta: {fecha_venta}
+                                ------------------------------------------------
+                                Película: {titulo_pelicula}        {edad_minima}+
+                                Duración: {duracion} minutos
+                                Sala: {sala_de_compra}
+                                Día y hora: {dia_compra} - {hora_compra:02}:{minutos_compra:02}
+                                Asientos: {' '.join(asientos)}
+                                ------------------------------------------------
+                                Cliente: {nombre_cliente} ({edad_cliente} años)
+                                C.C/I.T: {identificacion_cliente}
+                                ------------------------------------------------
+                                Total: ${total_venta:.2f}
+                                ------------------------------------------------
+                                ¡Gracias por su compra!
+                                ------------------------------------------------
+                                """
+
+                                # Imprimir el boleto
+                                print(boleto)
+                                os.system("pause")
+
+                except ValueError:
+                    Funciones.mostrar_error("Error de valor: Ingrese un número válido")
+
+                except TypeError:
+                    Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
 
 
 
