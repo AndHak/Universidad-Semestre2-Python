@@ -363,7 +363,6 @@ class Menus:
 
             if not self.cartelera:
                 Funciones.mostrar_alerta("No hay películas disponibles")
-                break
             else:
                 Funciones.mostrar_peliculas(self.cartelera)
 
@@ -916,7 +915,6 @@ class Menus:
 
             if not self.inventario_confiteria:
                 Funciones.mostrar_alerta("No hay productos en confiteria")
-                break
             else:
                 Funciones.mostrar_productos(self.inventario_confiteria)
                         
