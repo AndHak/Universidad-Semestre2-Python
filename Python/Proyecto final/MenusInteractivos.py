@@ -914,14 +914,13 @@ class Menus:
             #Opción siempre disponible
             print("Opción siempre disponible: 'c' para cancelar")
 
-            try:
-                if not self.inventario_confiteria:
-                    Funciones.mostrar_alerta("No hay productos en confiteria")
-                    break
-                else:
-                    Funciones.mostrar_productos(self.inventario_confiteria)
+            if not self.inventario_confiteria:
+                Funciones.mostrar_alerta("No hay productos en confiteria")
+                break
+            else:
+                Funciones.mostrar_productos(self.inventario_confiteria)
                         
-
+            try:
                 id_producto = Funciones.hacer_pregunta("ID: ")
                 if id_producto.lower() == "c":
                     Funciones.mostrar_alerta("La operacón se ha cancelado")
