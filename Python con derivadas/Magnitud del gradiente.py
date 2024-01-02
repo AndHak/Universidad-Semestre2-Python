@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Cargar la imagen en escala de grises
-imagen = cv2.imread('Python con derivadas\gato.jpg', cv2.IMREAD_GRAYSCALE)
+imagen = cv2.imread('Python con derivadas\edificio.jpg', cv2.IMREAD_GRAYSCALE)
 
 # Obtenemos las dimensiones de la imagen asi:
 alto, ancho = imagen.shape
@@ -35,11 +35,9 @@ for i in range(1, alto-1):
         #restado con el pixel de abajo en este caso
         derivada_y[i, j] = imagen[i+1, j] - imagen[i, j]
 
-derivada_xy = derivada_x + derivada_y
-
 magnitud_gradiente = np.sqrt(derivada_x**2 + derivada_y**2)
 
-plt.figure(figsize=(10, 10))
+plt.figure(figsize=(20, 20))
 
 # Primera fila: Imágenes originales y derivadas de primer orden
 plt.subplot(2, 4, 1)
@@ -47,10 +45,6 @@ plt.imshow(imagen, cmap="gray")
 plt.title("Imagen original")
 
 plt.subplot(2, 4, 2)
-plt.imshow(derivada_xy, cmap="gray")
-plt.title("Derivadas X e Y Juntas")
-
-plt.subplot(2, 4, 3)
 plt.imshow(magnitud_gradiente, cmap="gray")
 plt.title("Magnitud Gradiente")
 
