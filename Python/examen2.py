@@ -1,6 +1,4 @@
-Lo siento por la confusión anterior. Aquí tienes una versión más completa del programa que incluye todos los menús con sus respectivas opciones:
 
-```python
 class Socio:
     def __init__(self, nombre, id, tipo):
         self.nombre = nombre
