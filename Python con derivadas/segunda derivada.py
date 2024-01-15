@@ -26,7 +26,7 @@ for i in range(1, alto-2):
         #Hacemos los calculos correspondientes para encontrar f''(y)
         derivada_y[i, j] = imagen[i+2, j] - 2*imagen[i+1, j] + imagen[i, j]
 
-derivada_xy = derivada_x + derivada_y
+derivada_xy = np.sqrt(derivada_x**2 + derivada_y**2)
 
 # Primera fila: Imágenes originales y derivadas de primer orden
 plt.subplot(2, 4, 1),plt.imshow(imagen, cmap="gray"),plt.title("Imagen original")

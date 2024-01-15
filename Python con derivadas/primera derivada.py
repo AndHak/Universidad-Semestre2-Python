@@ -35,7 +35,7 @@ for i in range(1, alto-1):
         #restado con el pixel de abajo en este caso
         derivada_y[i, j] = imagen[i+1, j] - imagen[i, j]
 
-derivada_xy = derivada_x + derivada_y
+derivada_xy = np.sqrt(derivada_x**2 + derivada_y**2)
 
 # Primera fila: Imágenes originales y derivadas de primer orden
 plt.subplot(2, 4, 1)
