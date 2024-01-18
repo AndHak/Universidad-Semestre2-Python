@@ -1,6 +1,7 @@
 from Funciones import *
 import os
 
+
 class Archivo:
     def __init__(self):
         self.archivo_peliculas = []
@@ -101,20 +102,23 @@ class Archivo:
             titulo = f"{color_titulo}A R C H I V O    F A C T U R A S    P E L I C U L A S{estilo_reset}"
             facturas_data = []
 
-            for numero_factura, datos_factura in self.archivo_factura_peliculas.items():
-                fecha_venta, cliente, pelicula, asientos, id_sala, dia_compra, hora_compra, minutos_compra, sala_de_compra, caso = datos_factura
+            for datos_factura in self.archivo_factura_peliculas:
+                numero_factura, fecha_venta, cliente, pelicula, asientos, id_sala, dia_compra, hora_compra, minutos_compra, sala_de_compra, caso = datos_factura
                 identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
                 titulo_pelicula, sinopsis, duracion, genero, edad_minima, costo_pelicula = pelicula.obtener_datos_pelicula()
                 total_venta = costo_pelicula * len(asientos)
                 facturas_data.append([numero_factura, fecha_venta, nombre_cliente, titulo_pelicula, asientos, dia_compra, hora_compra, minutos_compra, sala_de_compra, total_venta, caso])
 
-                headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Pelicula", "Asientos", "Dia", "Hora", "Sala", "Total Venta" ,f"Caso{estilo_reset}"]
-                data = [[f"{a[0]:04}", a[1], a[2], a[3], " ".join(a[4]), a[5], f"{a[6]:02}:{a[7]:02}", a[8], f"{a[9]:.2f}", a[10]] for a in facturas_data]
+            headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Pelicula", "Asientos", "Dia", "Hora", "Sala", "Total Venta" ,f"Caso{estilo_reset}"]
+            data = [[f"{a[0]:04}", a[1], a[2], a[3], " ".join(a[4]), a[5], f"{a[6]:02}:{a[7]:02}", a[8], f"{a[9]:.2f}", a[10]] for a in facturas_data]
 
             tabla_facturas = tabulate(data, headers=headers, tablefmt="fancy_grid")
 
             print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
             print(tabla_facturas)
+            print()
+            os.system("pause")
+
 
 
     def mostrar_archivo_egresos(self):
@@ -164,4 +168,3 @@ class Archivo:
             print(tabla_archivo_ingresos)
             print()
             os.system("pause")
-    

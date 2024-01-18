@@ -143,6 +143,21 @@ class Menus:
 
     def cargar_datos(self):
         directorio_actual = os.path.dirname(os.path.abspath(__file__))      #Buscamos el directorio donde está este documento python
+        directorio_datos_cine = os.path.join(directorio_actual, "datos_cine")
+        directorio_archivos = os.path.join(directorio_datos_cine, "archivos")
+        directorio_facturas = os.path.join(directorio_datos_cine, "facturas")
+
+        # Verificar y crear directorio datos_cine
+        if not os.path.exists(directorio_datos_cine):
+            os.makedirs(directorio_datos_cine)
+
+        # Verificar y crear directorio archivos
+        if not os.path.exists(directorio_archivos):
+            os.makedirs(directorio_archivos)
+
+        # Verificar y crear directorio facturas
+        if not os.path.exists(directorio_facturas):
+            os.makedirs(directorio_facturas)
 
         #Cargar datos a la cartelera
         try:
@@ -378,6 +393,7 @@ class Menus:
                 #Busca el nombre de la pelicula en el inventario
                 if titulo_pelicula in self.cartelera:
                     Funciones.mostrar_error("No se agregó la película, parece que ya existe")
+                    break
 
                 #Sinapsis o breve descripcion de la pelicula
                 sinopsis = Funciones.hacer_pregunta("Sinopsis: ")
@@ -895,7 +911,7 @@ class Menus:
 
                     except ValueError:
                         Funciones.mostrar_error("Ingrese una opción válida")
-
+                break
 #######################################################################################
 
 
@@ -1757,8 +1773,9 @@ class Menus:
                                 
                                 self.dinero_en_caja -= total_venta
 
-                                datos_archivo = [fecha_venta, cliente, pelicula, asientos, id_sala_venta, dia_compra, hora_compra, minutos_compra, sala_de_compra, "ELIMINADA"]
+                                datos_archivo = [numero_factura, fecha_venta, cliente, pelicula, asientos, id_sala_venta, dia_compra, hora_compra, minutos_compra, sala_de_compra, "ELIMINADA"]
                                 self.archivo.archivo_factura_peliculas.append(datos_archivo)
+
 
                                 del self.factura_pelicula.facturas_peliculas[numero_factura]
 
