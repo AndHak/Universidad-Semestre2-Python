@@ -14,6 +14,7 @@ alto, ancho = imagen.shape
 derivada_x = np.zeros((alto, ancho))
 derivada_y = np.zeros((alto, ancho))
 
+
 #Calculaos la derivada en x usando la derivada hacia adelante
 #Entramos a la fila de la imagen
 for i in range(1, alto):

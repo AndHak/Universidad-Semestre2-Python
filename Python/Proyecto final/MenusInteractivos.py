@@ -2,7 +2,7 @@ from colorama import init
 from datetime import datetime, timedelta
 from Funciones import *
 from FacturaPelicula import FacturaPelicula
-from FacturaConfiteria import *
+from FacturaConfiteria import FacturaConfiteria
 from Datos import *
 from Archivo import *
 from tabulate import *
@@ -13,6 +13,7 @@ import pickle
 init(autoreset=True)
 
 factura_pelicula = FacturaPelicula()
+factura_confiteria = FacturaConfiteria()
 
 class Menus:
 
@@ -23,10 +24,12 @@ class Menus:
         self.clientes = {}      #Aqui se registran los clientes con las compras que hacen en confiteria y peliculas
         self.ocupacion_sala = []        #Aqui se almacenan los horarios de funcion
         self.inventario_confiteria = {}     #Aqui se guardan los productos de la confiteria
+        self.inventario_combos = {}
+        self.factura_combos = factura_confiteria
         self.salas = {}     #Aqui se guardan las salas una vez se haya realizado alguna venta
         self.archivo = archivo      #Aqui llamamos a las listas que estan en la clase archivo
         self.factura_pelicula = factura_pelicula    #Aqui asignamos la variable para la clase pelicula
-
+        self.factura_confiteria = factura_confiteria
         self.egresos = {}       #Aqui se manejan egresos por pagos luz, agua, aseo, administracion, etc.
         self.ingresos = {}      #Aqui estan todos los ingresos
         self.dinero_en_caja = 0       #Aqui guardamos el dinero en caja
@@ -41,6 +44,14 @@ class Menus:
 
     def guardar_datos(self):
         directorio_actual = os.path.dirname(os.path.abspath(__file__))
+
+        ruta_facturas_confiteria = os.path.join(directorio_actual, "datos_cine", "facturas", "facturas_confiteria.pkl")
+        with open(ruta_facturas_confiteria, "wb") as file:
+            pickle.dump(self.factura_confiteria.facturas_confiteria, file)
+
+        ruta_numero_factura_confiteria = os.path.join(directorio_actual, "datos_cine", "facturas", "numero_factura_confiteria.pkl")
+        with open(ruta_numero_factura_confiteria, "wb") as file:
+            pickle.dump(self.factura_confiteria.numero_de_factura_confiteria, file) 
 
         # Guardar datos de la cartelera
         ruta_cartelera = os.path.join(directorio_actual, "datos_cine", "cartelera.pkl")
@@ -87,6 +98,13 @@ class Menus:
         with open(ruta_modificaciones_caja, "wb") as file:
             pickle.dump(self.modificaciones_caja, file)
 
+        # Guardar datos de los combos
+        ruta_combos = os.path.join(directorio_actual, "datos_cine", "combos.pkl")
+        with open(ruta_combos, "wb") as file:
+            pickle.dump(self.inventario_combos, file)
+
+        
+
 
         #GUARDAR FACTURAS
         ###########################################################################################################
@@ -97,6 +115,18 @@ class Menus:
         ruta_numero_factura = os.path.join(directorio_actual, "datos_cine", "facturas", "numero_factura.pkl")
         with open(ruta_numero_factura, "wb") as file:
             pickle.dump(self.factura_pelicula.numero_de_factura_peliculas, file)
+
+        ruta_facturas_confiteria = os.path.join(directorio_actual, "datos_cine", "facturas", "facturas_confiteria.pkl")
+        with open(ruta_facturas_confiteria, "wb") as file:
+            pickle.dump(self.factura_confiteria.facturas_confiteria, file)
+
+        ruta_numero_factura_confi = os.path.join(directorio_actual, "datos_cine", "facturas", "numero_factura_2.pkl")
+        with open(ruta_numero_factura_confi, "wb") as file:
+            pickle.dump(self.factura_confiteria.numero_de_factura_confiteria,file)
+
+        
+            
+
 
         #GUARDAR ARCHIVOS
         ###########################################################################################################
@@ -158,6 +188,25 @@ class Menus:
         # Verificar y crear directorio facturas
         if not os.path.exists(directorio_facturas):
             os.makedirs(directorio_facturas)
+
+        try:
+            ruta_facturas_confiteria = os.path.join(directorio_actual, "datos_cine", "facturas", "facturas_confiteria.pkl")
+            with open(ruta_facturas_confiteria, "rb") as file:
+                self.factura_confiteria.facturas_confiteria = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'facturas_confiteria.pkl' no fue encontrado. Se creará por primera vez al iniciar el programa.")
+        except Exception as e:
+            print(f"Error al leer 'facturas_confiteria.pkl': {e}")
+
+        try:
+            ruta_numero_factura_confiteria = os.path.join(directorio_actual, "datos_cine", "facturas", "numero_factura_2.pkl")
+            with open(ruta_numero_factura_confiteria, "rb") as file:
+                self.factura_confiteria.numero_de_factura_confiteria = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'numero_factura_confiteria.pkl' no fue encontrado. Se creará por primera vez al iniciar el programa.")
+        except Exception as e:
+            print(f"Error al leer 'numero_factura_confiteria.pkl': {e}")
+
 
         #Cargar datos a la cartelera
         try:
@@ -272,6 +321,33 @@ class Menus:
         except Exception as e:
             print(f"Error al leer 'modificaciones_caja.pkl': {e}")
 
+        try:
+            ruta_facturas_confiteria = os.path.join(directorio_actual, "datos_cine", "facturas", "facturas_confiteria.pkl")
+            with open(ruta_facturas_confiteria, "rb") as file:
+                self.factura_confiteria.facturas_confiteria = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'modificaciones_caja.pkl' no fue encontrado. Se creará por primera vez al iniciar el programa.")
+        except Exception as e:
+            print(f"Error al leer 'modificaciones_caja.pkl': {e}")
+
+
+        try:
+            ruta_numero_factura_2 = os.path.join(directorio_actual, "datos_cine", "facturas", "numero_factura_2.pkl")
+            with open(ruta_numero_factura_2, "rb") as file:
+                self.factura_confiteria.numero_de_factura_confiteria = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'modificaciones_caja.pkl' no fue encontrado. Se creará por primera vez al iniciar el programa.")
+        except Exception as e:
+            print(f"Error al leer 'modificaciones_caja.pkl':{e}")
+
+        try:
+            ruta_combos = os.path.join(directorio_actual, "datos_cine", "combos.pkl")
+            with open(ruta_combos, "rb") as file:
+                self.inventario_combos = pickle.load(file)
+        except FileNotFoundError:
+            print("El archivo 'combos.pkl' no fue encontrado. Se creará por primera vez al agregar combos.")
+        except Exception as e:
+            print(f"Error al leer 'combos.pkl': {e}")
 
 
         #GUARDAR ARCHIVOS
@@ -1166,6 +1242,414 @@ class Menus:
 
     ##########################################################################################
 
+    def agregar_combo(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Agregar combo")
+            #Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+
+
+            if not self.inventario_combos:
+                Funciones.mostrar_alerta("No hay combos disponibles")
+            else:
+                Funciones.mostrar_productos_combos(self.inventario_combos)
+
+            opcion=input("Desea seguir agregando combos: (s/n)")
+            if opcion.lower()=="n":
+                break
+
+            while True:
+                try:
+                    id_producto = Funciones.hacer_pregunta("ID: ")
+                    if id_producto.lower() == "c":
+                        Funciones.mostrar_alerta("La operacón se ha cancelado")
+                        break
+                    
+                    nombre_producto = Funciones.hacer_pregunta("Nombre de combo: ")
+                    if nombre_producto.lower() == "c":
+                        Funciones.mostrar_alerta("La operacón se ha cancelado")
+                        break
+                    nombre_producto = nombre_producto.title()
+
+                    print("Productos que incluye el respectivo combo: ")
+                    lista = []
+                    while True:
+                        name_producto = Funciones.hacer_pregunta("Nombre producto: ")
+                        
+                        if name_producto.lower() == "c":
+                            Funciones.mostrar_alerta("La operación se ha cancelado")
+                            break
+                        
+                        name_producto = name_producto.title()
+                        lista.append(name_producto)
+                        print("'c' para dejar de agregar ")
+
+                    precio_compra_producto = Funciones.hacer_pregunta("Precio compra: ")
+                    if precio_compra_producto.lower() == "c":
+                        Funciones.mostrar_alerta("La operacón se ha cancelado")
+                        break
+                    precio_compra_producto = float(precio_compra_producto)
+
+                    if precio_compra_producto >= 0:
+
+                        precio_venta_producto = Funciones.hacer_pregunta("Precio venta: ")
+                        if precio_venta_producto.lower() == "c":
+                            Funciones.mostrar_alerta("La operacón se ha cancelado")
+                            break
+                        precio_venta_producto = float(precio_venta_producto)
+
+                        if precio_venta_producto > precio_compra_producto:
+
+                            cantidad_producto = Funciones.hacer_pregunta("Cantidad: ")
+                            if cantidad_producto.lower() == "c":
+                                Funciones.mostrar_alerta("La operacón se ha cancelado")
+                                break
+                            cantidad_producto = int(cantidad_producto)
+
+                            if cantidad_producto > 0:
+                                datos_producto = DatosCombos(id_producto, nombre_producto, lista, precio_compra_producto, precio_venta_producto, cantidad_producto)
+                                self.inventario_combos[id_producto] = datos_producto
+                                Funciones.mostrar_exito("El producto ha sido agregado al inventario")
+                                self.guardar_datos()
+                            else:
+                                Funciones.mostrar_alerta("La cantida no es valida")
+
+                        else:
+                           Funciones.mostrar_alerta("El precio digitado no es valido")
+                    
+                    else:
+                        Funciones.mostrar_alerta("El precio digitado no es valido")
+
+                except ValueError as e:
+                    print(e)
+                    input("Presione Enter para continuar...")
+            
+            opcion=input("Desea terminar de agregar combos: 's/n'")
+            if opcion.lower()=="s":
+                break
+
+    
+    def eliminar_combo(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Eliminar producto")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+            
+            try:
+                if not self.inventario_combos:
+                    Funciones.mostrar_alerta("No hay combos disponibles")
+                    break
+                else:
+                    Funciones.mostrar_productos_combos(self.inventario_combos)
+
+                    id_producto_buscar = Funciones.hacer_pregunta("ID producto que desea eliminar: ")
+                    if id_producto_buscar.lower() == "c":
+                        Funciones.mostrar_alerta("La operación se ha cancelado")
+                        break
+
+                    if id_producto_buscar in self.inventario_combos:
+
+                        Funciones.mostrar_exito("Producto encontrado: ")
+
+                        producto_encontrado = self.inventario_combos[id_producto_buscar]
+
+                        for id_producto, datos_producto in self.inventario_combos.items():
+                            if id_producto_buscar == id_producto:
+                                datos_producto = producto_encontrado.obtener_datos_producto()
+                                lista_elementos = ", ".join(datos_producto[2])  # Convertir la lista a una cadena
+
+                                # Convertir los valores numéricos a cadenas
+                                precio_compra_str = f"$ {datos_producto[3]:.2f}"
+                                precio_venta_str = f"$ {datos_producto[4]:.2f}"
+
+                                inventario_data = [id_producto, datos_producto[1], lista_elementos,
+                                                precio_compra_str, precio_venta_str, datos_producto[5]]
+
+                                headers = ["ID", "Combo", "Incluye", "Compra", "Venta", "Cantidad"]
+                                print(tabulate([inventario_data], headers=headers, tablefmt="fancy_grid"))
+                                print()
+                                break
+
+                        eliminar_pregunta = Funciones.hacer_pregunta("Está seguro que desea eliminar si/no: ")
+                        if eliminar_pregunta.lower() == "c":
+                            Funciones.mostrar_alerta("La operación se ha cancelado")
+                            break
+                        if eliminar_pregunta.lower() == "no":
+                            Funciones.mostrar_alerta("No se ha eliminado el producto")
+                        if eliminar_pregunta.lower() == "si":
+                            self.inventario_combos.pop(id_producto_buscar, None)  # Corregir la eliminación
+                            Funciones.mostrar_exito("Se ha eliminado el producto")
+                            self.guardar_datos()
+
+                    else:
+                        Funciones.mostrar_error("El Producto buscado no está en confitería")
+
+            except ValueError:
+                Funciones.mostrar_error("Error de valor: Ingrese un número válido")
+
+            except TypeError:
+                Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
+
+            
+    def modificar_combo(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Modificar producto")
+            #Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+
+            try:
+                if not self.inventario_combos:
+                    Funciones.mostrar_alerta("No hay productos en confiteria")
+                    break
+                else:
+                    Funciones.mostrar_productos_combos(self.inventario_combos)
+
+                    id_producto_buscar = Funciones.hacer_pregunta("ID producto que desea modificar: ")
+                    if id_producto_buscar.lower() == "c":
+                        Funciones.mostrar_alerta("La operacón se ha cancelado")
+                        break
+
+                    if id_producto_buscar in self.inventario_combos:
+
+                        Funciones.mostrar_exito("Producto encontrado: ")
+
+                        producto_encontrado = self.inventario_combos[id_producto_buscar]
+
+                        for id_producto, datos_producto in self.inventario_combos.items():
+                            if id_producto_buscar == id_producto:
+                                datos_producto = producto_encontrado.obtener_datos_producto()
+                                lista_elementos = ", ".join(datos_producto[2])  # Convertir la lista a una cadena
+
+                                # Convertir los valores numéricos a cadenas
+                                precio_compra_str = f"$ {datos_producto[3]:.2f}"
+                                precio_venta_str = f"$ {datos_producto[4]:.2f}"
+
+                                inventario_data = [id_producto, datos_producto[1], lista_elementos,
+                                                precio_compra_str, precio_venta_str, datos_producto[5]]
+
+                                headers = ["ID", "Combo", "Incluye", "Compra", "Venta", "Cantidad"]
+                                print(tabulate([inventario_data], headers=headers, tablefmt="fancy_grid"))
+                                print()
+                                break
+                        
+                        modificar_pregunta = Funciones.hacer_pregunta("Esta seguro que desea modificar si/no: ")
+                        if modificar_pregunta.lower() == "c":
+                            Funciones.mostrar_alerta("La operacón se ha cancelado")
+                            break  
+                        if modificar_pregunta.lower() == "no":
+                            Funciones.mostrar_alerta("La operacón se ha cancelado")
+                        if modificar_pregunta.lower() == "si":
+
+                            id_producto_nuevo = Funciones.hacer_pregunta("Nuevo ID: ")
+                            if id_producto_nuevo.lower() == "c":
+                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                                break
+                            if id_producto_buscar in self.inventario_combos:
+                                producto_encontrado = self.inventario_combos.pop(id_producto_buscar)
+                                self.inventario_combos[id_producto_nuevo] = producto_encontrado
+                            producto_encontrado.id_producto = id_producto_nuevo
+
+                            nombre_producto = Funciones.hacer_pregunta("Nuevo Nombre De Combo: ")
+                            if nombre_producto.lower() == "c":
+                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                                break
+                            producto_encontrado.nombre_producto = nombre_producto.title()
+
+                            print("Ingrese Nuevos Productos Del Combo: ")
+                            lista = []
+                            while True:
+                                name_producto = Funciones.hacer_pregunta("Nombre producto: ")
+                                
+                                if name_producto.lower() == "c":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                
+                                name_producto = name_producto.title()
+                                lista.append(name_producto)
+                                print("'c' para dejar de agregar ")
+                            producto_encontrado.lista = lista
+
+                            precio_compra_producto = Funciones.hacer_pregunta("Nuevo Precio compra: ")
+                            if precio_compra_producto.lower() == "c":
+                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                                break
+                            producto_encontrado.precio_compra_producto = float(precio_compra_producto)
+
+                            if producto_encontrado.precio_compra_producto >= 0:
+
+                                precio_venta_producto = Funciones.hacer_pregunta("Nuevo Precio venta: ")
+                                if precio_venta_producto.lower() == "c":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                producto_encontrado.precio_venta_producto = float(precio_venta_producto)
+
+                                if producto_encontrado.precio_venta_producto > producto_encontrado.precio_compra_producto:
+
+                                    cantidad_producto = Funciones.hacer_pregunta("Nueva Cantidad: ")
+                                    if cantidad_producto.lower() == "c":
+                                        Funciones.mostrar_alerta("La operación se ha cancelado")
+                                        break
+                                    producto_encontrado.cantidad_producto = int(cantidad_producto)
+
+                                    if producto_encontrado.cantidad_producto > 0:
+                                        Funciones.mostrar_exito("Se ha modificado el producto")
+                                        self.guardar_datos()
+                                    else:
+                                        Funciones.mostrar_alerta("La cantidad no es válida")
+                                
+                                else:
+                                    Funciones.mostrar_alerta("El precio digitado no es válido")
+
+                            else:
+                                Funciones.mostrar_alerta("El precio digitado no es válido")
+
+            except ValueError:
+                Funciones.mostrar_error("Error de valor: Ingrese un número válido")
+
+            except TypeError:
+                Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
+
+
+    def vender_combos(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Agregar combo")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+
+            if not self.inventario_combos:
+                Funciones.mostrar_alerta("No hay combos disponibles")
+                break
+            else:
+                Funciones.mostrar_productos_combos(self.inventario_combos)
+
+                try:
+                    venta_confirmada = input("¿Desea realizar una venta de combos? (s/n): ")
+                    if venta_confirmada.lower() == 'n' or venta_confirmada == 'c':
+                        Funciones.mostrar_alerta("La operación se ha cancelado")
+                        break
+
+                    total_venta_combos = 0
+                    factura_generada_combos = False
+                    factura_combos = None  # Almacena la factura actual de combos
+                    combos_vendidos = []  # Lista para almacenar combos vendidos
+
+                    while True:
+                        id_combo = Funciones.hacer_pregunta("ID del combo a vender (o 'c' para cancelar la venta): ")
+                        if id_combo.lower() == "c":
+                            Funciones.mostrar_alerta("Se va a cancelar la venta.")
+                            break
+
+                        if id_combo in self.inventario_combos:
+                            combo_a_vender = self.inventario_combos[id_combo]
+
+                            cantidad_combos_a_vender = Funciones.hacer_pregunta(f"Cantidad de '{combo_a_vender.nombre_producto}' a vender: ")
+                            if cantidad_combos_a_vender.lower() == "c":
+                                break
+                            cantidad_combos_a_vender = int(cantidad_combos_a_vender)
+
+                            if cantidad_combos_a_vender > 0 and cantidad_combos_a_vender <= combo_a_vender.cantidad_producto:
+                                total_venta_combos += cantidad_combos_a_vender * combo_a_vender.precio_venta_producto
+                                combos_vendidos.append((combo_a_vender, cantidad_combos_a_vender))
+
+                                confirmar_combos = Funciones.hacer_pregunta("\n¿Desea agregar más combos? si/no: ")
+                                if confirmar_combos.lower() == "c" or confirmar_combos.lower() == "no":
+                                    break
+
+                                if confirmar_combos.lower() == "si":
+                                    continue
+                            else:
+                                Funciones.mostrar_alerta("La cantidad de combos a vender no es válida")
+                        else:
+                            Funciones.mostrar_alerta("El ID del combo no es válido")
+
+                    # Generar factura de combos solo si se vendieron combos
+                    if combos_vendidos:
+                        if not factura_generada_combos:
+                            # Preguntar al cliente su identificación para el registro
+                            identificacion_cliente_combos = Funciones.hacer_pregunta("ID cliente para la venta de combos: ")
+                            if identificacion_cliente_combos.lower() == "c":
+                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                                break
+                            identificacion_cliente_combos = int(identificacion_cliente_combos)
+
+                            # Buscar si el cliente no está registrado
+                            if identificacion_cliente_combos not in self.clientes:
+                                # Si no está registrado, preguntar por su nombre y edad
+                                nombre_cliente_combos = Funciones.hacer_pregunta("Nombre cliente para la venta de combos: ")
+                                if nombre_cliente_combos.lower() == "c":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                nombre_cliente_combos = nombre_cliente_combos.title()
+
+                                while True:
+                                    edad_cliente_combos = Funciones.hacer_pregunta("Edad cliente para la venta de combos: ")
+                                    try:
+                                        edad_cliente_combos = int(edad_cliente_combos)
+                                        break  # Salir del bucle si la edad es un número entero válido
+                                    except ValueError:
+                                        Funciones.mostrar_alerta("Error de valor: Ingrese un número entero válido para la edad")
+
+                                cliente_combos = DatosCliente(identificacion_cliente_combos, nombre_cliente_combos, edad_cliente_combos)
+                                self.clientes[identificacion_cliente_combos] = cliente_combos
+                            else:
+                                cliente_combos = self.clientes[identificacion_cliente_combos]
+
+                            # Generar la factura de combos y actualizar los datos
+                            fecha_combos, numero_factura_combos, valor_total_factura_combos = self.factura_combos.generar_factura(cliente_combos, combos_vendidos)
+                            factura_generada_combos = True
+                            factura_combos = (fecha_combos, numero_factura_combos, valor_total_factura_combos)
+                            self.dinero_en_caja += total_venta_combos
+
+                            # Actualizar inventario de combos
+                            for combo, cantidad_combos in combos_vendidos:
+                                combo.cantidad_producto -= cantidad_combos
+
+                            ingresos_combos = [fecha_combos, numero_factura_combos, valor_total_factura_combos, "COMBOS"]
+                            ingresos_archivo_combos = [fecha_combos, numero_factura_combos, valor_total_factura_combos, "COMBOS", "NUEVO"]
+                            self.ingresos[fecha_combos] = ingresos_combos
+                            self.archivo.archivo_ingresos.append(ingresos_archivo_combos)
+                            Funciones.mostrar_exito("La venta de combos se ha realizado correctamente")
+                            self.guardar_datos()
+
+                            os.system("pause")
+                            break
+                        else:
+                            Funciones.mostrar_alerta("Ya se generó la factura para esta venta de combos. La operación se ha cancelado.")
+                            break
+                    else:
+                        Funciones.mostrar_alerta("No se vendieron combos. La operación se ha cancelado.")
+                        break
+
+                except ValueError:
+                    Funciones.mostrar_alerta("Error de valor: Ingrese un número entero válido")
+                
+
+    def ver_combos(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Agregar combo")
+            #Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+
+
+            if not self.inventario_combos:
+                Funciones.mostrar_alerta("No hay combos disponibles")
+                os.system("pause")
+                break
+            else:
+                Funciones.mostrar_productos_combos(self.inventario_combos)
+                os.system("pause")
+                break
+
     
 
     ##########################################################################################
@@ -1192,6 +1676,8 @@ class Menus:
             else:
                 if mostrar_productos_orden:
                     Funciones.mostrar_productos(mostrar_productos_orden)
+                    input()
+                    mostrar_productos_orden = None
                 else:
                     Funciones.mostrar_productos(self.inventario_confiteria)
                     # Definir colores y estilos
@@ -1199,53 +1685,8 @@ class Menus:
                     color_headers = Fore.LIGHTYELLOW_EX
                     estilo_reset = Style.RESET_ALL
                     try:
+                        productos_encontrados =  None
                         buscar_id_producto = Funciones.hacer_pregunta("Buscar id producto: ")
-                        if buscar_id_producto.lower() == "c":
-                            Funciones.mostrar_alerta("La operación se ha cancelado")
-                            break
-
-                        if buscar_id_producto.lower() == "on":
-                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].nombre_producto)
-                            mostrar_productos_orden = dict(orden)
-
-                        if buscar_id_producto.lower() == "ocat":
-                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].categoria_producto)
-                            mostrar_productos_orden = dict(orden)
-
-                        if buscar_id_producto.lower() == "ocan":
-                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].cantidad_producto)
-                            mostrar_productos_orden = dict(orden)
-
-                        if buscar_id_producto.lower() == "opc":
-                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].precio_compra_producto)
-                            mostrar_productos_orden = dict(orden)
-
-                        if buscar_id_producto.lower() == "opv":
-                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].precio_venta_producto)
-                            mostrar_productos_orden = dict(orden)
-
-                        if buscar_id_producto.lower() == "bn":
-                            nombre_a_buscar = Funciones.hacer_pregunta("Nombre a buscar: ").title()
-                            productos_encontrados = [producto for producto in self.inventario_confiteria.values()
-                                                    if nombre_a_buscar.lower() in producto.nombre_producto.lower()]
-
-                        if productos_encontrados:
-                            print(f"\n\n{color_titulo}Productos encontrados:\n{estilo_reset}")
-                            encontrados = []
-                            for producto_encontrado in productos_encontrados:
-                                datos_producto = producto_encontrado.obtener_datos_producto()
-
-                                encontrados.append([datos_producto[0], datos_producto[1], datos_producto[2],
-                                                    f"$ {datos_producto[3]:.2f}", f"$ {datos_producto[4]:.2f}",
-                                                    datos_producto[5]])
-
-                            headers = [f"{color_headers}ID", "Producto", "Categoria", "Compra", "Venta", f"Cantidad{estilo_reset}"]
-                            print(tabulate(encontrados, headers=headers, tablefmt="fancy_grid"))
-                            print()
-                            os.system("pause")
-                        else:
-                            Funciones.mostrar_alerta(f"No se encontraron productos que contengan '{nombre_a_buscar}'.")
-
 
                         if buscar_id_producto.isnumeric():
 
@@ -1271,6 +1712,54 @@ class Menus:
                             else:
                                 if buscar_id_producto not in self.inventario_confiteria:
                                     Funciones.mostrar_alerta("No hay ningun producto con la ID buscada")       
+
+                        if buscar_id_producto.lower() == "c":
+                            Funciones.mostrar_alerta("La operación se ha cancelado")
+                            break
+
+                        if buscar_id_producto.lower() == "on":
+                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].nombre_producto)
+                            mostrar_productos_orden = dict(orden)
+                            
+
+                        if buscar_id_producto.lower() == "ocat":
+                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].categoria_producto)
+                            mostrar_productos_orden = dict(orden)
+
+                        if buscar_id_producto.lower() == "ocan":
+                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].cantidad_producto)
+                            mostrar_productos_orden = dict(orden)
+
+                        if buscar_id_producto.lower() == "opc":
+                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].precio_compra_producto)
+                            mostrar_productos_orden = dict(orden)
+
+                        if buscar_id_producto.lower() == "opv":
+                            orden = sorted(self.inventario_confiteria.items(), key=lambda x: x[1].precio_venta_producto)
+                            mostrar_productos_orden = dict(orden)
+                            
+
+                        if buscar_id_producto.lower() == "bn":
+                            nombre_a_buscar = Funciones.hacer_pregunta("Nombre a buscar: ").title()
+                            productos_encontrados = [producto for producto in self.inventario_confiteria.values()
+                                                    if nombre_a_buscar.lower() in producto.nombre_producto.lower()]
+
+                            if productos_encontrados:
+                                print(f"\n\n{color_titulo}Productos encontrados:\n{estilo_reset}")
+                                encontrados = []
+                                for producto_encontrado in productos_encontrados:
+                                    datos_producto = producto_encontrado.obtener_datos_producto()
+
+                                    encontrados.append([datos_producto[0], datos_producto[1], datos_producto[2],
+                                                        f"$ {datos_producto[3]:.2f}", f"$ {datos_producto[4]:.2f}",
+                                                        datos_producto[5]])
+
+                                headers = [f"{color_headers}ID", "Producto", "Categoria", "Compra", "Venta", f"Cantidad{estilo_reset}"]
+                                print(tabulate(encontrados, headers=headers, tablefmt="fancy_grid"))
+                                print()
+                                os.system("pause")
+                            if not productos_encontrados:
+                                Funciones.mostrar_alerta(f"No se encontraron productos que contengan '{nombre_a_buscar}'.")
 
                     except ValueError:
                         Funciones.mostrar_error("Error de valor: Ingrese un número válido")
@@ -2128,9 +2617,6 @@ class Menus:
                     Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
 
 
-
-
-
 #######################################################################################
 
 
@@ -2139,7 +2625,458 @@ class Menus:
 
 #######################################################################################
 
+    def realizar_venta_producto(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Vender productos")
+            print("Opción siempre disponible: 'c' para cancelar")
 
+            if not self.inventario_confiteria:
+                Funciones.mostrar_alerta("No hay productos en confitería")
+                break
+            else:
+                Funciones.mostrar_productos(self.inventario_confiteria)
+
+                try:
+                    venta_confirmada = input("¿Desea realizar una venta? (s/n): ")
+                    if venta_confirmada.lower() == 'n' or venta_confirmada == 'c':
+                        Funciones.mostrar_alerta("La operación se ha cancelado")
+                        break
+
+                    total_venta = 0
+                    factura_generada = False
+                    factura = None  # Almacena la factura actual
+                    productos_vendidos = []  # Lista para almacenar productos vendidos
+
+                    while True:
+                        id_producto = Funciones.hacer_pregunta("ID del producto a vender (o 'c' para cancelar la venta): ")
+                        if id_producto.lower() == "c":
+                            Funciones.mostrar_alerta("Se va a cancelar la venta.")
+                            break
+
+                        if id_producto in self.inventario_confiteria:
+                            producto_a_vender = self.inventario_confiteria[id_producto]
+
+                            cantidad_a_vender = Funciones.hacer_pregunta(f"Cantidad de '{producto_a_vender.nombre_producto}' a vender: ")
+                            if cantidad_a_vender.lower() == "c":
+                                break
+                            cantidad_a_vender = int(cantidad_a_vender)
+
+                            if cantidad_a_vender > 0 and cantidad_a_vender <= producto_a_vender.cantidad_producto:
+                                total_venta += cantidad_a_vender * producto_a_vender.precio_venta_producto
+                                productos_vendidos.append((producto_a_vender, cantidad_a_vender))
+                                
+                                confirmar_productos = Funciones.hacer_pregunta("\n¿Desea agregar más productos? si/no: ")
+                                if confirmar_productos.lower() == "c" or confirmar_productos.lower() == "no":
+                                    break
+
+                                if confirmar_productos.lower() == "si":
+                                    continue
+                            else:
+                                Funciones.mostrar_alerta("La cantidad a vender no es válida")
+                        else:
+                            Funciones.mostrar_alerta("El ID del producto no es válido")
+
+                    # Generar factura solo si se vendieron productos
+                    if productos_vendidos:
+                        if not factura_generada:
+                            # Preguntar al cliente su identificación para el registro
+                            identificacion_cliente = Funciones.hacer_pregunta("ID cliente: ")
+                            if identificacion_cliente.lower() == "c":
+                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                                break
+                            identificacion_cliente = int(identificacion_cliente)
+
+                            # Buscar si el cliente no está registrado
+                            if identificacion_cliente not in self.clientes:
+                                # Si no está registrado, preguntar por su nombre y edad
+                                nombre_cliente = Funciones.hacer_pregunta("Nombre cliente: ")
+                                if nombre_cliente.lower() == "c":
+                                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                                    break
+                                nombre_cliente = nombre_cliente.title()
+
+                                while True:
+                                    edad_cliente = Funciones.hacer_pregunta("Edad cliente: ")
+                                    try:
+                                        edad_cliente = int(edad_cliente)
+                                        break  # Salir del bucle si la edad es un número entero válido
+                                    except ValueError:
+                                        Funciones.mostrar_alerta("Error de valor: Ingrese un número entero válido para la edad")
+
+                                cliente = DatosCliente(identificacion_cliente, nombre_cliente, edad_cliente)
+                                self.clientes[identificacion_cliente] = cliente
+                            else:
+                                cliente = self.clientes[identificacion_cliente]
+
+                            # Generar la factura y actualizar los datos
+                            fecha, numero_factura, valor_total_factura = self.factura_confiteria.generar_factura(cliente, productos_vendidos)
+                            factura_generada = True
+                            factura = (fecha, numero_factura, valor_total_factura)
+                            self.dinero_en_caja += total_venta
+                            # Actualizar inventario
+                            for producto, cantidad in productos_vendidos:
+                                producto.cantidad_producto -= cantidad
+
+                            ingresos = [fecha, numero_factura, valor_total_factura, "CONFITERIA"]
+                            ingresos_archivo = [fecha, numero_factura, valor_total_factura, "CONFITERIA", "NUEVO"]
+                            self.ingresos[fecha] = ingresos
+                            self.archivo.archivo_ingresos.append(ingresos_archivo)
+                            Funciones.mostrar_exito("La compra se ha realizado correctamente")
+                            self.guardar_datos()
+
+                            os.system("pause")
+                            break
+                        else:
+                            Funciones.mostrar_alerta("Ya se generó la factura para esta venta. La operación se ha cancelado.")
+                            break
+                    else:
+                        Funciones.mostrar_alerta("No se vendieron productos. La operación se ha cancelado.")
+                        break
+
+                except ValueError:
+                    Funciones.mostrar_alerta("Error de valor: Ingrese un número entero válido")
+                except Exception as e:
+                    Funciones.mostrar_alerta(f"Error: {e}")
+
+    def deshacer_venta_producto(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Cancelar Venta Producto")
+            print("Opción siempre disponible: 'c' para cancelar")
+
+            if not self.factura_confiteria.archivo.archivo_facturas_confiteria:
+                Funciones.mostrar_alerta("No hay ventas realizadas")
+                break
+
+            Funciones.mostrar_facturas_confiteria(self.factura_confiteria.archivo.archivo_facturas_confiteria)
+            try:
+                factura_a_eliminar = Funciones.hacer_pregunta("Numero Factura (o 'c' para cancelar): ")
+
+                if factura_a_eliminar.lower() == "c":
+                    Funciones.mostrar_alerta("La operación se ha cancelado")
+                    break
+
+                factura_a_eliminar = int(factura_a_eliminar)
+                factura_encontrada = None
+                productos_vendidos_encontrados = None
+
+                for factura in self.factura_confiteria.archivo.archivo_facturas_confiteria:
+                    numero_factura, fecha_venta, cliente, productos_vendidos, cantidad_vendida, total_venta, estado = factura
+
+                    if numero_factura == factura_a_eliminar:
+                        factura_encontrada = factura
+                        productos_vendidos_encontrados = productos_vendidos
+
+                        if factura_encontrada:
+                            identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+
+                            Funciones.mostrar_exito("Factura encontrada")
+
+                            # Mostrar la factura
+                            self.factura_confiteria.mostrar_factura(factura_encontrada, productos_vendidos_encontrados)
+
+                            # Preguntar si se desea cancelar la compra
+                            cancelar_factura = Funciones.hacer_pregunta("¿Cancelar esta compra? si/no: ").lower()
+
+                            if cancelar_factura == "si":
+                                # Actualizar ingresos
+                                for fecha, datos_ingreso in self.ingresos.items():
+                                    if numero_factura == datos_ingreso[1] and datos_ingreso[3] == "CONFITERIA":
+                                        ingreso_eliminado_archivo = [fecha, datos_ingreso[1], datos_ingreso[2], datos_ingreso[3], "ELIMINADO"]
+                                        self.archivo.archivo_ingresos.append(ingreso_eliminado_archivo)
+                                        fecha_a_eliminar_ingresos = fecha
+
+                                del self.ingresos[fecha_a_eliminar_ingresos]
+
+                                # Restar el dinero en caja
+                                self.dinero_en_caja -= total_venta
+
+                                # Actualizar el inventario
+                                for producto, cantidad in productos_vendidos_encontrados:
+                                    producto.cantidad_producto += cantidad
+
+                                # Actualizar datos de la factura en el archivo
+                                datos_archivo = [fecha_venta, numero_factura, total_venta, "ELIMINADA"]
+                                self.archivo.archivo_facturas_confiteria.append(datos_archivo)
+
+                                # Eliminar la factura de la estructura de facturas
+                                self.factura_confiteria.archivo.archivo_facturas_confiteria.remove(factura_encontrada)
+
+                                Funciones.mostrar_exito("Venta eliminada con éxito")
+                            elif cancelar_factura == "no":
+                                Funciones.mostrar_alerta("La operación se ha cancelado")
+                            else:
+                                Funciones.mostrar_alerta("Respuesta no válida. Por favor, ingrese 'si' o 'no'")
+                    else:
+                        Funciones.mostrar_alerta("No se encuentra la factura con el número ingresado. Intente de nuevo.")
+            except ValueError:
+                    Funciones.mostrar_alerta("Error de valor: Ingrese un número entero válido")
+            except Exception as e:
+                    Funciones.mostrar_alerta(f"Error: {e}")
+
+
+    def ver_ventas_confiteria(self):
+        while True:
+            os.system("cls")
+            Funciones.encabezado()
+            Funciones.subtitulo("Ventas Confiteria")
+            # Opción siempre disponible
+            print("Opción siempre disponible: 'c' para cancelar")
+            print("'vc' para ver ventas por cliente")
+            print("'vp' para ver ventas por producto")
+            print("'f' para buscar ventas por fecha")
+            print("'top' para ver el top 10 de clientes y productos")
+            print("Busqueda por N° Factura por defecto")
+
+            if not self.factura_confiteria.facturas_confiteria:
+                Funciones.mostrar_alerta("No hay Ventas realizadas")
+            else:
+                try:
+                    color_titulo = Fore.LIGHTCYAN_EX
+                    color_headers = Fore.LIGHTYELLOW_EX
+                    estilo_reset = Style.RESET_ALL
+
+                    Funciones.mostrar_facturas_confiteria(self.factura_confiteria.facturas_confiteria)
+
+                    buscar = Funciones.hacer_pregunta("Buscar: ")
+                    if buscar.isalpha():
+                        if buscar.lower() == "c":
+                            Funciones.mostrar_alerta("La operacion se ha cancelado")
+                            break
+
+                        if buscar.lower() == "vc":
+                            buscar = Funciones.hacer_pregunta("Cliente ID: ")
+                            if buscar.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+
+                            titulo = f"{color_titulo}F A C T U R A S    P O R    C L I E N T E{estilo_reset}"
+                            facturas_cliente = []
+                            total_ventas = 0
+                            numero_de_ventas = 0
+                            cliente_encontrado = False
+                            for numero_factura, datos_factura in self.factura_confiteria.facturas_confiteria.items():
+                                fecha_venta, cliente, producto, precio, cantidad = datos_factura
+                                identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto = producto.obtener_datos_confiteria()
+                                total_venta = cantidad * precio_venta_producto
+                                if identificacion_cliente == int(buscar):
+                                    cliente_encontrado = True
+
+                                    facturas_cliente.append([numero_factura, fecha_venta, nombre_cliente, nombre_producto, cantidad, total_venta])
+
+                                    headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Producto", "Precio", "Cantidad", f"Total Venta{estilo_reset}"]
+                                    data = [[f"{a[0]:04}", a[1], a[2], a[3], " ".join(a[4]), a[5], f"{a[6]:02}:{a[7]:02}", a[8], f"{a[9]:.2f}"] for a in facturas_cliente]
+                                    total_ventas += total_venta
+                                    numero_de_ventas += cantidad
+
+                            
+                            if cliente_encontrado:
+                                tabla_facturas = tabulate(data, headers=headers, tablefmt="fancy_grid")
+                                print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
+                                print(f"Total ventas: ${total_ventas:.2f}        Numero de ventas:  {numero_de_ventas}")
+                                print(tabla_facturas)
+                                print()
+                                os.system("pause")
+                            else:
+                                Funciones.mostrar_alerta("No existe el cliente buscado")
+
+                        if buscar.lower() == "vp":
+                            buscar = Funciones.hacer_pregunta("Productos: ")
+                            if buscar.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+                            buscar = buscar.title()
+
+                            titulo = f"{color_titulo}F A C T U R A S    P O R    P R O D U C T O{estilo_reset}"
+                            facturas_confiteria = []
+                            total_ventas = 0
+                            numero_de_ventas = 0
+                            producto_encontrado = False
+                            for numero_factura, datos_factura in self.factura_confiteria.facturas_confiteria.items():
+                                fecha_venta, cliente, producto, precio, cantidad = datos_factura
+                                identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto = producto.obtener_datos_confiteria()
+                                total_venta = cantidad * precio_venta_producto
+                                if nombre_producto == buscar or id_producto == buscar :
+                                    producto_encontrado = True
+                                    facturas_confiteria.append([numero_factura, fecha_venta, nombre_cliente, nombre_producto, cantidad, precio_venta_producto,total_venta])
+
+                                    headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Producto", "Precio", "Cantidad", f"Total Venta{estilo_reset}"]
+                                    data = [[f"{a[0]:04}", a[1], a[2], a[3], " ".join(a[4]), a[5], f"{a[6]:02}:{a[7]:02}", a[8], f"{a[9]:.2f}"] for a in facturas_confiteria]
+                                    total_ventas += total_venta
+                                    numero_de_ventas += cantidad
+
+                            
+
+                            if producto_encontrado:
+                                tabla_facturas = tabulate(data, headers=headers, tablefmt="fancy_grid")
+                                print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
+                                print(f"Total ventas: ${total_ventas:.2f}        Numero de ventas:  {numero_de_ventas}")
+                                print(tabla_facturas)
+                                print()
+                                os.system("pause")
+                            else:
+                                Funciones.mostrar_alerta("No se encontro el producto buscado")
+                            
+                        if buscar.lower() == "f":
+                            buscar_año = Funciones.hacer_pregunta("Año: ")
+                            if buscar_año.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+                            buscar_año = int(buscar_año)
+
+                            buscar_mes = Funciones.hacer_pregunta("Mes: ")
+                            if buscar_mes.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+                            buscar_mes = int(buscar_mes)
+
+                            buscar_dia = Funciones.hacer_pregunta("Día: ")
+                            if buscar_dia.lower() == "c":
+                                Funciones.mostrar_alerta("La operacion se ha cancelado")
+                                break
+                            buscar_dia = int(buscar_dia)
+
+                            titulo = f"{color_titulo}F A C T U R A S    D E L   {buscar_año}/{buscar_mes}/{buscar_dia}{estilo_reset}"
+                            facturas_fecha = []
+                            total_ventas = 0
+                            numero_de_ventas = 0
+                            fechas_encontradas = False
+                            for numero_factura, datos_factura in self.factura_confiteria.facturas_confiteria.items():
+                                fecha_venta, cliente, producto, precio, cantidad = datos_factura
+                                identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto = producto.obtener_datos_confiteria()
+                                total_venta = cantidad * precio_venta_producto
+                                if fecha_venta.startswith(f"{buscar_año:04}-{buscar_mes:02}-{buscar_dia:02}"):
+
+                                    fechas_encontradas = True
+                                    facturas_fecha.append([numero_factura, fecha_venta, nombre_cliente, nombre_producto, precio_venta_producto, cantidad, total_venta])
+
+                                    headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Producto", "Precio", "Cantidad", f"Total Venta{estilo_reset}"]
+                                    data = [[f"{a[0]:04}", a[1], a[2], a[3], " ".join(a[4]), a[5], f"{a[6]:02}:{a[7]:02}", a[8], f"{a[9]:.2f}"] for a in facturas_fecha]
+                                    total_ventas += total_venta
+                                    numero_de_ventas += cantidad
+
+                            
+
+                            if fechas_encontradas:
+                                tabla_facturas = tabulate(data, headers=headers, tablefmt="fancy_grid")
+                                print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
+                                print(f"Total ventas: ${total_ventas:.2f}        Numero de ventas:  {numero_de_ventas}")
+                                print(tabla_facturas)
+                                print()
+                                os.system("pause")
+                            else:
+                                Funciones.mostrar_alerta("No se encontro la fecha buscada")       
+                                
+                        if buscar.lower() == "top":
+                            titulo_clientes = f"{color_titulo}T O P    1 0    C L I E N T E S{estilo_reset}"
+                            top_clientes = {}
+                            for id_cliente, datos_cliente in self.clientes.items():
+                                for numero_factura, datos_factura in self.factura_confiteria.facturas_confiteria.items():
+                                    fecha_venta, cliente, producto, = datos_factura
+                                    identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                    id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto = producto.obtener_datos_confiteria()
+                                    total_venta = cantidad * precio_venta_producto
+                                    compras = 0
+                                    compras_valor = 0
+                                    if id_cliente == identificacion_cliente:
+                                        compras += cantidad
+                                        compras_valor += total_venta
+                                        if id_cliente not in top_clientes:
+                                            datos_cliente_top = [nombre_cliente, edad_cliente, compras, compras_valor]
+                                            top_clientes[identificacion_cliente] = datos_cliente_top
+                                        else:
+                                            for id_cliente_top, datos_cliente_top in top_clientes.items():
+                                                if id_cliente_top == id_cliente:
+                                                    datos_cliente_top[2] += compras
+                                                    datos_cliente_top[3] += compras_valor
+                                            
+                            data_clientes = []
+                            for id_cliente, datos_cliente in top_clientes.items():
+                                data_clientes.append([datos_cliente[0], datos_cliente[1], datos_cliente[2], datos_cliente[3]])
+                                headers_clientes = [f"{color_headers}Nombre", "Edad", "Productos comprados", f"Total compras{estilo_reset}"]
+                                data_top_clientes = [[a[0], a[1], a[2], f"{a[3]:.2f}"] for a in data_clientes]
+
+                            data_top_clientes = sorted(data_top_clientes, key=lambda x: x[2], reverse=True)[:10]
+                            tabla_top_clientes = tabulate(data_top_clientes, headers=headers_clientes, tablefmt="fancy_grid")
+                            print("\n" + titulo_clientes.center(len(tabla_top_clientes.split('\n')[0])) + "\n")
+                            print(tabla_top_clientes)
+                            print()
+
+
+                            titulo_productos = f"{color_titulo}T O P    1 0    P R O D U C T O S{estilo_reset}"
+                            top_productos = {}
+
+                            for numero_factura, datos_factura in self.factura_confiteria.facturas_confiteria.items():
+                                _, _, producto, _, cantidad, _, _, _ = datos_factura
+                                nombre_producto, _, _, _, _, precio_venta_producto = producto.obtener_datos_confiteria()
+                                total_venta = cantidad * precio_venta_producto
+
+                                if nombre_producto not in top_productos:
+                                    top_productos[nombre_producto] = [cantidad, total_venta]
+                                else:
+                                    top_productos[nombre_producto][0] += cantidad
+                                    top_productos[nombre_producto][1] += total_venta
+
+                            data_confiteria = []
+                            for nombre_producto, datos_confiteria in top_productos.items():
+                                data_confiteria.append([nombre_producto, datos_confiteria[0], f"{datos_confiteria[1]:.2f}"])
+
+                            headers_productos = [f"{color_headers}Título", "Facturas vendidas", f"Total recaudado{estilo_reset}"]
+                            data_top_productos = sorted(data_confiteria, key=lambda x: x[1], reverse=True)[:10]
+
+                            tabla_top_productos = tabulate(data_top_productos, headers=headers_productos, tablefmt="fancy_grid")
+                            print("\n" + titulo_productos.center(len(tabla_top_productos.split('\n')[0])) + "\n")
+                            print(tabla_top_productos)
+                            print()
+                            os.system("pause")
+
+
+                    if buscar.isnumeric():
+                        buscar = int(buscar)
+                        for numero_factura, datos_factura in self.factura_confiteria.facturas_confiteria.items():
+                            if numero_factura == buscar:
+                                fecha_venta, cliente, producto, precio, cantidad = datos_factura
+                                identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+                                id_producto, nombre_producto, categoria_producto, precio_compra_producto, precio_venta_producto, cantidad_producto = producto.obtener_datos_confiteria()
+                                total_venta = cantidad * precio_venta_producto
+
+                                Funciones.mostrar_exito("Factura encontrada")
+
+                                boleto = f"""
+                                ------------------------------------------------
+                                        CINE UDENAR - FACTURA DE VENTA
+                                ------------------------------------------------
+                                Número de factura: {numero_factura:04}
+                                Fecha de venta: {fecha_venta}
+                                ------------------------------------------------
+                                Productos: {nombre_producto}
+                                Precio: {precio_venta_producto}
+                                Cantidad: {cantidad}
+                                ------------------------------------------------
+                                Cliente: {nombre_cliente} ({edad_cliente} años)
+                                C.C/I.T: {identificacion_cliente}
+                                ------------------------------------------------
+                                Total: ${total_venta:.2f}
+                                ------------------------------------------------
+                                ¡Gracias por su compra!
+                                ------------------------------------------------
+                                """
+
+                                # Imprimir el boleto
+                                print(boleto)
+                                os.system("pause")
+
+                except ValueError:
+                    Funciones.mostrar_error("Error de valor: Ingrese un número válido")
+
+                except TypeError:
+                    Funciones.mostrar_error("Error de tipo: Ingrese un tipo de dato válido")
 
 
 

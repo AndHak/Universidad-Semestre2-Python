@@ -205,6 +205,7 @@ class Funciones:
         print(tabla_egresos)
         print()
 
+
     def mostrar_facturas_peliculas(facturas_peliculas):
         color_titulo = Fore.LIGHTCYAN_EX
         color_headers = Fore.LIGHTYELLOW_EX
@@ -227,10 +228,79 @@ class Funciones:
 
         print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
         print(tabla_facturas)
-    
 
 
+    def mostrar_facturas_confiteria(facturas_confiteria):
+        color_titulo = Fore.LIGHTCYAN_EX
+        color_headers = Fore.LIGHTYELLOW_EX
+        estilo_reset = Style.RESET_ALL
+
+        titulo = f"{color_titulo}F A C T U R A S     C O N F I T E R Í A{estilo_reset}"
+        
+        facturas_data = []
+        for factura in facturas_confiteria:
+            numero_factura, fecha_venta, cliente, productos_vendidos, cantidad_vendida, total_venta, estado = factura
+
+            # Acceder a los datos del cliente
+            identificacion_cliente, nombre_cliente, edad_cliente = cliente.obtener_datos_cliente()
+
+            # Construir información de productos vendidos
+            productos_info = ""
+            for producto, cantidad in productos_vendidos:
+                id_producto, nombre_producto, _, _, precio_venta_producto, _ = producto.obtener_datos_producto()
+                productos_info += f"{cantidad}x {nombre_producto} (${precio_venta_producto:.2f})\n"
+
+            facturas_data.append([numero_factura, fecha_venta, nombre_cliente, productos_info, total_venta])
+
+        headers = [f"{color_headers}Numero Factura", "Fecha de venta", "Cliente", "Productos", f"Total Venta{estilo_reset}"]
+        data = [[f"{a[0]:04}", a[1], a[2], a[3], f"${a[4]:.2f}"] for a in facturas_data]
+
+        tabla_facturas = tabulate(data, headers=headers, tablefmt="fancy_grid")
+
+        print("\n" + titulo.center(len(tabla_facturas.split('\n')[0])) + "\n")
+        print(tabla_facturas)
 
 
+    @staticmethod
+    def mostrar_factura(factura, productos_vendidos):
+        # Implementa la lógica para mostrar la factura aquí
+        # Puedes utilizar la información de la factura y los productos vendidos
 
+        print("FACTURA:")
+        print("Número de factura:", factura[1])
+        print("Fecha de venta:", factura[0])
+        print("Cliente:", factura[2].nombre_cliente)
+        print("Productos vendidos:")
 
+        for producto, cantidad in productos_vendidos:
+            print(f"- {cantidad} {producto.nombre_producto} - ${producto.precio_venta_producto:.2f} c/u")
+
+        print("Total venta: ${:.2f}".format(factura[2]))
+        print("¡Gracias por su compra!")
+
+    def mostrar_productos_combos(inventario_combos):
+        color_titulo = Fore.LIGHTCYAN_EX
+        color_headers = Fore.LIGHTYELLOW_EX
+        estilo_reset = Style.RESET_ALL
+
+        titulo = f"{color_titulo}C O M B O S{estilo_reset}"
+        
+        inventario_data = []
+        for id_producto, datos_producto in inventario_combos.items():
+            datos_producto = datos_producto.obtener_datos_producto()
+            lista_elementos = ", ".join(datos_producto[2])  # Convertir la lista a una cadena
+            inventario_data.append([id_producto, datos_producto[1], lista_elementos,
+                                    f"$ {datos_producto[3]:.2f}", f"$ {datos_producto[4]:.2f}",
+                                    datos_producto[5]])
+
+        headers = [f"{color_headers}ID", "Combo", "Incluye", "Compra", "Venta", f"Cantidad{estilo_reset}"]
+
+        # Obtener la tabla del inventario utilizando tabulate sin imprimir
+        tabla_inventario = tabulate(inventario_data, headers=headers, tablefmt="fancy_grid")
+
+        # Imprimir el título centrado sobre la tabla
+        print("\n" + titulo.center(len(tabla_inventario.split('\n')[0])) + "\n")
+
+        # Imprimir la tabla del inventario utilizando tabulate
+        print(tabla_inventario)
+        print()

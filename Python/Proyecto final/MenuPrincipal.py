@@ -1,6 +1,7 @@
 from MenusInteractivos import *
 from Funciones import *
 import os
+from FacturaConfiteria import *
 
 #Abriri terminal...
 #digitar        pip install colorama
@@ -9,6 +10,7 @@ import os
 
 archivo = Archivo()
 abrir_menu = Menus(archivo)
+factura_confiteria = FacturaConfiteria()
 
 def menu_principal():
     while True:
@@ -99,11 +101,10 @@ def sistema_de_confiteria():
         print("""
         1.  Agregar producto
         2.  Eliminar producto
-        3.  Modificar producto
-        4.  Administracion de combos
-        5.  Buscar productos
-        6.  Buscar combos
-        7.  Salir""")
+        3.  Administracion de combos
+        4.  Buscar productos
+        5.  Ver combos
+        6.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
             if opcion_seleccionada == 1:
@@ -111,14 +112,12 @@ def sistema_de_confiteria():
             elif opcion_seleccionada == 2:
                 abrir_menu.eliminar_producto()
             elif opcion_seleccionada == 3:
-                abrir_menu.modificar_producto()
-            elif opcion_seleccionada == 4:
                 administracion_de_combos()
-            elif opcion_seleccionada == 5:
+            elif opcion_seleccionada == 4:
                 abrir_menu.buscar_productos()
+            elif opcion_seleccionada == 5:
+                abrir_menu.ver_combos()
             elif opcion_seleccionada == 6:
-                pass
-            elif opcion_seleccionada == 7:
                 break
         except ValueError:
             Funciones.mostrar_error("Ingrese una opción válida")
@@ -132,8 +131,8 @@ def administracion_de_combos():
         1.  Agregar combo
         2.  Eliminar combo
         3.  Modificar combo
-        4.  Registro de combos
-        5.  Ver combos
+        4.  Ver combos
+        5.  Vender combos
         6.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
@@ -144,13 +143,14 @@ def administracion_de_combos():
             elif opcion_seleccionada == 3:
                 abrir_menu.modificar_combo()
             elif opcion_seleccionada == 4:
-                abrir_menu.registro_de_combos()
-            elif opcion_seleccionada == 5:
                 abrir_menu.ver_combos()
+            elif opcion_seleccionada == 5:
+                abrir_menu.vender_combos()
             elif opcion_seleccionada == 6:
                 break
-        except ValueError:
-            Funciones.mostrar_error("Ingrese una opción válida")
+        except ValueError as e:
+            print(e)
+            input("Presione Enter para continuar...")
 
 def sistema_de_ventas_peliculas():
     while True:
@@ -191,30 +191,32 @@ def sistema_de_ventas_confiteria():
         Funciones.subtitulo("Sistema de ventas confiteria")
         print("""
         1.  Realizar venta
-        2.  Modificar venta
-        3.  Deshacer venta
-        4.  Menu cuadre de caja y cuentas
-        5.  Buscar facturas
-        6.  Ver ventas
-        7.  Salir""")
+        2.  Deshacer venta
+        3.  Menu cuadre de caja y cuentas
+        4.  Buscar facturas
+        5.  Salir""")
         try:
             opcion_seleccionada = int(Funciones.hacer_pregunta("Escoja una opción del menú: "))
-            if opcion_seleccionada == 1:
-                abrir_menu.realizar_venta_producto()
-            elif opcion_seleccionada == 2:
-                abrir_menu.modificar_venta_producto()
-            elif opcion_seleccionada == 3:
-                abrir_menu.deshacer_venta_producto()
-            elif opcion_seleccionada == 4:
-                menu_cuadre_de_caja_y_cuentas()
-            elif opcion_seleccionada == 5:
-                abrir_menu.buscar_facturas_confiteria()
-            elif opcion_seleccionada == 6:
-                abrir_menu.ver_ventas_confiteria()
-            elif opcion_seleccionada == 7:
-                break
-        except ValueError:
-            Funciones.mostrar_error("Ingrese una opción válida")
+            match opcion_seleccionada:
+                case 1:
+                    abrir_menu.realizar_venta_producto()
+                    break
+                case 2:
+                    abrir_menu.deshacer_venta_producto()
+                    break
+                case 3:
+                    menu_cuadre_de_caja_y_cuentas()
+                    break
+                case 4:
+                    factura_confiteria.buscar_facturas_confiteria()
+                    break
+                case 5:
+                    break
+                case _:
+                    raise ValueError("Error: Ingrese una opción válida.")
+        except ValueError as e:
+            print(e)
+            input("Presione Enter para continuar...")
 
 def manejo_de_datos():
     while True:
