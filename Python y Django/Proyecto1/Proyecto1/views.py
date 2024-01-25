@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 import datetime
 from django.template import Template, Context
+from django.template.loader import get_template
+from django.shortcuts import render
 
 
 class Persona(object):
@@ -9,24 +11,22 @@ class Persona(object):
         self.apellido = apellido
         self.edad = edad
 
+def pag_a(request):
+    ahora = datetime.datetime.now()
+
+    return render(request, "a.html", {"Ahora":ahora})
+
 
 def saludo(request):
 
     p1 = Persona("Andres", "Guerra", "22")
+    temas = ["Plantillas", "Modelos", "Formularios", "Vistas", "Despliegue"]
 
     ahora = datetime.datetime.now()
 
-    doc_externo = open("C:/Programacion Universidad/Semestre 2/Python y Django/Proyecto1/Proyecto1/Plantillas/Html/plantilla1.html")
+    ctx = {"nombre_persona": p1.nombre, "apellido_persona": p1.apellido, "edad":p1.edad, "hora": ahora, "temas":temas}
 
-    plt = Template(doc_externo.read())
-
-    doc_externo.close()
-
-    ctx = Context({"nombre_persona": p1.nombre, "apellido_persona": p1.apellido, "edad":p1.edad, "hora": ahora})
-
-    documento = plt.render(ctx)
-
-    return HttpResponse(documento)
+    return render(request, "plantilla1.html", ctx)
 
 def despedida(request):
     return HttpResponse("Hola mundo")
@@ -46,7 +46,6 @@ Fecha y hora: {fecha}
     return HttpResponse(vista)
 
 def calculate_age(request, age, year):
-
     age = 22
     period = year-2024
     future_age = age + period

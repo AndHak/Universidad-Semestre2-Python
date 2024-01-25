@@ -54,7 +54,7 @@ ROOT_URLCONF = 'Proyecto1.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["C:\Programacion Universidad\Semestre 2\Python y Django\Proyecto1\Proyecto1\Plantillas\Html"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

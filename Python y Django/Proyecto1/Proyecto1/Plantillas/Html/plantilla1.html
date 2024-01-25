@@ -6,14 +6,40 @@
     <title>Saludo</title>
 </head>
 <body>
+    {% include "barra.html" %}
     <h1>
+        {% comment %}
+        Comentario
+        {% endcomment %}
         Hola mundo cruel
     </h1>
+
+    {% if nombre_persona == 'Andres' %}
+
+    <p>El curso lo imparte el programador titular</p>
+
+    {% endif %}
+
     <h2>
-        El nombre del programador es {{nombre_persona}} {{apellido_persona}} edad: {{edad}}
+        El nombre del programador es {{nombre_persona.upper}} {{apellido_persona.upper}} edad: {{edad}}
     </h2>
     <h3>
         Momento actual: {{hora}}
     </h3>
+    <p> <strong>Temas del curso: </strong> </p>
+    <p> 
+        <ul>
+
+        {% if temas %}
+            {% for tema in temas %}
+
+                <p>{{tema}}</p>
+        
+            {% endfor %}
+        {% else %}
+            <p>No hay temas</p>
+        {% endif %}
+        </ul>
+    </p>
 </body>
 </html> 

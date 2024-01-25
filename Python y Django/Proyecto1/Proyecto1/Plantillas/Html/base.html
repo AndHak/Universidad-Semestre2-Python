@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %} {% endblock %}
+    </title>
+</head>
+<body>
+
+    <h1 style="display: flex; background-color: black; color: white;"> AndHakTeam.org</h1>
+
+    {% include "barra.html" %}
+    <h3> Curso de seguridad informatica y diseño web </h3>
+
+    {% block content %}
+
+    {% endblock %}
+
+    <p style="display: flex; background-color: black; color: white;">Seguridad informatica avanzada</p>
+
+
+    
+</body>
+</html>
