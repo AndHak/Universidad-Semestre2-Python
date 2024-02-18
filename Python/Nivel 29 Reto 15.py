@@ -108,6 +108,7 @@ while exe:
         nave_y < asteroide_y + 100 and
         nave_y + 100 > asteroide_y):
         # Colisión detectada, regresar la nave a la posición inicial
+        pygame.time.delay(1000)
         nave_x = 540
         nave_y = 610
 
@@ -137,8 +138,5 @@ while exe:
         nave_izquierda(ventana, nave_x, nave_y)
 
     pygame.display.update()
-
-pygame.quit()
-
 
 pygame.quit()
